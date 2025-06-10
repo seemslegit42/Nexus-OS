@@ -60,30 +60,48 @@ export function WorkspaceGrid({
   
   const [minimizedZoneIds, setMinimizedZoneIds] = useState<string[]>([]);
   const [storedHeightsBeforeMinimize, setStoredHeightsBeforeMinimize] = useState<Record<string, { h: number; minH: number }>>({});
+  const [locallyClosedZoneIds, setLocallyClosedZoneIds] = useState<string[]>([]);
+
 
   const [calculatedRowHeight, setCalculatedRowHeight] = useState(DEFAULT_ROW_HEIGHT_PIXELS);
 
   useEffect(() => {
+    // Calculate row height based on a dummy header to ensure minimized zones fit their header.
+    // This runs once on mount.
     const dummyHeader = document.createElement('div');
-    dummyHeader.className = 'draggable-zone-header flex flex-row items-center justify-between space-y-0 p-3 border-b border-border/50 min-h-[48px]'; // Match Zone header style
+    // Apply classes similar to Zone's header for accurate height measurement
+    dummyHeader.className = 'draggable-zone-header flex flex-row items-center justify-between space-y-0 p-3 border-b border-border/50 min-h-[48px]';
     dummyHeader.style.position = 'absolute';
     dummyHeader.style.visibility = 'hidden';
+    dummyHeader.style.width = '300px'; // Arbitrary width
     document.body.appendChild(dummyHeader);
-    const headerHeight = dummyHeader.offsetHeight || 48; // Fallback, should match CSS
+    const headerPixelHeight = dummyHeader.offsetHeight || 48; // Fallback
     document.body.removeChild(dummyHeader);
-    setCalculatedRowHeight(Math.max(10, Math.ceil(headerHeight / MINIMIZED_ZONE_HEADER_ROWS)));
+    
+    // Set rowHeight to be a fraction of the header, ensuring MINIMIZED_ZONE_HEADER_ROWS make up the header
+    setCalculatedRowHeight(Math.max(10, Math.ceil(headerPixelHeight / MINIMIZED_ZONE_HEADER_ROWS)));
   }, []);
 
 
   useEffect(() => {
+    if (calculatedRowHeight === DEFAULT_ROW_HEIGHT_PIXELS && !document.body) {
+      // Wait for document.body to be available if calculatedRowHeight hasn't been set yet properly
+      // This is a safeguard, but the initial useEffect should handle it.
+      return;
+    }
     setIsMounted(true);
     const initialLayouts: Layouts = {};
     Object.keys(cols).forEach(bpKey => {
       const bp = bpKey as keyof typeof cols;
-      initialLayouts[bp] = zoneConfigs.map(zc => {
+      initialLayouts[bp] = zoneConfigs
+        .filter(zc => !locallyClosedZoneIds.includes(zc.id)) // Filter out locally closed zones
+        .map(zc => {
+        // Precedence: Breakpoint-specific layout > ZoneConfig top-level > Defaults
         const bpLayoutConfig = zc.defaultLayout[bp] || zc.defaultLayout.lg;
 
         const itemStatic = bpLayoutConfig.static ?? zc.static ?? false;
+        // If static, it's not draggable or resizable by default.
+        // Otherwise, allow dragging/resizing unless explicitly set to false.
         const itemIsResizable = bpLayoutConfig.isResizable ?? zc.isResizable ?? !itemStatic;
         const itemIsDraggable = bpLayoutConfig.isDraggable ?? zc.isDraggable ?? !itemStatic;
 
@@ -99,7 +117,7 @@ export function WorkspaceGrid({
       });
     });
     setCurrentLayouts(initialLayouts);
-  }, [zoneConfigs, cols, calculatedRowHeight]); 
+  }, [zoneConfigs, cols, calculatedRowHeight, locallyClosedZoneIds]); // Add locallyClosedZoneIds dependency
 
   const handleLayoutChange = (currentLayout: Layout[], allLayouts: Layouts) => {
     if (JSON.stringify(allLayouts) !== JSON.stringify(currentLayouts)) {
@@ -154,10 +172,11 @@ export function WorkspaceGrid({
 
         Object.keys(restoredLayouts).forEach(bp => {
           if (restoredLayouts[bp]) {
-            restoredLayouts[bp].forEach((itemL: Layout) => {
-              // Properties are already restored from storedLayoutsBeforeMaximize
-              // Now, re-apply minimized state if necessary
-              if (minimizedZoneIds.includes(itemL.i)) {
+             (restoredLayouts[bp] as Layout[]).forEach((itemL: Layout) => {
+              // Properties are restored from storedLayoutsBeforeMaximize
+              // Now, re-apply minimized state if necessary and if it was stored
+              const wasMinimizedBeforeMaximize = minimizedZoneIds.includes(itemL.i) && storedLayoutsBeforeMaximize?.[bp]?.find(l => l.i === itemL.i);
+              if (wasMinimizedBeforeMaximize) {
                 itemL.h = MINIMIZED_ZONE_HEADER_ROWS;
                 itemL.minH = MINIMIZED_ZONE_HEADER_ROWS;
                 itemL.isResizable = false;
@@ -168,15 +187,14 @@ export function WorkspaceGrid({
         });
         return restoredLayouts;
 
-      } else if (!maximizedZoneId) { // Maximize
+      } else if (!maximizedZoneId) { // Maximize a new zone
         setStoredLayoutsBeforeMaximize(JSON.parse(JSON.stringify(prevLayouts)));
         setMaximizedZoneId(id);
         
-        // Un-minimize the target zone if it was minimized
-        if (minimizedZoneIds.includes(id)) {
-            setMinimizedZoneIds(prev => prev.filter(minId => minId !== id));
-            // Height will be overridden by maximize logic below
-        }
+        // Ensure the target zone is not minimized visually when maximized
+        const updatedMinimizedZoneIds = minimizedZoneIds.filter(minId => minId !== id);
+        setMinimizedZoneIds(updatedMinimizedZoneIds);
+
 
         Object.keys(newLayoutsState).forEach(bp => {
           const bpKey = bp as keyof typeof cols;
@@ -185,7 +203,7 @@ export function WorkspaceGrid({
           
           if (bpLayout) {
             bpLayout.forEach((itemL: Layout) => {
-              if (itemL.i === id) {
+              if (itemL.i === id) { // The zone being maximized
                 itemL.x = 0;
                 itemL.y = 0; 
                 itemL.w = currentBPCols;
@@ -195,8 +213,8 @@ export function WorkspaceGrid({
                 itemL.static = true;
                 itemL.isDraggable = false;
                 itemL.isResizable = false;
-              } else {
-                 itemL.static = true; // Pin other zones in place
+              } else { // Other zones
+                 itemL.static = true; 
                  itemL.isDraggable = false;
                  itemL.isResizable = false;
               }
@@ -205,12 +223,13 @@ export function WorkspaceGrid({
         });
         return newLayoutsState;
       }
+      // If a zone is already maximized and a different zone's maximize is triggered, do nothing.
       return prevLayouts; 
     });
-  }, [maximizedZoneId, storedLayoutsBeforeMaximize, cols, calculatedRowHeight, currentBreakpoint, minimizedZoneIds, storedHeightsBeforeMinimize]);
+  }, [maximizedZoneId, storedLayoutsBeforeMaximize, cols, calculatedRowHeight, minimizedZoneIds, storedHeightsBeforeMinimize]);
   
   const handleToggleMinimize = useCallback((id: string) => {
-    if (maximizedZoneId === id || maximizedZoneId) return; 
+    if (maximizedZoneId) return; // Cannot minimize if a zone is maximized
 
     const isCurrentlyMinimized = minimizedZoneIds.includes(id);
     const itemCurrentLayoutForBp = currentLayouts[currentBreakpoint]?.find(l => l.i === id);
@@ -222,22 +241,22 @@ export function WorkspaceGrid({
       setMinimizedZoneIds(prev => [...prev, id]);
       setStoredHeightsBeforeMinimize(prev => ({
         ...prev,
-        [id]: { h: itemCurrentLayoutForBp.h, minH: itemCurrentLayoutForBp.minH }
+        [id]: { h: itemCurrentLayoutForBp.h, minH: itemCurrentLayoutForBp.minH || MINIMIZED_ZONE_HEADER_ROWS }
       }));
       updateLayoutItemForAllBreakpoints(id, {
         h: MINIMIZED_ZONE_HEADER_ROWS,
         minH: MINIMIZED_ZONE_HEADER_ROWS,
         isResizable: false, 
-        isDraggable: !isPinned, // Draggable if not pinned
+        isDraggable: !isPinned, 
       });
     } else { 
       setMinimizedZoneIds(prev => prev.filter(minId => minId !== id));
       const oldHeights = storedHeightsBeforeMinimize[id];
       updateLayoutItemForAllBreakpoints(id, {
         h: oldHeights?.h || itemCurrentLayoutForBp.h, 
-        minH: oldHeights?.minH || itemCurrentLayoutForBp.minH, 
-        isResizable: !isPinned, // Resizable if not pinned
-        isDraggable: !isPinned, // Draggable if not pinned
+        minH: oldHeights?.minH || itemCurrentLayoutForBp.minH || MINIMIZED_ZONE_HEADER_ROWS, 
+        isResizable: !isPinned, 
+        isDraggable: !isPinned, 
       });
       setStoredHeightsBeforeMinimize(prev => {
         const newState = {...prev};
@@ -253,14 +272,26 @@ export function WorkspaceGrid({
     if (onZoneClose) {
       onZoneClose(id); 
     } else {
-      // console.warn(`Zone close clicked for ${id}, but no onZoneClose handler provided.`);
+      // If no external handler, manage "closed" state internally for this session
+      setLocallyClosedZoneIds(prev => [...prev, id]);
+      // Remove any stored minimize heights for this zone
+      setStoredHeightsBeforeMinimize(prev => {
+        const newState = {...prev};
+        delete newState[id];
+        return newState;
+      });
+       // Remove from minimized list if it was minimized
+      setMinimizedZoneIds(prev => prev.filter(minId => minId !== id));
     }
   };
 
-  if (!isMounted || !calculatedRowHeight) {
+  if (!isMounted || !calculatedRowHeight || (calculatedRowHeight === DEFAULT_ROW_HEIGHT_PIXELS && zoneConfigs.length > 0 && typeof window !== 'undefined')) {
+    // Basic placeholder while rowHeight is being calculated or not mounted
     return (
       <div className={cn("layout grid-placeholder", className)} style={{minHeight: '300px'}}>
-        {zoneConfigs.map(zc => (
+        {zoneConfigs
+          .filter(zc => !locallyClosedZoneIds.includes(zc.id))
+          .map(zc => (
           <div key={zc.id} className="bg-muted/30 rounded-lg p-4">Loading {zc.title}...</div>
         ))}
       </div>
@@ -268,6 +299,8 @@ export function WorkspaceGrid({
   }
   
   const layoutsToRender = currentLayouts; 
+  const activeZoneConfigs = zoneConfigs.filter(zc => !locallyClosedZoneIds.includes(zc.id));
+
 
   return (
     <ResponsiveGridLayout
@@ -284,18 +317,22 @@ export function WorkspaceGrid({
       measureBeforeMount={false} 
       useCSSTransforms={true}
     >
-      {zoneConfigs.map((zoneConfig) => {
+      {activeZoneConfigs.map((zoneConfig) => {
         const rglItem = layoutsToRender[currentBreakpoint]?.find(item => item.i === zoneConfig.id) || 
                         currentLayouts[currentBreakpoint]?.find(item => item.i === zoneConfig.id) || 
-                        zoneConfig.defaultLayout.lg; // Fallback, should ideally always find
+                        zoneConfig.defaultLayout.lg; // Fallback
         
-        const isPinnedByGrid = rglItem.static || false;
+        const isEffectivelyPinned = rglItem.static || false; // Based on RGL item's current state
         const isCurrentlyMaximized = zoneConfig.id === maximizedZoneId;
         const isActuallyMinimized = minimizedZoneIds.includes(zoneConfig.id);
 
+        // Determine if controls should be enabled/disabled
         const canPinZone = zoneConfig.canPin !== false && !isCurrentlyMaximized;
+        // Can maximize if not minimized AND ( (no zone is maximized) OR (this IS the maximized zone) )
         const canMaximizeZone = zoneConfig.canMaximize !== false && !isActuallyMinimized && (!maximizedZoneId || isCurrentlyMaximized) ;
+        // Can minimize if not maximized
         const canMinimizeZone = zoneConfig.canMinimize !== false && !isCurrentlyMaximized;
+        // Can close if not maximized
         const canCloseZone = zoneConfig.canClose !== false && !isCurrentlyMaximized;
 
         return (
@@ -306,7 +343,7 @@ export function WorkspaceGrid({
               icon={zoneConfig.icon}
               
               onPinToggle={canPinZone ? () => handleTogglePin(zoneConfig.id) : undefined}
-              isPinned={isPinnedByGrid}
+              isPinned={isEffectivelyPinned} // Reflect RGL's static state
               
               onMaximizeToggle={canMaximizeZone ? () => handleToggleMaximize(zoneConfig.id) : undefined}
               isMaximized={isCurrentlyMaximized}
@@ -330,3 +367,4 @@ export function WorkspaceGrid({
     </ResponsiveGridLayout>
   );
 }
+
