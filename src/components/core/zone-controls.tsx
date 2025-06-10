@@ -1,3 +1,4 @@
+
 // src/components/core/zone-controls.tsx
 'use client';
 
@@ -28,7 +29,7 @@ export function ZoneControls({
   onMinimizeToggle,
   isMinimized,
   onClose,
-  canPin = true, // Default to true if not provided, actual disable state controlled by WorkspaceGrid
+  canPin = true,
   canMaximize = true,
   canMinimize = true,
   canClose = true,
@@ -62,7 +63,7 @@ export function ZoneControls({
       size="icon" 
       className={cn(
         baseButtonClass,
-        "text-yellow-400/80 hover:text-yellow-300 hover:border-yellow-400/50 hover:shadow-yellow-400/40 hover:shadow-[0_0_12px_3px_var(--tw-shadow-color)]",
+        "text-yellow-400/80 hover:text-yellow-300 hover:border-yellow-400/50 hover:shadow-yellow-400/40 hover:shadow-[0_0_12px_3px_var(--tw-shadow-color)]", // Using a generic yellow for minimize
         isMinimized && "text-yellow-300 border-yellow-400/60 shadow-yellow-400/50 shadow-[0_0_10px_2px_var(--tw-shadow-color)]"
       )} 
       onClick={onMinimizeToggle} 
@@ -80,7 +81,7 @@ export function ZoneControls({
       size="icon" 
       className={cn(
         baseButtonClass,
-        "text-green-400/80 hover:text-green-300 hover:border-green-400/50 hover:shadow-green-400/40 hover:shadow-[0_0_12px_3px_var(--tw-shadow-color)]",
+        "text-green-400/80 hover:text-green-300 hover:border-green-400/50 hover:shadow-green-400/40 hover:shadow-[0_0_12px_3px_var(--tw-shadow-color)]", // Using a generic green for maximize
         isMaximized && "text-green-300 border-green-400/60 shadow-green-400/50 shadow-[0_0_10px_2px_var(--tw-shadow-color)]"
       )} 
       onClick={onMaximizeToggle} 
@@ -100,7 +101,8 @@ export function ZoneControls({
       size="icon" 
       className={cn(
         baseButtonClass,
-        "text-red-400/80 hover:text-red-300 hover:border-red-400/50 hover:shadow-red-400/40 hover:shadow-[0_0_12px_3px_var(--tw-shadow-color)]"
+        "text-red-400/80 hover:text-red-300 hover:border-red-400/50 hover:shadow-red-400/40 hover:shadow-[0_0_12px_3px_var(--tw-shadow-color)]", // Using a generic red for close (destructive action)
+        // No specific "active" state for close as it removes the zone
       )} 
       onClick={onClose} 
       title="Close Zone"
