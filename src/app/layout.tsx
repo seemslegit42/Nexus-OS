@@ -1,7 +1,9 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { TopBar } from '@/components/core/top-bar';
 import { Toaster } from "@/components/ui/toaster";
+import { Zone } from '@/components/core/zone';
 
 export const metadata: Metadata = {
   title: 'NexOS',
@@ -23,8 +25,24 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased flex flex-col min-h-screen bg-background">
         <TopBar />
-        <main className="flex-grow flex flex-col p-4 pt-[calc(4rem+1rem)]"> {/* Adjust pt to account for TopBar height */}
-          {children}
+        {/* main provides top padding for TopBar and flex context. Added overflow-hidden */}
+        <main className="flex-grow flex flex-col pt-[4rem] overflow-hidden"> 
+          <Zone
+            title="" // No title for the main app canvas, header should hide
+            // No icon for the main app canvas
+            className="flex-grow !border-none !shadow-none !bg-transparent !rounded-none" // Zone takes available space, removes card-like appearance
+            // All controls are disabled for the main app canvas, so header effectively hides
+            canPin={false}
+            canMaximize={false}
+            canMinimize={false}
+            canClose={false}
+          >
+            {/* 
+              Children (page content, typically a WorkspaceGrid) will be rendered 
+              inside Zone's CardContent. CardContent has p-4 by default and overflow-auto.
+            */}
+            {children}
+          </Zone>
         </main>
         <Toaster />
       </body>
