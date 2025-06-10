@@ -43,6 +43,12 @@
     --chart-3: 0 60% 60%; /* Reddish */
     --chart-4: 40 70% 65%; /* Lighter Gold */
     --chart-5: 20 75% 50%; /* Brownish Orange */
+
+    /* Scrollbar Variables - Light Theme */
+    --scrollbar-track-bg: hsl(40 67% 98% / 0.4);  /* Semi-transparent page background */
+    --scrollbar-thumb-bg: hsl(0 0% 75% / 0.5);  /* Lighter grey, semi-transparent */
+    --scrollbar-thumb-hover-bg: hsl(var(--primary) / 0.6);
+    --scrollbar-thumb-border-color: hsl(40 67% 98% / 0.4); /* Same as track */
   }
 
   .dark {
@@ -80,6 +86,12 @@
     --chart-3: 0 60% 65%;
     --chart-4: 40 70% 70%;
     --chart-5: 20 75% 55%;
+
+    /* Scrollbar Variables - Dark Theme */
+    --scrollbar-track-bg: hsl(0 0% 10% / 0.4);       /* Semi-transparent page background */
+    --scrollbar-thumb-bg: hsl(0 0% 35% / 0.5);       /* Darker grey, semi-transparent */
+    --scrollbar-thumb-hover-bg: hsl(var(--primary) / 0.6);
+    --scrollbar-thumb-border-color: hsl(0 0% 10% / 0.4); /* Same as track */
   }
 }
 
@@ -159,24 +171,24 @@
   /* For Webkit-based browsers (Chrome, Safari, Edge) */
   ::-webkit-scrollbar {
     width: 8px;
-    height: 8px; 
+    height: 8px;
   }
 
   ::-webkit-scrollbar-track {
-    background: hsl(var(--background) / 0.5); /* Slightly more transparent than previous for better blend */
+    background: var(--scrollbar-track-bg);
     border-radius: 10px;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: hsl(var(--border) / 0.7); /* Use border color, slightly transparent */
+    background-color: var(--scrollbar-thumb-bg);
     border-radius: 10px;
-    border: 2px solid hsl(var(--background) / 0.5); /* Creates padding effect, using track color */
+    border: 2px solid var(--scrollbar-thumb-border-color); /* Creates padding effect */
     background-clip: padding-box; /* Ensures border doesn't overlap thumb color */
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--primary) / 0.7); /* Primary color on hover, slightly transparent */
-    border-color: hsl(var(--background) / 0.3);
+    background-color: var(--scrollbar-thumb-hover-bg);
+    border-color: var(--scrollbar-thumb-border-color);
   }
   
   ::-webkit-scrollbar-corner {
@@ -186,6 +198,7 @@
   /* For Firefox (limited styling) */
   * {
     scrollbar-width: thin;
-    scrollbar-color: hsl(var(--border)) hsl(var(--background) / 0.5); /* thumb and track color */
+    /* thumb color, track color */
+    scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg);
   }
 }
