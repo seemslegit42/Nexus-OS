@@ -100,7 +100,7 @@
 }
 .react-grid-item {
   transition: all 200ms ease;
-  transition-property: left, top;
+  transition-property: left, top, width, height; /* Added width and height for smoother RGL resizes */
 }
 .react-grid-item.cssTransforms {
   transition-property: transform;
@@ -152,4 +152,40 @@
 
 .react-resizable-hide > .react-resizable-handle {
   display: none;
+}
+
+/* Custom Scrollbar Styles */
+@layer utilities {
+  /* For Webkit-based browsers (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px; 
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background) / 0.5); /* Slightly more transparent than previous for better blend */
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border) / 0.7); /* Use border color, slightly transparent */
+    border-radius: 10px;
+    border: 2px solid hsl(var(--background) / 0.5); /* Creates padding effect, using track color */
+    background-clip: padding-box; /* Ensures border doesn't overlap thumb color */
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.7); /* Primary color on hover, slightly transparent */
+    border-color: hsl(var(--background) / 0.3);
+  }
+  
+  ::-webkit-scrollbar-corner {
+    background: transparent; /* Hides the scrollbar corner if both vertical and horizontal are present */
+  }
+
+  /* For Firefox (limited styling) */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) hsl(var(--background) / 0.5); /* thumb and track color */
+  }
 }
