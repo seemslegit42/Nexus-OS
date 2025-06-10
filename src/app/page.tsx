@@ -1,3 +1,4 @@
+
 import { Zone } from '@/components/core/zone';
 import { Button } from '@/components/ui/button';
 import { Activity, Users, AlertTriangle, LayoutGrid, Cpu, Rocket, Info as InfoIcon } from 'lucide-react';
@@ -23,7 +24,7 @@ export default function HomePage() {
               <p className="text-xs text-muted-foreground">Start a complex task with a series of prompts.</p>
             </div>
           </Button>
-          <Link href="/loom-studio" legacyBehavior>
+          <Link href="/loom-studio">
             <Button variant="outline" className="w-full justify-start p-4 h-auto text-left">
               <LayoutGrid className="mr-3 h-6 w-6 text-primary" />
               <div>
@@ -90,11 +91,9 @@ export default function HomePage() {
             { name: 'Command', href: '/command', icon: <Rocket/>, hint: "command line" },
             { name: 'Modules', href: '/modules', icon: <LayoutGrid/>, hint: "system modules" },
           ].map(item => (
-            <Link href={item.href} key={item.name} legacyBehavior>
-              <a className="flex flex-col items-center p-4 bg-background hover:bg-muted rounded-lg transition-colors border border-border">
+            <Link href={item.href} key={item.name} className="flex flex-col items-center p-4 bg-background hover:bg-muted rounded-lg transition-colors border border-border">
                 <div className="text-primary mb-2">{item.icon}</div>
                 <span className="text-sm font-medium text-center text-foreground font-headline">{item.name}</span>
-              </a>
             </Link>
           ))}
         </div>
