@@ -1,77 +1,84 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Pin, Lock, Info, Expand, Minimize, X } from "lucide-react";
 import type { ReactNode } from "react";
+import { ZoneControls } from "./zone-controls"; // Assuming ZoneControls is in the same directory
 
 interface ZoneProps {
   title: string;
   children: ReactNode;
   className?: string;
-  actions?: ReactNode;
-  collapsible?: boolean;
-  defaultCollapsed?: boolean;
   icon?: ReactNode;
-  onLockToggle?: () => void;
-  isLocked?: boolean;
+  
+  // Controls related props
   onPinToggle?: () => void;
   isPinned?: boolean;
-  onExpandToggle?: () => void;
-  isExpanded?: boolean;
+  onMaximizeToggle?: () => void;
+  isMaximized?: boolean;
+  onMinimizeToggle?: () => void;
+  isMinimized?: boolean;
   onClose?: () => void;
+
+  canPin?: boolean;
+  canMaximize?: boolean;
+  canMinimize?: boolean;
+  canClose?: boolean;
 }
 
 export function Zone({ 
   title, 
   children, 
   className, 
-  actions, 
   icon,
-  onLockToggle,
-  isLocked,
   onPinToggle,
   isPinned,
-  onExpandToggle,
-  isExpanded,
-  onClose
+  onMaximizeToggle,
+  isMaximized,
+  onMinimizeToggle,
+  isMinimized,
+  onClose,
+  canPin = true,
+  canMaximize = true,
+  canMinimize = true,
+  canClose = true,
 }: ZoneProps) {
   return (
     <Card className={cn("bg-card/80 backdrop-blur-md shadow-lg rounded-xl border-border flex flex-col overflow-hidden h-full", className)}>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-4 border-b border-border/50">
-        <div className="flex items-center gap-2">
-          {icon && <span className="text-primary">{icon}</span>}
-          <CardTitle className="text-lg font-headline text-foreground">{title}</CardTitle>
+      <CardHeader 
+        className={cn(
+          "draggable-zone-header", // Added class for react-grid-layout draggableHandle
+          "flex flex-row items-center justify-between space-y-0 p-3 border-b border-border/50 min-h-[48px] cursor-grab" // Ensure min-height and cursor
+        )}
+      >
+        <div className="flex items-center gap-2 overflow-hidden">
+          {icon && <span className="text-primary flex-shrink-0">{icon}</span>}
+          <CardTitle className="text-base font-headline text-foreground truncate">{title}</CardTitle>
         </div>
-        <div className="flex items-center gap-1">
-          {actions}
-          {onLockToggle && (
-            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={onLockToggle}>
-              <Lock className={cn("h-4 w-4", isLocked && "text-primary")} />
-              <span className="sr-only">{isLocked ? "Unlock" : "Lock"}</span>
-            </Button>
-          )}
-          {onPinToggle && (
-            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={onPinToggle}>
-              <Pin className={cn("h-4 w-4", isPinned && "text-primary")} />
-              <span className="sr-only">{isPinned ? "Unpin" : "Pin"}</span>
-            </Button>
-          )}
-          {onExpandToggle && (
-            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={onExpandToggle}>
-              {isExpanded ? <Minimize className="h-4 w-4" /> : <Expand className="h-4 w-4" />}
-              <span className="sr-only">{isExpanded ? "Minimize" : "Expand"}</span>
-            </Button>
-          )}
-          {onClose && (
-           <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={onClose}>
-            <X className="h-4 w-4" />
-            <span className="sr-only">Close</span>
-          </Button>
-          )}
-        </div>
+        <ZoneControls
+          onPinToggle={onPinToggle}
+          isPinned={isPinned}
+          onMaximizeToggle={onMaximizeToggle}
+          isMaximized={isMaximized}
+          onMinimizeToggle={onMinimizeToggle}
+          isMinimized={isMinimized}
+          onClose={onClose}
+          canPin={canPin}
+          canMaximize={canMaximize}
+          canMinimize={canMinimize}
+          canClose={canClose}
+        />
       </CardHeader>
-      <CardContent className="p-4 flex-grow overflow-auto">
-        {children}
+      <CardContent 
+        className={cn(
+          "p-4 flex-grow overflow-auto transition-all duration-300 ease-in-out",
+          isMinimized ? "max-h-0 p-0 opacity-0 invisible" : "opacity-100 visible"
+        )}
+        style={{
+             paddingTop: isMinimized ? 0 : undefined,
+             paddingBottom: isMinimized ? 0 : undefined,
+        }}
+      >
+        {!isMinimized && children}
       </CardContent>
     </Card>
   );
