@@ -1,3 +1,4 @@
+
 // src/app/loom-studio/page.tsx
 'use client';
 
@@ -7,7 +8,7 @@ import { PromptSandbox } from '@/components/loom-studio/prompt-sandbox';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Layers, Rows, Edit3, ListChecks, PlayCircle, Aperture } from 'lucide-react';
+import { Layers, Rows, Edit3, ListChecks, PlayCircle, Aperture, Palette, Sparkles as AiFeedbackIcon } from 'lucide-react';
 import Image from 'next/image';
 
 function CanvasContent(): ReactNode {
@@ -15,6 +16,22 @@ function CanvasContent(): ReactNode {
     <div className="flex items-center justify-center h-full bg-muted/30 rounded-md">
       <Image src="https://placehold.co/800x500.png" alt="Canvas Area" width={800} height={500} className="object-contain max-h-full max-w-full rounded" data-ai-hint="visual programming canvas" />
     </div>
+  );
+}
+
+function ToolsPaletteContent(): ReactNode {
+  return (
+    <ScrollArea className="h-full">
+      <div className="p-2 space-y-2">
+        {['Recorder', 'Node Tool', 'Connector', 'Eraser', 'Text Tool'].map(tool => (
+          <Button key={tool} variant="outline" className="w-full justify-start text-sm">
+            {/* Placeholder for tool icons */}
+            <Palette className="mr-2 h-4 w-4" /> 
+            {tool}
+          </Button>
+        ))}
+      </div>
+    </ScrollArea>
   );
 }
 
@@ -51,8 +68,17 @@ function TimelineRecordingsContent(): ReactNode {
   );
 }
 
-function AIPromptInjectionSandboxContent(): ReactNode {
-  return <PromptSandbox />;
+function AiFeedbackOverlayContent(): ReactNode {
+  return (
+    <ScrollArea className="h-full">
+      <div className="p-2 space-y-2 text-sm">
+        <p className="font-medium text-primary">AI Feedback:</p>
+        <p className="text-muted-foreground">"Consider adding a conditional branch after 'Data Input Node' for error handling."</p>
+        <p className="text-muted-foreground">"The 'Summarize Text' prompt could be more specific for better results."</p>
+        <Button variant="outline" size="sm" className="w-full mt-2">Apply Suggestion</Button>
+      </div>
+    </ScrollArea>
+  );
 }
 
 
@@ -60,20 +86,31 @@ export default function LoomStudioPage() {
   const loomStudioPageZoneConfigs: ZoneConfig[] = [
     {
       id: 'canvas',
-      title: 'Canvas',
+      title: 'Visual Workflow Canvas',
       icon: <Aperture className="w-5 h-5" />,
       content: <CanvasContent />,
-      defaultLayout: { // This zone will be static
-        lg: { x: 0, y: 0, w: 8, h: 16, static: true }, // Static: true makes it non-draggable/non-resizable
-        md: { x: 0, y: 0, w: 6, h: 16, static: true },
+      defaultLayout: { 
+        lg: { x: 0, y: 0, w: 9, h: 16, static: true }, 
+        md: { x: 0, y: 0, w: 7, h: 16, static: true },
         sm: { x: 0, y: 0, w: 6, h: 12, static: true },
       },
-      isDraggable: false, // Explicitly false
-      isResizable: false, // Explicitly false
-      canPin: false, // Disable pinning control for static zone
-      canMaximize: false, // Disable maximize for static zone
-      canMinimize: false, // Disable minimize for static zone
-      canClose: false, // Disable close for static zone
+      isDraggable: false, 
+      isResizable: false, 
+      canPin: false, 
+      canMaximize: false, 
+      canMinimize: false, 
+      canClose: false, 
+    },
+    {
+      id: 'toolsPalette',
+      title: 'Floating Tools',
+      icon: <Palette className="w-5 h-5" />,
+      content: <ToolsPaletteContent />,
+      defaultLayout: {
+        lg: { x: 9, y: 0, w: 3, h: 8, minW: 2, minH: 4 },
+        md: { x: 7, y: 0, w: 3, h: 8, minW: 2, minH: 4 },
+        sm: { x: 0, y: 12, w: 6, h: 5, minW: 3, minH: 3 },
+      },
     },
     {
       id: 'promptLayerEditor',
@@ -81,9 +118,9 @@ export default function LoomStudioPage() {
       icon: <Edit3 className="w-5 h-5" />,
       content: <PromptLayerEditorContent />,
       defaultLayout: {
-        lg: { x: 0, y: 16, w: 8, h: 6, minW: 4, minH: 4 },
-        md: { x: 0, y: 16, w: 6, h: 6, minW: 3, minH: 4 },
-        sm: { x: 0, y: 12, w: 6, h: 5, minW: 3, minH: 3 },
+        lg: { x: 0, y: 16, w: 9, h: 6, minW: 4, minH: 4 },
+        md: { x: 0, y: 16, w: 7, h: 6, minW: 3, minH: 4 },
+        sm: { x: 0, y: 17, w: 6, h: 5, minW: 3, minH: 3 },
       },
     },
     {
@@ -92,9 +129,9 @@ export default function LoomStudioPage() {
       icon: <ListChecks className="w-5 h-5" />,
       content: <InspectorContent />,
       defaultLayout: {
-        lg: { x: 8, y: 0, w: 4, h: 7, minW: 3, minH: 4 },
-        md: { x: 6, y: 0, w: 4, h: 7, minW: 3, minH: 4 },
-        sm: { x: 0, y: 17, w: 3, h: 6, minW: 2, minH: 3 },
+        lg: { x: 9, y: 8, w: 3, h: 7, minW: 2, minH: 4 },
+        md: { x: 7, y: 8, w: 3, h: 7, minW: 2, minH: 4 },
+        sm: { x: 0, y: 22, w: 3, h: 6, minW: 2, minH: 3 },
       },
     },
     {
@@ -103,20 +140,32 @@ export default function LoomStudioPage() {
       icon: <Rows className="w-5 h-5" />,
       content: <TimelineRecordingsContent />,
       defaultLayout: {
-        lg: { x: 8, y: 7, w: 4, h: 7, minW: 3, minH: 4 },
-        md: { x: 6, y: 7, w: 4, h: 7, minW: 3, minH: 4 },
-        sm: { x: 3, y: 17, w: 3, h: 6, minW: 2, minH: 3 },
+        lg: { x: 9, y: 15, w: 3, h: 7, minW: 2, minH: 4 },
+        md: { x: 7, y: 15, w: 3, h: 7, minW: 2, minH: 4 },
+        sm: { x: 3, y: 22, w: 3, h: 6, minW: 2, minH: 3 },
       },
     },
+     {
+      id: 'aiFeedbackOverlay', // Placeholder for AI Feedback as a zone
+      title: 'AI Feedback',
+      icon: <AiFeedbackIcon className="w-5 h-5" />,
+      content: <AiFeedbackOverlayContent />,
+      defaultLayout: {
+        lg: { x: 9, y: 22, w: 3, h: 6, minW: 2, minH: 4 }, // Example position
+        md: { x: 7, y: 22, w: 3, h: 6, minW: 2, minH: 4 },
+        sm: { x: 0, y: 28, w: 6, h: 5, minW: 3, minH: 3 },
+      },
+    },
+    // AI Prompt Injection Sandbox from original code
     {
       id: 'aiPromptSandbox',
       title: 'AI Prompt Injection Sandbox',
       icon: <Layers className="w-5 h-5" />,
-      content: <AIPromptInjectionSandboxContent />,
+      content: <PromptSandbox />,
       defaultLayout: {
-        lg: { x: 8, y: 14, w: 4, h: 8, minW: 3, minH: 5 },
-        md: { x: 6, y: 14, w: 4, h: 8, minW: 3, minH: 5 },
-        sm: { x: 0, y: 23, w: 6, h: 7, minW: 3, minH: 4 },
+        lg: { x: 0, y: 22, w: 9, h: 8, minW: 4, minH: 5 },
+        md: { x: 0, y: 22, w: 7, h: 8, minW: 4, minH: 5 },
+        sm: { x: 0, y: 33, w: 6, h: 7, minW: 3, minH: 4 },
       },
     }
   ];
@@ -125,8 +174,8 @@ export default function LoomStudioPage() {
     <WorkspaceGrid
       zoneConfigs={loomStudioPageZoneConfigs}
       className="flex-grow"
-      // Note: The WorkspaceGrid internally handles responsive column counts.
-      // rowHeight might need adjustment based on desired granularity.
     />
   );
 }
+
+    

@@ -23,7 +23,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Bell, 
   Search, 
-  Settings, 
+  Settings as SettingsIcon, // Renamed to avoid conflict
   LogOut, 
   UserCircle, 
   Cpu, 
@@ -38,21 +38,31 @@ import {
   ListChecks,
   History,
   Info,
-  AlertTriangleIcon, // Changed from AlertTriangle for consistency with Info
-  CheckCircle2
+  AlertTriangleIcon,
+  CheckCircle2,
+  Users, // For Permissions
+  ShieldCheck, // For Security Center
+  FileText, // For OS Updates (alternative to History)
+  Settings2, // For Settings Page (alternative to SettingsIcon if needed for variety)
+  Rocket, // For Onboarding
+  Briefcase // For Modules (alternative to SlidersHorizontal)
 } from 'lucide-react';
 
 const modules = [
   { name: 'Dashboard', href: '/', icon: <Home className="mr-2 h-4 w-4" /> },
-  { name: 'Agent Console', href: '/agents', icon: <Cpu className="mr-2 h-4 w-4" /> },
   { name: 'Loom Studio', href: '/loom-studio', icon: <LayoutGrid className="mr-2 h-4 w-4" /> },
-  { name: 'Command Center', href: '/command', icon: <Command className="mr-2 h-4 w-4" /> },
-  { name: 'Modules', href: '/modules', icon: <SlidersHorizontal className="mr-2 h-4 w-4" /> },
-  { name: 'File Vault', href: '/files', icon: <FileArchive className="mr-2 h-4 w-4" /> },
-  { name: 'Billing', href: '/billing', icon: <BarChart3 className="mr-2 h-4 w-4" /> },
+  { name: 'Agent Console', href: '/agents', icon: <Cpu className="mr-2 h-4 w-4" /> },
   { name: 'Logs & Audit', href: '/logs', icon: <ListChecks className="mr-2 h-4 w-4" /> },
-  { name: 'Notifications', href: '/notifications', icon: <Bell className="mr-2 h-4 w-4" /> },
-  { name: 'Updates', href: '/updates', icon: <History className="mr-2 h-4 w-4" /> },
+  { name: 'Modules', href: '/modules', icon: <Briefcase className="mr-2 h-4 w-4" /> },
+  { name: 'Settings', href: '/settings', icon: <SettingsIcon className="mr-2 h-4 w-4" /> },
+  { name: 'Permissions', href: '/permissions', icon: <Users className="mr-2 h-4 w-4" /> },
+  { name: 'Security Center', href: '/security', icon: <ShieldCheck className="mr-2 h-4 w-4" /> },
+  { name: 'Command & Cauldron', href: '/command', icon: <Command className="mr-2 h-4 w-4" /> },
+  { name: 'Alerts & Notifications', href: '/notifications', icon: <Bell className="mr-2 h-4 w-4" /> },
+  { name: 'Billing & Usage', href: '/billing', icon: <BarChart3 className="mr-2 h-4 w-4" /> },
+  { name: 'Onboarding Wizard', href: '/onboarding', icon: <Rocket className="mr-2 h-4 w-4" /> },
+  { name: 'File Vault', href: '/files', icon: <FileArchive className="mr-2 h-4 w-4" /> },
+  { name: 'OS Updates', href: '/updates', icon: <FileText className="mr-2 h-4 w-4" /> },
 ];
 
 const activeAgentsInfo = [
@@ -105,18 +115,20 @@ export function TopBar() {
             <DropdownMenuContent className="w-64" align="end">
               <DropdownMenuLabel>Switch Module</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                {modules.map((mod) => (
-                  <Link href={mod.href} key={mod.name} passHref>
-                    <DropdownMenuItem asChild>
-                      <a>
-                        {mod.icon}
-                        <span>{mod.name}</span>
-                      </a>
-                    </DropdownMenuItem>
-                  </Link>
-                ))}
-              </DropdownMenuGroup>
+              <ScrollArea className="h-[calc(100vh_-_10rem)] max-h-[400px]">
+                <DropdownMenuGroup>
+                  {modules.map((mod) => (
+                    <Link href={mod.href} key={mod.name} passHref>
+                      <DropdownMenuItem asChild>
+                        <a>
+                          {mod.icon}
+                          <span>{mod.name}</span>
+                        </a>
+                      </DropdownMenuItem>
+                    </Link>
+                  ))}
+                </DropdownMenuGroup>
+              </ScrollArea>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -248,7 +260,7 @@ export function TopBar() {
               </Link>
               <Link href="/settings" passHref>
                 <DropdownMenuItem asChild>
-                  <a><Settings className="mr-2 h-4 w-4" /><span>Settings</span></a>
+                  <a><SettingsIcon className="mr-2 h-4 w-4" /><span>Settings</span></a>
                 </DropdownMenuItem>
               </Link>
               <DropdownMenuSeparator />
@@ -263,3 +275,5 @@ export function TopBar() {
     </header>
   );
 }
+
+    

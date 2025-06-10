@@ -1,11 +1,15 @@
 
 'use client';
 
-import { Zone } from '@/components/core/zone';
+import type { ReactNode } from 'react';
 import { WorkspaceGrid, type ZoneConfig } from '@/components/core/workspace-grid';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Bell, AlertTriangle, Info, Cpu, History, CheckCircle2 } from 'lucide-react';
+import { Bell, AlertTriangle, Info, Cpu, History, CheckCircle2, Settings2, Zap, MessageSquare } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import Image from 'next/image';
 
 const notifications = [
   { id: 1, type: 'alert', title: 'Critical System Alert: Agent SecureGuard Offline', message: 'Agent SecureGuard has unexpectedly stopped. Immediate attention required.', time: '2m ago', urgency: 'high', agent: 'SecureGuard' },
@@ -24,17 +28,17 @@ const getUrgencyStyles = (urgency: string) => {
 
 function NotificationsContent() {
   return (
-    <>
-      <div className="flex justify-between items-center mb-4">
+    <div className="flex flex-col h-full">
+      <div className="flex justify-between items-center mb-4 p-1 border-b border-border/30">
         <h2 className="text-xl font-headline text-foreground">Recent Notifications</h2>
         <Button variant="outline">Mark all as read</Button>
       </div>
-      <div className="space-y-3">
+      <div className="space-y-3 flex-grow overflow-y-auto p-1">
         {notifications.map((notif) => {
           const styles = getUrgencyStyles(notif.urgency);
           return (
             <Card key={notif.id} className={`shadow-md ${styles.color}`}>
-              <CardHeader className="pb-2">
+              <CardHeader className="pb-2 pt-3 px-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     {styles.icon}
@@ -43,29 +47,71 @@ function NotificationsContent() {
                   <span className="text-xs text-muted-foreground">{notif.time}</span>
                 </div>
               </CardHeader>
-              <CardContent className="pb-3">
+              <CardContent className="pb-3 px-3">
                 <p className="text-sm text-foreground">{notif.message}</p>
                 {notif.agent && <p className="text-xs text-muted-foreground mt-1">Related Agent: {notif.agent}</p>}
               </CardContent>
-              <CardFooter className="flex gap-2 pb-3">
+              <CardFooter className="flex gap-2 pb-3 px-3">
                 <Button variant="outline" size="sm"><CheckCircle2 className="mr-1 h-4 w-4"/> Mark as Read</Button>
                 {notif.urgency === 'high' && <Button variant="destructive" size="sm"><AlertTriangle className="mr-1 h-4 w-4"/> Escalate</Button>}
                 {notif.agent && <Button variant="secondary" size="sm"><Cpu className="mr-1 h-4 w-4"/> View Agent</Button>}
-                <Button variant="ghost" size="sm"><History className="mr-1 h-4 w-4"/> Snooze</Button>
               </CardFooter>
             </Card>
           );
         })}
+        {notifications.length === 0 && (
+            <div className="text-center py-8">
+                <Bell className="mx-auto h-12 w-12 text-muted-foreground" />
+                <h3 className="mt-2 text-sm font-medium text-foreground">No new notifications</h3>
+                <p className="mt-1 text-sm text-muted-foreground">You're all caught up!</p>
+            </div>
+        )}
       </div>
-      {notifications.length === 0 && (
-          <div className="text-center py-8">
-              <Bell className="mx-auto h-12 w-12 text-muted-foreground" />
-              <h3 className="mt-2 text-sm font-medium text-foreground">No new notifications</h3>
-              <p className="mt-1 text-sm text-muted-foreground">You're all caught up!</p>
-          </div>
-      )}
-    </>
+    </div>
   );
+}
+
+function AutoActionConfigContent(): ReactNode {
+    return (
+        <div className="p-1 space-y-4">
+            <h3 className="text-md font-semibold font-headline text-foreground">Automated Actions</h3>
+            <p className="text-xs text-muted-foreground">Configure rules for NexOS to automatically respond to certain notifications.</p>
+            
+            <Card className="bg-background/50">
+                <CardHeader>
+                    <CardTitle className="text-base flex items-center justify-between">
+                        Rule: Agent Offline Critical
+                        <Switch defaultChecked/>
+                    </CardTitle>
+                    <CardDescription className="text-xs">When an agent reports critical offline status.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                    <div>
+                        <Label htmlFor="action-type-offline" className="text-xs">Action Type</Label>
+                        <Select defaultValue="restart_agent">
+                            <SelectTrigger id="action-type-offline" className="h-8 text-xs bg-background border-input focus:ring-primary">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="restart_agent">Attempt to Restart Agent</SelectItem>
+                                <SelectItem value="notify_admin">Notify Administrator Team</SelectItem>
+                                <SelectItem value="create_ticket">Create Support Ticket</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div>
+                        <Label htmlFor="notify-channel-offline" className="text-xs">Notify Channel (if applicable)</Label>
+                        <Input id="notify-channel-offline" placeholder="e.g., #ops-alerts (Slack)" className="h-8 text-xs bg-background border-input focus:ring-primary"/>
+                    </div>
+                </CardContent>
+                <CardFooter>
+                    <Button variant="outline" size="sm">Save Rule</Button>
+                </CardFooter>
+            </Card>
+
+            <Button variant="outline" className="w-full"><PlusCircle className="mr-2 h-4 w-4"/> Add New Auto-Action Rule</Button>
+        </div>
+    );
 }
 
 
@@ -74,17 +120,24 @@ export default function NotificationsPage() {
     {
       id: 'notificationsCenter',
       title: 'Notification Center',
-      icon: <Bell className="w-5 h-5" />,
+      icon: <MessageSquare className="w-5 h-5" />,
       content: <NotificationsContent />,
       defaultLayout: {
-        lg: { x: 0, y: 0, w: 12, h: 16, minW: 6, minH: 8 }, // Span full width on large screens
-        md: { x: 0, y: 0, w: 10, h: 16, minW: 5, minH: 8 },
-        sm: { x: 0, y: 0, w: 6, h: 16, minW: 4, minH: 8 },
-        xs: { x: 0, y: 0, w: 4, h: 16, minW: 2, minH: 8 },
-        xxs: { x: 0, y: 0, w: 2, h: 16, minW: 1, minH: 8 },
+        lg: { x: 0, y: 0, w: 7, h: 16, minW: 4, minH: 8 }, 
+        md: { x: 0, y: 0, w: 6, h: 16, minW: 4, minH: 8 },
+        sm: { x: 0, y: 0, w: 6, h: 10, minW: 4, minH: 6 },
       },
-      isDraggable: true,
-      isResizable: true,
+    },
+    {
+      id: 'autoActionConfig',
+      title: 'Auto-Action Configuration',
+      icon: <Zap className="w-5 h-5" />,
+      content: <AutoActionConfigContent />,
+      defaultLayout: {
+        lg: { x: 7, y: 0, w: 5, h: 16, minW: 3, minH: 8 }, 
+        md: { x: 6, y: 0, w: 4, h: 16, minW: 3, minH: 8 },
+        sm: { x: 0, y: 10, w: 6, h: 8, minW: 3, minH: 6 },
+      },
     }
   ];
 
@@ -92,7 +145,8 @@ export default function NotificationsPage() {
     <WorkspaceGrid
       zoneConfigs={notificationZoneConfigs}
       className="flex-grow"
-      rowHeight={30} // Adjust as needed
     />
   );
 }
+
+    

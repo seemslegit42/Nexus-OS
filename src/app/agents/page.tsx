@@ -1,3 +1,4 @@
+
 // src/app/agents/page.tsx
 'use client';
 
@@ -7,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Cpu, PlusCircle, Search, Eye, Settings2, Trash2 } from 'lucide-react';
+import { Cpu, PlusCircle, Search, Eye, Settings2, Trash2, Zap } from 'lucide-react';
 import Image from 'next/image';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -24,7 +25,7 @@ function AgentOverviewContent(): ReactNode {
       <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-2">
         <div className="relative w-full md:max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search agents..." className="pl-10 bg-background border-border focus:ring-primary" />
+          <Input placeholder="Search agents..." className="pl-10 bg-background border-input focus:ring-primary" />
         </div>
         <Button className="w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
           <PlusCircle className="mr-2 h-4 w-4" /> Spawn New Agent
@@ -76,7 +77,7 @@ function AgentOverviewContent(): ReactNode {
                       <Button variant="ghost" size="icon" className="h-8 w-8"><Settings2 className="h-4 w-4" /></Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Configure Agent</p>
+                      <p>Configure Agent / Edit Scope</p>
                     </TooltipContent>
                   </Tooltip>
                   <Tooltip>
@@ -101,20 +102,20 @@ function AgentConfigurationContent(): ReactNode {
   return (
     <div className="p-4 space-y-4">
       <h3 className="text-md font-semibold font-headline text-foreground">Configure: OptimizerPrime</h3>
-      <Image src="https://placehold.co/400x300.png" alt="Agent Config" width={400} height={300} className="rounded-md" data-ai-hint="settings form interface" />
-      <p className="text-sm text-muted-foreground">Select an agent from the list to configure its parameters, training data, and scope.</p>
+      <p className="text-sm text-muted-foreground">Adjust agent parameters, training data sources, and operational scope.</p>
+      <Image src="https://placehold.co/400x300.png" alt="Agent Config Form" width={400} height={300} className="rounded-md" data-ai-hint="settings form interface" />
       <Button className="w-full" disabled>Save Changes</Button>
     </div>
   );
 }
 
-function LiveAgentBehaviorContent(): ReactNode {
+function LiveAgentBehaviorContent(): ReactNode { // Renamed for clarity from "Visual Debugger"
   return (
     <>
       <div className="h-64 bg-muted/30 rounded-md flex items-center justify-center p-4">
-        <Image src="https://placehold.co/600x300.png" alt="Shadow Mode Visual" width={600} height={300} className="rounded-md" data-ai-hint="data stream activity" />
+        <Image src="https://placehold.co/600x300.png" alt="Agent Activity Stream" width={600} height={300} className="rounded-md" data-ai-hint="data stream activity graph" />
       </div>
-      <p className="text-xs text-muted-foreground mt-2">Real-time visualization of selected agent's actions and decision-making process.</p>
+      <p className="text-xs text-muted-foreground mt-2">Real-time visualization of 'OptimizerPrime' actions and decision-making process.</p>
     </>
   );
 }
@@ -123,8 +124,8 @@ function LiveAgentBehaviorContent(): ReactNode {
 export default function AgentConsolePage() {
   const agentPageZoneConfigs: ZoneConfig[] = [
     {
-      id: 'agentOverview',
-      title: 'Agent Overview',
+      id: 'agentList', // Changed ID for clarity
+      title: 'Agent List & Overview', // Updated title
       icon: <Cpu className="w-5 h-5" />,
       content: <AgentOverviewContent />,
       defaultLayout: {
@@ -134,23 +135,23 @@ export default function AgentConsolePage() {
       },
     },
     {
-      id: 'agentConfiguration',
-      title: 'Agent Configuration',
+      id: 'agentScopeEditing', // Changed ID for clarity
+      title: 'Agent Configuration & Scope Editing', // Updated title
       icon: <Settings2 className="w-5 h-5" />,
       content: <AgentConfigurationContent />,
       defaultLayout: {
-        lg: { x: 0, y: 10, w: 4, h: 10, minW: 3, minH: 6 },
+        lg: { x: 0, y: 10, w: 5, h: 10, minW: 3, minH: 6 }, // Adjusted width
         md: { x: 0, y: 10, w: 5, h: 9, minW: 3, minH: 6 },
         sm: { x: 0, y: 9, w: 6, h: 8, minW: 3, minH: 5 },
       },
     },
     {
-      id: 'liveAgentBehavior',
-      title: "Live Agent Behavior ('Shadow Mode')",
-      icon: <Eye className="w-5 h-5" />,
+      id: 'realTimeActivityDebugger', // Changed ID
+      title: "Live Agent Activity / Visual Debugger", // Updated title
+      icon: <Zap className="w-5 h-5" />, // Changed icon
       content: <LiveAgentBehaviorContent />,
       defaultLayout: {
-        lg: { x: 4, y: 10, w: 8, h: 10, minW: 4, minH: 6 },
+        lg: { x: 5, y: 10, w: 7, h: 10, minW: 4, minH: 6 }, // Adjusted width and x
         md: { x: 5, y: 10, w: 5, h: 9, minW: 3, minH: 6 },
         sm: { x: 0, y: 17, w: 6, h: 8, minW: 3, minH: 5 },
       },
@@ -164,3 +165,5 @@ export default function AgentConsolePage() {
     />
   );
 }
+
+    
