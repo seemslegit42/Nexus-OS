@@ -14,6 +14,12 @@ import {
   DropdownMenuGroup
 } from '@/components/ui/dropdown-menu';
 import { 
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Badge } from '@/components/ui/badge';
+import { 
   Bell, 
   Search, 
   Settings, 
@@ -42,6 +48,14 @@ const modules = [
   { name: 'Billing', href: '/billing', icon: <BarChart3 className="mr-2 h-4 w-4" /> },
   { name: 'Logs & Audit', href: '/logs', icon: <ListChecks className="mr-2 h-4 w-4" /> },
   { name: 'Updates', href: '/updates', icon: <History className="mr-2 h-4 w-4" /> },
+];
+
+const activeAgentsInfo = [
+  { name: "OptimizerPrime", status: "Active", tasks: 3, lastLog: "Optimized frontend performance module for Project Zeta." },
+  { name: "DataMinerX", status: "Idle", tasks: 0, lastLog: "Quarterly sales data scan complete, no new anomalies." },
+  { name: "SecureGuard", status: "Error", tasks: 1, lastLog: "Critical: Anomaly detected in auth service. Escalated." },
+  { name: "ContentCreatorAI", status: "Processing", tasks: 1, lastLog: "Generating weekly social media engagement report." },
+  { name: "SysMonitor", status: "Active", tasks: 5, lastLog: "Network latency check normal, CPU usage stable." },
 ];
 
 export function TopBar() {
@@ -93,10 +107,54 @@ export function TopBar() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-            <Cpu className="h-5 w-5" />
-            <span className="sr-only">Agent Status</span>
-          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                <Cpu className="h-5 w-5" />
+                <span className="sr-only">Agent Status</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80" align="end">
+              <div className="grid gap-4">
+                <div className="space-y-2">
+                  <h4 className="font-medium leading-none font-headline text-foreground">Active Agents</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Quick overview of agent states.
+                  </p>
+                </div>
+                <div className="grid gap-1 max-h-72 overflow-y-auto pr-1">
+                  {activeAgentsInfo.map((agent) => (
+                    <div key={agent.name} className="grid grid-cols-[1fr_auto] items-center gap-x-2 p-2 rounded-md hover:bg-muted/30">
+                      <div className="overflow-hidden">
+                        <p className="text-sm font-medium leading-none text-foreground truncate">
+                          {agent.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate" title={agent.lastLog}>
+                          {agent.tasks} active tasks - {agent.lastLog}
+                        </p>
+                      </div>
+                      <Badge 
+                        variant={
+                          agent.status === 'Active' || agent.status === 'Processing' ? 'default' : 
+                          agent.status === 'Error' ? 'destructive' : 'secondary'
+                        }
+                        className={
+                          agent.status === 'Active' || agent.status === 'Processing' ? 'bg-green-500/80 text-white min-w-[70px] text-center justify-center' : 
+                          agent.status === 'Error' ? 'min-w-[70px] text-center justify-center' :
+                          'min-w-[70px] text-center justify-center'
+                        }
+                      >
+                        {agent.status}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+                <Button variant="outline" size="sm" className="w-full" asChild>
+                  <Link href="/agents">View All Agents</Link>
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
           
           <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
             <Bell className="h-5 w-5" />
