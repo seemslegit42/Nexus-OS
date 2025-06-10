@@ -1,5 +1,8 @@
 
+'use client';
+
 import { Zone } from '@/components/core/zone';
+import { WorkspaceGrid, type ZoneConfig } from '@/components/core/workspace-grid';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bell, AlertTriangle, Info, Cpu, History, CheckCircle2 } from 'lucide-react';
@@ -19,50 +22,77 @@ const getUrgencyStyles = (urgency: string) => {
   }
 };
 
-export default function NotificationsPage() {
+function NotificationsContent() {
   return (
-    <div className="flex-grow grid grid-cols-1 gap-4">
-      <Zone title="Notification Center" icon={<Bell className="w-5 h-5" />}>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-headline text-foreground">Recent Notifications</h2>
-          <Button variant="outline">Mark all as read</Button>
-        </div>
-        <div className="space-y-3">
-          {notifications.map((notif) => {
-            const styles = getUrgencyStyles(notif.urgency);
-            return (
-              <Card key={notif.id} className={`shadow-md ${styles.color}`}>
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      {styles.icon}
-                      <CardTitle className={`text-md font-headline ${styles.titleColor}`}>{notif.title}</CardTitle>
-                    </div>
-                    <span className="text-xs text-muted-foreground">{notif.time}</span>
+    <>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-headline text-foreground">Recent Notifications</h2>
+        <Button variant="outline">Mark all as read</Button>
+      </div>
+      <div className="space-y-3">
+        {notifications.map((notif) => {
+          const styles = getUrgencyStyles(notif.urgency);
+          return (
+            <Card key={notif.id} className={`shadow-md ${styles.color}`}>
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {styles.icon}
+                    <CardTitle className={`text-md font-headline ${styles.titleColor}`}>{notif.title}</CardTitle>
                   </div>
-                </CardHeader>
-                <CardContent className="pb-3">
-                  <p className="text-sm text-foreground">{notif.message}</p>
-                  {notif.agent && <p className="text-xs text-muted-foreground mt-1">Related Agent: {notif.agent}</p>}
-                </CardContent>
-                <CardFooter className="flex gap-2 pb-3">
-                  <Button variant="outline" size="sm"><CheckCircle2 className="mr-1 h-4 w-4"/> Mark as Read</Button>
-                  {notif.urgency === 'high' && <Button variant="destructive" size="sm"><AlertTriangle className="mr-1 h-4 w-4"/> Escalate</Button>}
-                  {notif.agent && <Button variant="secondary" size="sm"><Cpu className="mr-1 h-4 w-4"/> View Agent</Button>}
-                  <Button variant="ghost" size="sm"><History className="mr-1 h-4 w-4"/> Snooze</Button>
-                </CardFooter>
-              </Card>
-            );
-          })}
-        </div>
-        {notifications.length === 0 && (
-            <div className="text-center py-8">
-                <Bell className="mx-auto h-12 w-12 text-muted-foreground" />
-                <h3 className="mt-2 text-sm font-medium text-foreground">No new notifications</h3>
-                <p className="mt-1 text-sm text-muted-foreground">You're all caught up!</p>
-            </div>
-        )}
-      </Zone>
-    </div>
+                  <span className="text-xs text-muted-foreground">{notif.time}</span>
+                </div>
+              </CardHeader>
+              <CardContent className="pb-3">
+                <p className="text-sm text-foreground">{notif.message}</p>
+                {notif.agent && <p className="text-xs text-muted-foreground mt-1">Related Agent: {notif.agent}</p>}
+              </CardContent>
+              <CardFooter className="flex gap-2 pb-3">
+                <Button variant="outline" size="sm"><CheckCircle2 className="mr-1 h-4 w-4"/> Mark as Read</Button>
+                {notif.urgency === 'high' && <Button variant="destructive" size="sm"><AlertTriangle className="mr-1 h-4 w-4"/> Escalate</Button>}
+                {notif.agent && <Button variant="secondary" size="sm"><Cpu className="mr-1 h-4 w-4"/> View Agent</Button>}
+                <Button variant="ghost" size="sm"><History className="mr-1 h-4 w-4"/> Snooze</Button>
+              </CardFooter>
+            </Card>
+          );
+        })}
+      </div>
+      {notifications.length === 0 && (
+          <div className="text-center py-8">
+              <Bell className="mx-auto h-12 w-12 text-muted-foreground" />
+              <h3 className="mt-2 text-sm font-medium text-foreground">No new notifications</h3>
+              <p className="mt-1 text-sm text-muted-foreground">You're all caught up!</p>
+          </div>
+      )}
+    </>
+  );
+}
+
+
+export default function NotificationsPage() {
+  const notificationZoneConfigs: ZoneConfig[] = [
+    {
+      id: 'notificationsCenter',
+      title: 'Notification Center',
+      icon: <Bell className="w-5 h-5" />,
+      content: <NotificationsContent />,
+      defaultLayout: {
+        lg: { x: 0, y: 0, w: 12, h: 16, minW: 6, minH: 8 }, // Span full width on large screens
+        md: { x: 0, y: 0, w: 10, h: 16, minW: 5, minH: 8 },
+        sm: { x: 0, y: 0, w: 6, h: 16, minW: 4, minH: 8 },
+        xs: { x: 0, y: 0, w: 4, h: 16, minW: 2, minH: 8 },
+        xxs: { x: 0, y: 0, w: 2, h: 16, minW: 1, minH: 8 },
+      },
+      isDraggable: true,
+      isResizable: true,
+    }
+  ];
+
+  return (
+    <WorkspaceGrid
+      zoneConfigs={notificationZoneConfigs}
+      className="flex-grow"
+      rowHeight={30} // Adjust as needed
+    />
   );
 }
