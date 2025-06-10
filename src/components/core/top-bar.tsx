@@ -23,46 +23,47 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Bell, 
   Search, 
-  Settings as SettingsIcon, // Renamed to avoid conflict
+  Settings as SettingsIcon,
   LogOut, 
   UserCircle, 
   Cpu, 
   ShieldAlert, 
   Grid3x3,
   Home,
-  LayoutGrid,
-  Command,
-  SlidersHorizontal,
-  FileArchive,
-  BarChart3,
-  ListChecks,
-  History,
+  LayoutGrid, // For Loom Studio
+  Command as CommandIcon, // For Command & Cauldron
+  SlidersHorizontal, // Fallback for Modules, will use Briefcase
+  FileArchive, // For File Vault
+  BarChart3, // For Billing & Usage
+  ListChecks, // For Logs & Audit
+  History, // For OS Updates (or FileText)
   Info,
   AlertTriangleIcon,
   CheckCircle2,
   Users, // For Permissions
   ShieldCheck, // For Security Center
-  FileText, // For OS Updates (alternative to History)
-  Settings2, // For Settings Page (alternative to SettingsIcon if needed for variety)
+  Settings2, // For Settings Page
   Rocket, // For Onboarding
-  Briefcase // For Modules (alternative to SlidersHorizontal)
+  Briefcase, // For Modules
+  GitMerge, // For OS Updates
+  MessageSquare // For Notifications/Alerts
 } from 'lucide-react';
 
 const modules = [
   { name: 'Dashboard', href: '/', icon: <Home className="mr-2 h-4 w-4" /> },
   { name: 'Loom Studio', href: '/loom-studio', icon: <LayoutGrid className="mr-2 h-4 w-4" /> },
   { name: 'Agent Console', href: '/agents', icon: <Cpu className="mr-2 h-4 w-4" /> },
-  { name: 'Logs & Audit', href: '/logs', icon: <ListChecks className="mr-2 h-4 w-4" /> },
+  { name: 'Command & Cauldron', href: '/command', icon: <CommandIcon className="mr-2 h-4 w-4" /> },
   { name: 'Modules', href: '/modules', icon: <Briefcase className="mr-2 h-4 w-4" /> },
-  { name: 'Settings', href: '/settings', icon: <SettingsIcon className="mr-2 h-4 w-4" /> },
-  { name: 'Permissions', href: '/permissions', icon: <Users className="mr-2 h-4 w-4" /> },
+  { name: 'Logs & Audit', href: '/logs', icon: <ListChecks className="mr-2 h-4 w-4" /> },
   { name: 'Security Center', href: '/security', icon: <ShieldCheck className="mr-2 h-4 w-4" /> },
-  { name: 'Command & Cauldron', href: '/command', icon: <Command className="mr-2 h-4 w-4" /> },
-  { name: 'Alerts & Notifications', href: '/notifications', icon: <Bell className="mr-2 h-4 w-4" /> },
+  { name: 'Permissions', href: '/permissions', icon: <Users className="mr-2 h-4 w-4" /> },
+  { name: 'Settings', href: '/settings', icon: <Settings2 className="mr-2 h-4 w-4" /> },
+  { name: 'Alerts & Notifications', href: '/notifications', icon: <MessageSquare className="mr-2 h-4 w-4" /> },
   { name: 'Billing & Usage', href: '/billing', icon: <BarChart3 className="mr-2 h-4 w-4" /> },
-  { name: 'Onboarding Wizard', href: '/onboarding', icon: <Rocket className="mr-2 h-4 w-4" /> },
   { name: 'File Vault', href: '/files', icon: <FileArchive className="mr-2 h-4 w-4" /> },
-  { name: 'OS Updates', href: '/updates', icon: <FileText className="mr-2 h-4 w-4" /> },
+  { name: 'OS Updates', href: '/updates', icon: <GitMerge className="mr-2 h-4 w-4" /> },
+  { name: 'Onboarding Wizard', href: '/onboarding', icon: <Rocket className="mr-2 h-4 w-4" /> },
 ];
 
 const activeAgentsInfo = [
@@ -253,7 +254,7 @@ export function TopBar() {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <Link href="/settings#profile" passHref>
+              <Link href="/settings#userProfileSettings" passHref>
                 <DropdownMenuItem asChild>
                    <a><UserCircle className="mr-2 h-4 w-4" /><span>Profile</span></a>
                 </DropdownMenuItem>
@@ -275,5 +276,3 @@ export function TopBar() {
     </header>
   );
 }
-
-    

@@ -9,22 +9,24 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText, CalendarDays, User, Cpu, Filter, AlertTriangle, Layers, Sparkles, Loader2, PlaySquare, ShieldCheck } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { FileText, CalendarDays, User, Cpu, Filter, AlertTriangle, Layers, Sparkles, Loader2, PlaySquare, ShieldCheck, ListFilter, Users, Repeat, Eye } from 'lucide-react';
 import Image from 'next/image';
 import { summarizeLogs, type SummarizeLogsInput } from '@/ai/flows/summarize-logs';
-import { cn } from '@/lib/utils'; // For cn utility
+import { cn } from '@/lib/utils';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const initialLogEntries = [
-  { timestamp: '2023-10-26 10:00:15', user: 'Agent Alpha', module: 'AuthService', action: 'User login successful', details: 'IP: 192.168.1.100', level: 'INFO', type: 'Security' },
-  { timestamp: '2023-10-26 10:01:22', user: 'User Beta', module: 'BillingModule', action: 'Payment processing failed', details: 'Reason: Insufficient funds', level: 'ERROR', type: 'Audit' },
-  { timestamp: '2023-10-26 10:02:05', user: 'Agent Gamma', module: 'DataSync', action: 'Data sync initiated', details: 'Source: CRM, Target: Warehouse', level: 'INFO', type: 'System' },
-  { timestamp: '2023-10-26 10:03:40', user: 'System', module: 'Kernel', action: 'Security patch applied', details: 'CVE-2023-XXXX', level: 'WARN', type: 'Security' },
-  { timestamp: '2023-10-26 10:05:00', user: 'Agent Alpha', module: 'OptimizerPrime', action: 'Optimization task started for Project Gamma.', details: 'Using v2 algorithm.', level: 'INFO', type: 'Agent'},
-  { timestamp: '2023-10-26 10:05:30', user: 'User Delta', module: 'FileVault', action: 'File upload failed: Q4_Review.docx', details: 'Error: Network timeout.', level: 'ERROR', type: 'UserSession'},
+  { timestamp: '2023-10-26 10:00:15', user: 'Agent Alpha', module: 'AuthService', action: 'User login successful', details: 'IP: 192.168.1.100', level: 'INFO', type: 'Security', stateBefore: '{ "loggedIn": false }', stateAfter: '{ "loggedIn": true }' },
+  { timestamp: '2023-10-26 10:01:22', user: 'User Beta', module: 'BillingModule', action: 'Payment processing failed', details: 'Reason: Insufficient funds', level: 'ERROR', type: 'Audit', stateBefore: '{ "balance": 10 }', stateAfter: '{ "balance": 10, "attempted": 50 }' },
+  { timestamp: '2023-10-26 10:02:05', user: 'Agent Gamma', module: 'DataSync', action: 'Data sync initiated', details: 'Source: CRM, Target: Warehouse', level: 'INFO', type: 'System', stateBefore: '{}', stateAfter: '{}' },
+  { timestamp: '2023-10-26 10:03:40', user: 'System', module: 'Kernel', action: 'Security patch CVE-2023-XXXX applied', details: 'Reboot scheduled', level: 'WARN', type: 'Security', stateBefore: '{ "patched": false }', stateAfter: '{ "patched": true }' },
+  { timestamp: '2023-10-26 10:05:00', user: 'Agent Alpha', module: 'OptimizerPrime', action: 'Optimization task started for Project Gamma.', details: 'Using v2 algorithm.', level: 'INFO', type: 'Agent', stateBefore: '{}', stateAfter: '{}'},
+  { timestamp: '2023-10-26 10:05:30', user: 'User Delta', module: 'FileVault', action: 'File upload failed: Q4_Review.docx', details: 'Error: Network timeout.', level: 'ERROR', type: 'UserSession', stateBefore: '{}', stateAfter: '{}'},
+  { timestamp: '2023-10-26 10:06:00', user: 'Agent SecureGuard', module: 'Firewall', action: 'Blocked suspicious IP: 203.0.113.45', details: 'Attempted RDP access.', level: 'CRITICAL', type: 'Security', stateBefore: '{}', stateAfter: '{ "blocked_ips": ["203.0.113.45"] }' },
 ];
 
-function LogStreamFilterContent(): ReactNode {
+function LogStreamFilterContent(): ReactNode { // Security logs, audit trails, system events, advanced filtering
   const [logEntries, setLogEntries] = useState(initialLogEntries);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
   const [isSummarizing, setIsSummarizing] = useState<boolean>(false);
@@ -56,120 +58,134 @@ function LogStreamFilterContent(): ReactNode {
   };
 
   return (
-    <>
-      <div className="flex flex-wrap gap-2 mb-4 p-2 border-b border-border/50 items-center">
-        <Input type="text" placeholder="Search logs..." className="flex-grow min-w-[150px] bg-background border-input focus:ring-primary" />
-        <Select>
-          <SelectTrigger className="w-full md:w-[150px] bg-background border-input focus:ring-primary">
-            <SelectValue placeholder="Log Type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Logs</SelectItem>
-            <SelectItem value="security">Security Logs</SelectItem>
-            <SelectItem value="usersession">User Sessions</SelectItem>
-            <SelectItem value="audit">Audit Trails</SelectItem>
-            <SelectItem value="agent">Agent Logs</SelectItem>
-            <SelectItem value="system">System Logs</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select>
-          <SelectTrigger className="w-full md:w-[150px] bg-background border-input focus:ring-primary">
-            <SelectValue placeholder="Severity" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Levels</SelectItem>
-            <SelectItem value="info">INFO</SelectItem>
-            <SelectItem value="warn">WARN</SelectItem>
-            <SelectItem value="error">ERROR</SelectItem>
-            <SelectItem value="critical">CRITICAL</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button variant="outline"><Filter className="mr-2 h-4 w-4" />Apply</Button>
-        <Button onClick={handleSummarizeLogs} disabled={isSummarizing} variant="outline" className="text-primary border-primary/50 hover:bg-primary/10">
-          {isSummarizing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-          AI Summary
-        </Button>
-      </div>
+    <Card className="h-full flex flex-col">
+      <CardHeader className="p-3 border-b">
+        <div className="flex flex-wrap gap-2 items-center">
+            <Input type="text" placeholder="Search logs (keywords, user, module...)" className="flex-grow min-w-[200px] bg-background border-input focus:ring-primary h-8 text-sm" />
+            <Select>
+            <SelectTrigger className="w-full md:w-[130px] bg-background border-input focus:ring-primary h-8 text-xs">
+                <SelectValue placeholder="Log Type" />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="security">Security</SelectItem>
+                <SelectItem value="usersession">User Session</SelectItem>
+                <SelectItem value="audit">Audit</SelectItem>
+                <SelectItem value="agent">Agent</SelectItem>
+                <SelectItem value="system">System</SelectItem>
+            </SelectContent>
+            </Select>
+            <Select>
+            <SelectTrigger className="w-full md:w-[110px] bg-background border-input focus:ring-primary h-8 text-xs">
+                <SelectValue placeholder="Severity" />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectItem value="all">All Levels</SelectItem>
+                <SelectItem value="info">INFO</SelectItem>
+                <SelectItem value="warn">WARN</SelectItem>
+                <SelectItem value="error">ERROR</SelectItem>
+                <SelectItem value="critical">CRITICAL</SelectItem>
+            </SelectContent>
+            </Select>
+            <Input type="date" placeholder="Date" className="w-full md:w-[120px] bg-background border-input focus:ring-primary h-8 text-xs"/>
+            <Button variant="outline" size="sm" className="h-8 text-xs"><Filter className="mr-1.5 h-3.5 w-3.5" />Apply Filters</Button>
+            <Button onClick={handleSummarizeLogs} disabled={isSummarizing} variant="outline" size="sm" className="text-primary border-primary/50 hover:bg-primary/10 h-8 text-xs">
+            {isSummarizing ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Sparkles className="mr-1.5 h-3.5 w-3.5" />}
+            AI Summary
+            </Button>
+        </div>
+      </CardHeader>
 
-      {(isSummarizing || aiSummary || summaryError) && (
-        <Card className="mb-4 bg-background/70 backdrop-blur-sm">
-          <CardHeader><CardTitle className="font-headline text-md text-primary flex items-center"><Sparkles className="h-5 w-5 mr-2" />AI Log Summary</CardTitle></CardHeader>
-          <CardContent>
-            {isSummarizing && <div className="flex items-center text-muted-foreground"><Loader2 className="mr-2 h-4 w-4 animate-spin" />Generating...</div>}
-            {summaryError && <p className="text-destructive">{summaryError}</p>}
-            {aiSummary && <p className="text-sm text-foreground whitespace-pre-wrap">{aiSummary}</p>}
-          </CardContent>
-        </Card>
-      )}
-
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead><CalendarDays className="inline h-4 w-4 mr-1" />Timestamp</TableHead>
-              <TableHead><User className="inline h-4 w-4 mr-1" />User/Agent</TableHead>
-              <TableHead><Cpu className="inline h-4 w-4 mr-1" />Module</TableHead>
-              <TableHead>Action</TableHead>
-              <TableHead>Details</TableHead>
-              <TableHead>Level</TableHead>
-              <TableHead>Type</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {logEntries.map((log, i) => (
-              <TableRow key={i} className={cn(log.level === 'CRITICAL' && 'bg-destructive/20', log.level === 'ERROR' && 'bg-destructive/10', log.level === 'WARN' && 'bg-yellow-500/10')}>
-                <TableCell className="text-xs text-muted-foreground whitespace-nowrap">{log.timestamp}</TableCell>
-                <TableCell className="font-medium text-foreground whitespace-nowrap">{log.user}</TableCell>
-                <TableCell className="text-muted-foreground whitespace-nowrap">{log.module}</TableCell>
-                <TableCell className="text-foreground">{log.action}</TableCell>
-                <TableCell className="text-xs text-muted-foreground max-w-xs truncate" title={log.details}>{log.details}</TableCell>
-                <TableCell>
-                  <span className={cn("px-2 py-0.5 rounded-full text-xs font-semibold",
-                    log.level === 'INFO' && "bg-blue-500/10 text-blue-700 dark:text-blue-400",
-                    log.level === 'WARN' && "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
-                    log.level === 'ERROR' && "bg-red-500/10 text-red-700 dark:text-red-400",
-                    log.level === 'CRITICAL' && "bg-red-700/20 text-red-800 dark:text-red-300"
-                  )}>{log.level}</span>
-                </TableCell>
-                <TableCell className="text-xs text-muted-foreground whitespace-nowrap">{log.type}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </>
+      <CardContent className="p-2 flex-grow overflow-hidden relative">
+        {(isSummarizing || aiSummary || summaryError) && (
+            <Card className="mb-2 bg-background/70 backdrop-blur-sm sticky top-0 z-10 shadow-md">
+            <CardHeader className="p-2"><CardTitle className="font-headline text-sm text-primary flex items-center"><Sparkles className="h-4 w-4 mr-1.5" />AI Log Summary</CardTitle></CardHeader>
+            <CardContent className="p-2">
+                {isSummarizing && <div className="flex items-center text-muted-foreground text-xs"><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />Generating...</div>}
+                {summaryError && <p className="text-destructive text-xs">{summaryError}</p>}
+                {aiSummary && <p className="text-xs text-foreground whitespace-pre-wrap">{aiSummary}</p>}
+            </CardContent>
+            </Card>
+        )}
+        <ScrollArea className="h-full">
+            <Table>
+            <TableHeader>
+                <TableRow>
+                <TableHead className="w-[150px] text-xs"><CalendarDays className="inline h-3.5 w-3.5 mr-1" />Timestamp</TableHead>
+                <TableHead className="text-xs"><User className="inline h-3.5 w-3.5 mr-1" />User/Agent</TableHead>
+                <TableHead className="text-xs"><Cpu className="inline h-3.5 w-3.5 mr-1" />Module</TableHead>
+                <TableHead className="text-xs">Action</TableHead>
+                <TableHead className="text-xs">Details</TableHead>
+                <TableHead className="text-xs">Level</TableHead>
+                <TableHead className="text-xs">Type</TableHead>
+                <TableHead className="text-xs text-center">View</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {logEntries.map((log, i) => (
+                <TableRow key={i} className={cn(log.level === 'CRITICAL' && 'bg-destructive/30 hover:bg-destructive/40', log.level === 'ERROR' && 'bg-destructive/10 hover:bg-destructive/20', log.level === 'WARN' && 'bg-yellow-500/10 hover:bg-yellow-500/20', log.type === 'Security' && log.level === 'CRITICAL' && 'border-l-4 border-destructive')}>
+                    <TableCell className="text-xs text-muted-foreground whitespace-nowrap py-1.5">{log.timestamp}</TableCell>
+                    <TableCell className="font-medium text-foreground whitespace-nowrap text-xs py-1.5">{log.user}</TableCell>
+                    <TableCell className="text-muted-foreground whitespace-nowrap text-xs py-1.5">{log.module}</TableCell>
+                    <TableCell className="text-foreground text-xs py-1.5">{log.action}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground max-w-[200px] truncate py-1.5" title={log.details}>{log.details}</TableCell>
+                    <TableCell className="py-1.5">
+                    <span className={cn("px-1.5 py-0.5 rounded-full text-[10px] font-semibold",
+                        log.level === 'INFO' && "bg-blue-500/10 text-blue-700 dark:text-blue-400",
+                        log.level === 'WARN' && "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
+                        log.level === 'ERROR' && "bg-red-500/10 text-red-700 dark:text-red-400",
+                        log.level === 'CRITICAL' && "bg-red-700/20 text-red-800 dark:text-red-300"
+                    )}>{log.level}</span>
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground whitespace-nowrap py-1.5">{log.type}</TableCell>
+                    <TableCell className="text-xs text-center py-1.5">
+                        <Button variant="ghost" size="icon" className="h-6 w-6"><Eye className="h-3.5 w-3.5"/></Button>
+                    </TableCell>
+                </TableRow>
+                ))}
+            </TableBody>
+            </Table>
+        </ScrollArea>
+      </CardContent>
+    </Card>
   );
 }
 
-function EventTimelineContent(): ReactNode {
+function EventTimelineContent(): ReactNode { // Replayable event timelines, visual diff of state
   return (
-    <>
-      <p className="text-sm text-muted-foreground mb-2">Replayable event timeline for 'User Login Anomaly - IP: 203.0.113.45'.</p>
-      <div className="h-64 bg-muted/30 rounded-md flex items-center justify-center p-4">
-        <Image src="https://placehold.co/600x300.png" alt="Event Timeline" width={600} height={300} className="rounded-md" data-ai-hint="gantt chart events" />
-      </div>
-      <div className="flex gap-2 mt-2">
-        <Button variant="outline" size="sm">Play</Button>
-        <Button variant="outline" size="sm">Step Back</Button>
-        <Button variant="outline" size="sm">Step Forward</Button>
-      </div>
-    </>
+    <Card className="h-full">
+      <CardHeader className="p-3">
+        <CardTitle className="text-md font-semibold font-headline text-foreground">Event Timeline & State Diff</CardTitle>
+        <CardDescription className="text-xs text-muted-foreground">Replay critical action: 'Payment processing failed' (User Beta).</CardDescription>
+      </CardHeader>
+      <CardContent className="p-3 text-center">
+        <Image src="https://placehold.co/600x300.png" alt="Event Timeline with State Diff" width={600} height={300} className="rounded-md border" data-ai-hint="gantt chart events state comparison" />
+        <div className="flex gap-2 mt-2 justify-center">
+          <Button variant="outline" size="sm"><PlaySquare className="mr-1.5 h-3.5 w-3.5"/>Play</Button>
+          <Button variant="outline" size="sm">Step Back</Button>
+          <Button variant="outline" size="sm">Step Forward</Button>
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">Red alert trigger zones are highlighted on timeline.</p>
+      </CardContent>
+    </Card>
   );
 }
 
-function UserSessionDetailsContent(): ReactNode {
+function UserSessionDetailsContent(): ReactNode { // User sessions
   return (
-    <>
-      <p className="text-sm text-muted-foreground mb-2">Details for session ID: sess_userbeta_xyz789</p>
-      <div className="p-3 bg-background/50 rounded-md text-xs space-y-1">
-        <p><span className="font-semibold">User:</span> User Beta</p>
-        <p><span className="font-semibold">Start Time:</span> 2023-10-26 10:01:00</p>
-        <p><span className="font-semibold">Duration:</span> 45 minutes</p>
-        <p><span className="font-semibold">IP Address:</span> 198.51.100.12</p>
-        <p><span className="font-semibold">Key Actions:</span> Viewed Billing, Attempted Payment, Logged Out.</p>
-      </div>
-      <Image src="https://placehold.co/300x200.png" alt="User Activity Heatmap" width={300} height={200} className="rounded-md mt-2 mx-auto" data-ai-hint="activity heatmap user" />
-    </>
+    <Card className="h-full">
+        <CardHeader className="p-3">
+            <CardTitle className="text-md font-semibold font-headline text-foreground">User Session: <span className="text-primary">User Beta</span></CardTitle>
+            <CardDescription className="text-xs text-muted-foreground">ID: sess_userbeta_xyz789</CardDescription>
+        </CardHeader>
+        <CardContent className="p-3 text-xs space-y-1">
+            <p><span className="font-semibold">Start Time:</span> 2023-10-26 10:01:00</p>
+            <p><span className="font-semibold">Duration:</span> 45 minutes</p>
+            <p><span className="font-semibold">IP Address:</span> 198.51.100.12</p>
+            <p><span className="font-semibold">Key Actions:</span> Viewed Billing, Attempted Payment, Logged Out.</p>
+            <Image src="https://placehold.co/300x200.png" alt="User Activity Heatmap" width={300} height={200} className="rounded-md mt-2 mx-auto border" data-ai-hint="activity heatmap user clicks" />
+      </CardContent>
+    </Card>
   );
 }
 
@@ -177,8 +193,8 @@ export default function LogsAuditPage() {
   const logsPageZoneConfigs: ZoneConfig[] = [
     {
       id: 'logStreamFilter',
-      title: 'Security Logs, Audit Trails & System Events', // Updated title
-      icon: <FileText className="w-5 h-5" />,
+      title: 'Log Explorer & AI Summary', 
+      icon: <ListFilter className="w-5 h-5" />, // Changed Icon
       content: <LogStreamFilterContent />,
       defaultLayout: {
         lg: { x: 0, y: 0, w: 12, h: 12, minW: 6, minH: 8 },
@@ -187,9 +203,9 @@ export default function LogsAuditPage() {
       },
     },
     {
-      id: 'eventTimeline', // New ID
-      title: 'Replayable Event Timeline', // New title
-      icon: <PlaySquare className="w-5 h-5" />,
+      id: 'eventTimeline',
+      title: 'Replayable Event Timeline & Diff', // Updated title
+      icon: <Repeat className="w-5 h-5" />, // Changed Icon
       content: <EventTimelineContent />,
       defaultLayout: {
         lg: { x: 0, y: 12, w: 8, h: 8, minW: 4, minH: 5 },
@@ -198,9 +214,9 @@ export default function LogsAuditPage() {
       },
     },
     {
-      id: 'userSessionDetails', // New ID
-      title: 'User Session Details', // New title
-      icon: <User className="w-5 h-5" />,
+      id: 'userSessionDetails',
+      title: 'User Session Details', 
+      icon: <Users className="w-5 h-5" />, // Changed Icon
       content: <UserSessionDetailsContent />,
       defaultLayout: {
         lg: { x: 8, y: 12, w: 4, h: 8, minW: 3, minH: 5 },
@@ -214,8 +230,7 @@ export default function LogsAuditPage() {
     <WorkspaceGrid
       zoneConfigs={logsPageZoneConfigs}
       className="flex-grow"
+       cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }} // Ensure 12 columns for lg
     />
   );
 }
-
-    
