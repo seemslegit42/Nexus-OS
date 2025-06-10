@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
-import { ZoneControls } from "./zone-controls"; // Assuming ZoneControls is in the same directory
+import { ZoneControls } from "./zone-controls"; 
 
 interface ZoneProps {
   title: string;
@@ -10,7 +10,6 @@ interface ZoneProps {
   className?: string;
   icon?: ReactNode;
   
-  // Controls related props
   onPinToggle?: () => void;
   isPinned?: boolean;
   onMaximizeToggle?: () => void;
@@ -43,11 +42,11 @@ export function Zone({
   canClose = true,
 }: ZoneProps) {
   return (
-    <Card className={cn("bg-card/80 backdrop-blur-md shadow-lg rounded-xl border-border flex flex-col overflow-hidden h-full", className)}>
+    <Card className={cn("bg-card/60 backdrop-blur-lg shadow-xl rounded-xl border-border/30 flex flex-col overflow-hidden h-full", className)}>
       <CardHeader 
         className={cn(
-          "draggable-zone-header", // Added class for react-grid-layout draggableHandle
-          "flex flex-row items-center justify-between space-y-0 p-3 border-b border-border/50 min-h-[48px] cursor-grab" // Ensure min-height and cursor
+          "draggable-zone-header", 
+          "flex flex-row items-center justify-between space-y-0 p-3 border-b border-border/30 min-h-[48px] cursor-grab"
         )}
       >
         <div className="flex items-center gap-2 overflow-hidden">
@@ -71,12 +70,8 @@ export function Zone({
       <CardContent 
         className={cn(
           "p-4 flex-grow overflow-auto transition-all duration-300 ease-in-out",
-          isMinimized ? "max-h-0 p-0 opacity-0 invisible" : "opacity-100 visible"
+          isMinimized ? "max-h-0 p-0 !pt-0 !pb-0 opacity-0 invisible" : "opacity-100 visible"
         )}
-        style={{
-             paddingTop: isMinimized ? 0 : undefined,
-             paddingBottom: isMinimized ? 0 : undefined,
-        }}
       >
         {!isMinimized && children}
       </CardContent>
