@@ -19,6 +19,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Bell, 
   Search, 
@@ -35,7 +36,10 @@ import {
   FileArchive,
   BarChart3,
   ListChecks,
-  History
+  History,
+  Info,
+  AlertTriangleIcon, // Changed from AlertTriangle for consistency with Info
+  CheckCircle2
 } from 'lucide-react';
 
 const modules = [
@@ -47,6 +51,7 @@ const modules = [
   { name: 'File Vault', href: '/files', icon: <FileArchive className="mr-2 h-4 w-4" /> },
   { name: 'Billing', href: '/billing', icon: <BarChart3 className="mr-2 h-4 w-4" /> },
   { name: 'Logs & Audit', href: '/logs', icon: <ListChecks className="mr-2 h-4 w-4" /> },
+  { name: 'Notifications', href: '/notifications', icon: <Bell className="mr-2 h-4 w-4" /> },
   { name: 'Updates', href: '/updates', icon: <History className="mr-2 h-4 w-4" /> },
 ];
 
@@ -57,6 +62,14 @@ const activeAgentsInfo = [
   { name: "ContentCreatorAI", status: "Processing", tasks: 1, lastLog: "Generating weekly social media engagement report." },
   { name: "SysMonitor", status: "Active", tasks: 5, lastLog: "Network latency check normal, CPU usage stable." },
 ];
+
+const recentNotifications = [
+  { id: 1, type: 'error', title: 'Agent SecureGuard Offline', message: 'Agent has unexpectedly stopped.', time: '2m ago', icon: <AlertTriangleIcon className="h-4 w-4 text-destructive" /> },
+  { id: 2, type: 'info', title: 'OS Update v1.1.0 Available', message: 'New version of NexOS ready for installation.', time: '1h ago', icon: <Info className="h-4 w-4 text-primary" /> },
+  { id: 3, type: 'success', title: 'Task Completed by DataMinerX', message: 'Q3 sales data analysis finished.', time: '3h ago', icon: <CheckCircle2 className="h-4 w-4 text-green-500" /> },
+  { id: 4, type: 'warning', title: 'Low Disk Space', message: 'Module storage is at 92% capacity.', time: '5h ago', icon: <AlertTriangleIcon className="h-4 w-4 text-yellow-500" /> },
+];
+
 
 export function TopBar() {
   return (
@@ -122,33 +135,35 @@ export function TopBar() {
                     Quick overview of agent states.
                   </p>
                 </div>
-                <div className="grid gap-1 max-h-72 overflow-y-auto pr-1">
-                  {activeAgentsInfo.map((agent) => (
-                    <div key={agent.name} className="grid grid-cols-[1fr_auto] items-center gap-x-2 p-2 rounded-md hover:bg-muted/30">
-                      <div className="overflow-hidden">
-                        <p className="text-sm font-medium leading-none text-foreground truncate">
-                          {agent.name}
-                        </p>
-                        <p className="text-xs text-muted-foreground truncate" title={agent.lastLog}>
-                          {agent.tasks} active tasks - {agent.lastLog}
-                        </p>
+                <ScrollArea className="max-h-72">
+                  <div className="grid gap-1 pr-1">
+                    {activeAgentsInfo.map((agent) => (
+                      <div key={agent.name} className="grid grid-cols-[1fr_auto] items-center gap-x-2 p-2 rounded-md hover:bg-muted/30">
+                        <div className="overflow-hidden">
+                          <p className="text-sm font-medium leading-none text-foreground truncate">
+                            {agent.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate" title={agent.lastLog}>
+                            {agent.tasks} active tasks - {agent.lastLog}
+                          </p>
+                        </div>
+                        <Badge 
+                          variant={
+                            agent.status === 'Active' || agent.status === 'Processing' ? 'default' : 
+                            agent.status === 'Error' ? 'destructive' : 'secondary'
+                          }
+                          className={
+                            agent.status === 'Active' || agent.status === 'Processing' ? 'bg-green-500/80 text-white min-w-[70px] text-center justify-center' : 
+                            agent.status === 'Error' ? 'min-w-[70px] text-center justify-center' :
+                            'min-w-[70px] text-center justify-center'
+                          }
+                        >
+                          {agent.status}
+                        </Badge>
                       </div>
-                      <Badge 
-                        variant={
-                          agent.status === 'Active' || agent.status === 'Processing' ? 'default' : 
-                          agent.status === 'Error' ? 'destructive' : 'secondary'
-                        }
-                        className={
-                          agent.status === 'Active' || agent.status === 'Processing' ? 'bg-green-500/80 text-white min-w-[70px] text-center justify-center' : 
-                          agent.status === 'Error' ? 'min-w-[70px] text-center justify-center' :
-                          'min-w-[70px] text-center justify-center'
-                        }
-                      >
-                        {agent.status}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                </ScrollArea>
                 <Button variant="outline" size="sm" className="w-full" asChild>
                   <Link href="/agents">View All Agents</Link>
                 </Button>
@@ -156,10 +171,48 @@ export function TopBar() {
             </PopoverContent>
           </Popover>
           
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-            <Bell className="h-5 w-5" />
-            <span className="sr-only">Notifications</span>
-          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground relative">
+                <Bell className="h-5 w-5" />
+                {recentNotifications.length > 0 && (
+                  <span className="absolute top-1 right-1 flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                  </span>
+                )}
+                <span className="sr-only">Notifications</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-96" align="end">
+              <div className="grid gap-4">
+                <div className="flex justify-between items-center">
+                  <h4 className="font-medium leading-none font-headline text-foreground">Recent Notifications</h4>
+                  <Button variant="link" size="sm" className="text-xs p-0 h-auto text-primary">Mark all as read</Button>
+                </div>
+                <ScrollArea className="max-h-80">
+                  <div className="grid gap-2 pr-2">
+                    {recentNotifications.map((notif) => (
+                      <div key={notif.id} className="flex items-start gap-3 p-2.5 rounded-md border border-border/50 hover:bg-muted/50">
+                        <div className="mt-0.5">{notif.icon}</div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-foreground">{notif.title}</p>
+                          <p className="text-xs text-muted-foreground">{notif.message}</p>
+                        </div>
+                        <p className="text-xs text-muted-foreground whitespace-nowrap">{notif.time}</p>
+                      </div>
+                    ))}
+                    {recentNotifications.length === 0 && (
+                      <p className="text-sm text-muted-foreground text-center py-4">No new notifications.</p>
+                    )}
+                  </div>
+                </ScrollArea>
+                <Button variant="outline" size="sm" className="w-full" asChild>
+                  <Link href="/notifications">View All Notifications</Link>
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
 
           <div className="flex items-center gap-2 p-2 rounded-md bg-muted/50 border border-transparent hover:border-border transition-colors">
             <ShieldAlert className="h-4 w-4 text-primary" />
