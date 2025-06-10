@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Cpu, PlusCircle, Search, Eye, Settings2, Trash2 } from 'lucide-react';
 import Image from 'next/image';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const agents = [
   { id: 'agt_001', name: 'OptimizerPrime', status: 'Active', role: 'Code Optimizer', training: 'Python, JS', scope: 'Project Alpha', lastActivity: '5m ago' },
@@ -19,7 +20,7 @@ const agents = [
 
 function AgentOverviewContent(): ReactNode {
   return (
-    <>
+    <TooltipProvider>
       <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-2">
         <div className="relative w-full md:max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -46,8 +47,14 @@ function AgentOverviewContent(): ReactNode {
               <TableRow key={agent.id}>
                 <TableCell className="font-medium text-foreground">{agent.name}</TableCell>
                 <TableCell>
-                  <Badge variant={agent.status === 'Active' ? 'default' : agent.status === 'Error' ? 'destructive' : 'secondary'}
-                    className={agent.status === 'Active' ? 'bg-green-500/80 text-white' : agent.status === 'Error' ? 'bg-destructive text-destructive-foreground' : ''}
+                  <Badge 
+                    variant={
+                      agent.status === 'Active' ? 'default' : 
+                      agent.status === 'Error' ? 'destructive' : 'secondary'
+                    }
+                    className={
+                      agent.status === 'Active' ? 'bg-green-500/80 text-white dark:bg-green-600/80 dark:text-white' : ''
+                    }
                   >
                     {agent.status}
                   </Badge>
@@ -56,16 +63,37 @@ function AgentOverviewContent(): ReactNode {
                 <TableCell className="text-muted-foreground">{agent.scope}</TableCell>
                 <TableCell className="text-muted-foreground">{agent.lastActivity}</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="icon" className="h-8 w-8"><Eye className="h-4 w-4" /></Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8"><Settings2 className="h-4 w-4" /></Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8"><Eye className="h-4 w-4" /></Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>View Details</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8"><Settings2 className="h-4 w-4" /></Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Configure Agent</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Delete Agent</p>
+                    </TooltipContent>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
-    </>
+    </TooltipProvider>
   );
 }
 
