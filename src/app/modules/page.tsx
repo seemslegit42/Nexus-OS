@@ -1,3 +1,4 @@
+
 import { Zone } from '@/components/core/zone';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,7 +15,7 @@ const modules = [
 
 export default function ModulesPage() {
   return (
-    <div className="flex-grow flex flex-col gap-4">
+    <div className="flex-grow grid grid-cols-1 gap-4">
       <Zone title="Module Marketplace" icon={<Blocks className="w-5 h-5" />} className="flex-grow">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-headline text-foreground">Available System Modules</h2>

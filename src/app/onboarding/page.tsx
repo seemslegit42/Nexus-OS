@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -19,11 +20,11 @@ export default function OnboardingPage() {
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
   return (
-    <div className="flex-grow flex flex-col items-center justify-center p-4">
+    <div className="flex-grow grid grid-cols-1 place-items-center gap-4 p-4">
       <Zone 
         title="NexOS Onboarding Wizard" 
         icon={<Sparkles className="w-6 h-6 text-primary" />} 
-        className="w-full max-w-2xl"
+        className="max-w-2xl w-full"
       >
         <div className="p-2 sm:p-4">
           <Progress value={progress} className="w-full mb-6 h-2 [&>div]:bg-primary" />
