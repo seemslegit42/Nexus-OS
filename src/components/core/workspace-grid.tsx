@@ -2,7 +2,8 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback }
+from 'react';
 import { Responsive, WidthProvider, type Layout, type Layouts } from 'react-grid-layout';
 import { Zone } from '@/components/core/zone';
 import { cn } from '@/lib/utils';
@@ -45,49 +46,65 @@ export function WorkspaceGrid({
 }: WorkspaceGridProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [currentLayouts, setCurrentLayouts] = useState<Layouts>({});
+  const [currentBreakpoint, setCurrentBreakpoint] = useState<string>('lg');
 
   useEffect(() => {
     setIsMounted(true);
-    // Initialize layouts from zoneConfigs
     const initialLayouts: Layouts = {};
-    Object.keys(cols).forEach(bp => {
+    Object.keys(cols).forEach(bpKey => {
+      const bp = bpKey as keyof typeof cols;
       initialLayouts[bp] = zoneConfigs.map(zc => ({
         i: zc.id,
-        ...(zc.defaultLayout[bp as keyof typeof zc.defaultLayout] || zc.defaultLayout.lg),
+        ...(zc.defaultLayout[bp] || zc.defaultLayout.lg),
         minW: zc.minW,
         minH: zc.minH,
-        static: zc.static,
-        isResizable: zc.isResizable,
-        isDraggable: zc.isDraggable,
+        static: zc.static === undefined ? false : zc.static,
+        isResizable: zc.isResizable === undefined ? true : zc.isResizable,
+        isDraggable: zc.isDraggable === undefined ? true : zc.isDraggable,
       }));
     });
     setCurrentLayouts(initialLayouts);
   }, [zoneConfigs, cols]);
 
   const handleLayoutChange = (currentLayout: Layout[], allLayouts: Layouts) => {
-    setCurrentLayouts(allLayouts);
+    // Only update layouts if they are truly different to avoid infinite loops if onLayoutChange prop causes re-render
+    if (JSON.stringify(allLayouts) !== JSON.stringify(currentLayouts)) {
+      setCurrentLayouts(allLayouts);
+    }
     if (onLayoutChange) {
       onLayoutChange(currentLayout, allLayouts);
     }
   };
   
-  // Dummy handlers for Zone actions - these would typically update state or call props
   const handleToggleLock = (id: string) => console.log(`Toggle lock for ${id}`);
-  const handleTogglePin = (id: string) => {
-    console.log(`Toggle pin for ${id}`);
-    // Example: Make item static by updating its layout property
-    // This requires more complex state management to update `currentLayouts`
-    // and then pass the updated layouts back to ResponsiveGridLayout.
-  };
+  
+  const handleTogglePin = useCallback((id: string) => {
+    setCurrentLayouts(prevLayouts => {
+      const newLayouts = { ...prevLayouts };
+      // Toggle static for the item across all breakpoints for consistency
+      Object.keys(newLayouts).forEach(bp => {
+        const bpLayout = newLayouts[bp] ? [...newLayouts[bp]] : [];
+        const itemIndex = bpLayout.findIndex(item => item.i === id);
+        if (itemIndex !== -1) {
+          bpLayout[itemIndex] = {
+            ...bpLayout[itemIndex],
+            static: !bpLayout[itemIndex].static,
+          };
+          newLayouts[bp] = bpLayout;
+        }
+      });
+      return newLayouts;
+    });
+  }, []);
+
   const handleToggleExpand = (id: string) => console.log(`Toggle expand for ${id}`);
   const handleClose = (id: string) => console.log(`Close ${id}`);
 
-
   if (!isMounted) {
-    // Prevent server-side rendering mismatch for react-grid-layout
-    // You could return a loader here if preferred
     return null; 
   }
+
+  const currentBreakpointLayout = currentLayouts[currentBreakpoint] || [];
 
   return (
     <ResponsiveGridLayout
@@ -97,26 +114,42 @@ export function WorkspaceGrid({
       cols={cols}
       rowHeight={rowHeight}
       onLayoutChange={handleLayoutChange}
-      draggableHandle=".card-header" // Allows dragging only from the Zone's header
+      onBreakpointChange={(newBreakpoint) => setCurrentBreakpoint(newBreakpoint)}
+      draggableHandle=".card-header"
+      preventCollision={false}
     >
-      {zoneConfigs.map((zoneConfig) => (
-        <div key={zoneConfig.id} className="bg-transparent">
-          <Zone
-            title={zoneConfig.title}
-            icon={zoneConfig.icon}
-            onLockToggle={() => handleToggleLock(zoneConfig.id)}
-            isLocked={zoneConfig.static} // Example: map static to isLocked
-            onPinToggle={() => handleTogglePin(zoneConfig.id)}
-            isPinned={zoneConfig.static} // Example: map static to isPinned
-            onExpandToggle={() => handleToggleExpand(zoneConfig.id)}
-            // isExpanded={...} // Requires state
-            onClose={() => handleClose(zoneConfig.id)}
-            className="h-full" // Ensure Zone fills its grid item
-          >
-            {zoneConfig.content}
-          </Zone>
-        </div>
-      ))}
+      {zoneConfigs.map((zoneConfig) => {
+        const rglItem = currentBreakpointLayout.find(item => item.i === zoneConfig.id);
+        const isCurrentlyPinned = rglItem ? rglItem.static || false : zoneConfig.static || false;
+        // isDraggable and isResizable are derived from !isCurrentlyPinned unless explicitly set false
+        const isCurrentlyDraggable = !isCurrentlyPinned && (rglItem ? rglItem.isDraggable !== false : zoneConfig.isDraggable !== false);
+        const isCurrentlyResizable = !isCurrentlyPinned && (rglItem ? rglItem.isResizable !== false : zoneConfig.isResizable !== false);
+
+        // This div is the grid item. react-grid-layout needs a key here.
+        // It will use properties from the `layouts` prop for this key.
+        return (
+          <div key={zoneConfig.id} data-grid={
+            // Provide explicit layout if not using layouts prop directly, but we are.
+            // So this data-grid is mostly for debugging or direct styling if needed.
+            // RGL derives props from the `layouts` object matching this key.
+            currentLayouts[currentBreakpoint]?.find(l => l.i === zoneConfig.id) || zoneConfig.defaultLayout.lg
+          }>
+            <Zone
+              title={zoneConfig.title}
+              icon={zoneConfig.icon}
+              onLockToggle={() => handleToggleLock(zoneConfig.id)}
+              isLocked={isCurrentlyPinned} // For now, lock means pinned
+              onPinToggle={() => handleTogglePin(zoneConfig.id)}
+              isPinned={isCurrentlyPinned}
+              onExpandToggle={() => handleToggleExpand(zoneConfig.id)}
+              onClose={() => handleClose(zoneConfig.id)}
+              className="h-full"
+            >
+              {zoneConfig.content}
+            </Zone>
+          </div>
+        );
+      })}
     </ResponsiveGridLayout>
   );
 }
