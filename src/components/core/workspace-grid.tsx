@@ -70,8 +70,7 @@ export function WorkspaceGrid({
 
   const handleLayoutChange = (currentLayout: Layout[], allLayouts: Layouts) => {
     if (JSON.stringify(allLayouts) !== JSON.stringify(currentLayouts)) {
-       // Only update if layouts actually changed to prevent potential loops with onLayoutChange prop
-      if (!expandedZoneId) { // Do not externally overwrite layouts if a zone is expanded by internal state
+      if (!expandedZoneId) { 
          setCurrentLayouts(allLayouts);
       }
     }
@@ -81,13 +80,12 @@ export function WorkspaceGrid({
   };
   
   const handleToggleLock = (id: string) => {
-    // For now, lock toggles pin status. Implement separate lock logic if needed.
     handleTogglePin(id);
     console.log(`Toggle lock for ${id} (currently acts as pin)`);
   }
   
   const handleTogglePin = useCallback((id: string) => {
-    if (expandedZoneId) return; // Don't allow pinning/unpinning if a zone is expanded
+    if (expandedZoneId) return; 
 
     setCurrentLayouts(prevLayouts => {
       const newLayouts = { ...prevLayouts };
@@ -99,7 +97,6 @@ export function WorkspaceGrid({
           bpLayout[itemIndex] = {
             ...bpLayout[itemIndex],
             static: !currentStaticState,
-            // If unpinning, restore draggable/resizable based on original config or true by default
             isDraggable: currentStaticState ? (zoneConfigs.find(zc => zc.id === id)?.isDraggable ?? true) : false,
             isResizable: currentStaticState ? (zoneConfigs.find(zc => zc.id === id)?.isResizable ?? true) : false,
           };
@@ -112,19 +109,17 @@ export function WorkspaceGrid({
 
   const handleToggleExpand = useCallback((id: string) => {
     setCurrentLayouts(prevLayouts => {
-      const newLayoutsState = JSON.parse(JSON.stringify(prevLayouts)); // Deep clone
+      const newLayoutsState = JSON.parse(JSON.stringify(prevLayouts)); 
 
-      if (expandedZoneId === id) { // Minimize current expanded zone
+      if (expandedZoneId === id) { 
         setExpandedZoneId(null);
         const restoredLayouts = storedLayoutsBeforeExpand || prevLayouts;
         setStoredLayoutsBeforeExpand(null);
-        // Ensure that upon restoration, items are not all stuck as static
         Object.keys(restoredLayouts).forEach(bp => {
           if (restoredLayouts[bp]) {
             restoredLayouts[bp].forEach((item: Layout) => {
               const originalZoneConfig = zoneConfigs.find(zc => zc.id === item.i);
               const userPinned = storedLayoutsBeforeExpand?.[bp]?.find((l:Layout) => l.i === item.i)?.static;
-              // If it was pinned by user (in storedLayouts) OR originally static, keep it static
               item.static = userPinned || originalZoneConfig?.static || false; 
               item.isDraggable = !item.static && (originalZoneConfig?.isDraggable ?? true);
               item.isResizable = !item.static && (originalZoneConfig?.isResizable ?? true);
@@ -132,7 +127,7 @@ export function WorkspaceGrid({
           }
         });
         return restoredLayouts;
-      } else if (!expandedZoneId) { // Expand this zone, no other zone is expanded
+      } else if (!expandedZoneId) { 
         setStoredLayoutsBeforeExpand(JSON.parse(JSON.stringify(prevLayouts)));
         setExpandedZoneId(id);
 
@@ -142,7 +137,6 @@ export function WorkspaceGrid({
           const bpLayout = newLayoutsState[bpKey] as Layout[];
           
           if (bpLayout) {
-            // Make other items static (pinned)
             bpLayout.forEach((item: Layout) => {
               if (item.i !== id) {
                 item.static = true;
@@ -158,7 +152,7 @@ export function WorkspaceGrid({
                 x: 0,
                 y: 0, 
                 w: currentBPCols,
-                h: 20, // Expanded height (e.g., 20 rows * 30px/row = 600px). Adjust as needed.
+                h: 20, 
                 static: true,
                 isDraggable: false,
                 isResizable: false,
@@ -168,24 +162,17 @@ export function WorkspaceGrid({
         });
         return newLayoutsState;
       }
-      // If another zone is already expanded, and user tries to expand a different one:
-      // console.warn("Another zone is already expanded. Please minimize it first.");
-      return prevLayouts; // Do nothing
+      return prevLayouts; 
     });
   }, [expandedZoneId, storedLayoutsBeforeExpand, cols, zoneConfigs]);
 
 
   const handleClose = (id: string) => {
-    if (expandedZoneId) return; // Don't allow closing if a zone is expanded
+    if (expandedZoneId) return; 
     console.log(`Attempting to close zone: ${id}. Implement removal from zoneConfigs and update layout.`);
-    // Actual removal would involve:
-    // 1. Updating the parent component's state that provides zoneConfigs.
-    // 2. zoneConfigs prop would change, and useEffect would rebuild initialLayouts.
-    // This action is better handled by a callback to the parent that manages zoneConfigs.
   };
 
   if (!isMounted) {
-    // Render placeholders or null during SSR/initial mount before layouts are ready
     return (
       <div className={cn("layout grid-placeholder", className)}>
         {zoneConfigs.map(zc => (
@@ -194,8 +181,6 @@ export function WorkspaceGrid({
       </div>
     );
   }
-
-  const currentBreakpointLayout = currentLayouts[currentBreakpoint] || [];
 
   return (
     <ResponsiveGridLayout
@@ -206,33 +191,16 @@ export function WorkspaceGrid({
       rowHeight={rowHeight}
       onLayoutChange={handleLayoutChange}
       onBreakpointChange={(newBreakpoint) => setCurrentBreakpoint(newBreakpoint)}
-      draggableHandle=".card-header" // Ensure zones are draggable by their header
-      preventCollision={false} // Set to true if you want items to push each other; false allows potential overlap for more flexible manual layout.
-                               // When expanding, collision prevention can be complex.
-      isDroppable={!expandedZoneId} // Disable dropping new items if a zone is expanded
-      // margin={[10, 10]} // Optional: define margin between items
-      // containerPadding={[10,10]} // Optional: define padding for the container
+      draggableHandle=".card-header" 
+      preventCollision={true} 
+      isDroppable={!expandedZoneId} 
     >
       {zoneConfigs.map((zoneConfig) => {
-        // Find the current layout item for this zoneConfig on the current breakpoint
         const rglItem = currentLayouts[currentBreakpoint]?.find(item => item.i === zoneConfig.id);
-        
-        // Determine pinned status: it's pinned if its layout item is static.
-        // Also consider the original static state from zoneConfig if item not found (should not happen after init).
         const isCurrentlyPinned = rglItem ? rglItem.static || false : zoneConfig.static || false;
 
-        // An item is draggable/resizable only if it's NOT pinned/static
-        // and its config allows it (or defaults to true)
-        // AND no zone is expanded (or if it's the expanded zone, it's also not draggable/resizable)
-        const canDragOrResize = !isCurrentlyPinned && !expandedZoneId;
-        const isCurrentlyDraggable = canDragOrResize && (rglItem ? rglItem.isDraggable !== false : zoneConfig.isDraggable !== false);
-        const isCurrentlyResizable = canDragOrResize && (rglItem ? rglItem.isResizable !== false : zoneConfig.isResizable !== false);
-
         return (
-          <div key={zoneConfig.id} data-grid={rglItem || zoneConfig.defaultLayout.lg} 
-            // RGL applies isDraggable, isResizable, static from the layout item directly.
-            // We pass them to Zone for UI icon state.
-          >
+          <div key={zoneConfig.id} data-grid={rglItem || zoneConfig.defaultLayout.lg} >
             <Zone
               title={zoneConfig.title}
               icon={zoneConfig.icon}
@@ -243,10 +211,7 @@ export function WorkspaceGrid({
               onExpandToggle={() => handleToggleExpand(zoneConfig.id)}
               isExpanded={zoneConfig.id === expandedZoneId}
               onClose={() => handleClose(zoneConfig.id)}
-              className="h-full" // Ensure Zone fills the RGL item div
-              // Pass down draggable/resizable status for potential internal Zone logic or styling, though RGL controls the actual behavior.
-              // isDraggable={isCurrentlyDraggable} 
-              // isResizable={isCurrentlyResizable}
+              className="h-full" 
             >
               {zoneConfig.content}
             </Zone>
