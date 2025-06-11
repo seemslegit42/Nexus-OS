@@ -11,7 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { PlusCircle, Search, Filter as FilterIcon, Edit, Copy, Rocket, EyeOff, Eye, MoreVertical, SlidersHorizontal, AlertTriangle, Settings, ChevronsUpDown } from 'lucide-react';
+import { PlusCircle, Search, Filter as FilterIcon, Edit, Copy, Rocket, EyeOff, Eye, MoreVertical, SlidersHorizontal, AlertTriangle, Settings, ChevronsUpDown, ChevronDown } from 'lucide-react';
 import type { MicroApp } from '@/types/micro-app';
 import { MicroAppDetailDrawer } from '@/components/admin/micro-apps/micro-app-detail-drawer';
 import { cn } from '@/lib/utils';
@@ -19,6 +19,7 @@ import { useMicroAppRegistryStore, type MicroAppStatus } from '@/stores/micro-ap
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 
 // Helper to get appropriate badge variant for status
@@ -154,7 +155,7 @@ export default function MicroAppRegistryPage() {
             {selectedAppIds.length > 0 && (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="h-9">
+                    <Button variant="outline" className="h-9 hidden md:inline-flex"> {/* Hidden on mobile */}
                         Bulk Actions ({selectedAppIds.length}) <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50"/>
                     </Button>
                     </DropdownMenuTrigger>
@@ -217,7 +218,8 @@ export default function MicroAppRegistryPage() {
         </div>
       </header>
 
-      <Card className="flex-grow flex flex-col overflow-hidden">
+      {/* Desktop Table View */}
+      <Card className="flex-grow flex-col overflow-hidden hidden md:flex">
         <CardHeader className="hidden">
           <CardTitle>All Micro-Apps</CardTitle>
           <CardDescription>Browse and manage all available micro-applications within NexOS.</CardDescription>
@@ -256,7 +258,7 @@ export default function MicroAppRegistryPage() {
                         />
                     </TableCell>
                     <TableCell className="text-center">
-                      <Settings className="h-5 w-5 text-primary/70 mx-auto" /> {/* Lucide Settings as placeholder */}
+                      <Settings className="h-5 w-5 text-primary/70 mx-auto" />
                     </TableCell>
                     <TableCell className="font-medium text-foreground py-2.5">
                         {app.displayName}
@@ -328,6 +330,73 @@ export default function MicroAppRegistryPage() {
         </CardContent>
       </Card>
 
+      {/* Mobile Accordion View */}
+      <div className="md:hidden flex-grow">
+        {displayedApps.length === 0 && searchTerm ? (
+          <div className="text-center p-8 text-muted-foreground">
+            <SlidersHorizontal className="mx-auto h-12 w-12 opacity-50 mb-2" />
+            <p>No micro-apps found for "{searchTerm}".</p>
+          </div>
+        ) : displayedApps.length === 0 && !searchTerm ? (
+            <div className="text-center p-8 text-muted-foreground">
+                <SlidersHorizontal className="mx-auto h-12 w-12 opacity-50 mb-2" />
+                <p>No micro-apps available.</p>
+            </div>
+        ) : (
+        <ScrollArea className="h-full">
+          <Accordion type="multiple" className="w-full space-y-2">
+            {displayedApps.map((app) => (
+              <AccordionItem value={app.id} key={app.id} className="bg-card border border-border/60 rounded-lg shadow-sm">
+                <AccordionTrigger className="p-3 hover:no-underline">
+                  <div className="flex items-center gap-3 w-full">
+                    <Settings className="h-5 w-5 text-primary/70 flex-shrink-0" />
+                    <div className="flex-grow text-left">
+                      <h3 className="font-medium text-foreground text-sm">{app.displayName}</h3>
+                      <p className="text-xs text-muted-foreground">{app.internalName}</p>
+                    </div>
+                    <Badge variant={getStatusBadgeVariant(app.status)} className={cn("text-xs py-0.5 px-2 h-5 leading-tight flex-shrink-0", getStatusBadgeColorClass(app.status))}>
+                      {app.status}
+                    </Badge>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="border-t border-border/40">
+                  <div className="p-3 space-y-2">
+                    <p className="text-xs text-muted-foreground">{app.description}</p>
+                    <div>
+                      <span className="text-xs font-semibold text-foreground">Category: </span>
+                      <span className="text-xs text-muted-foreground">{app.category}</span>
+                    </div>
+                    <div>
+                      <span className="text-xs font-semibold text-foreground">Tags: </span>
+                      <span className="text-xs text-muted-foreground">{app.tags?.join(', ') || 'None'}</span>
+                    </div>
+                    <div>
+                      <span className="text-xs font-semibold text-foreground">Visible: </span>
+                       {app.isVisible ? <Eye className="h-3.5 w-3.5 text-green-500 inline" /> : <EyeOff className="h-3.5 w-3.5 text-muted-foreground inline" />}
+                    </div>
+                     <div>
+                      <span className="text-xs font-semibold text-foreground">Agent Deps: </span>
+                      <span className="text-xs text-muted-foreground">{(app.agentDependencies && app.agentDependencies.length > 0) ? app.agentDependencies.join(', ') : 'None'}</span>
+                    </div>
+                    <div className="flex gap-2 pt-2">
+                      <Button size="sm" variant="outline" onClick={() => handleEditApp(app.id)} className="text-xs">
+                        <Edit className="mr-1.5 h-3.5 w-3.5" /> Edit
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => toggleAppStatus(app.id)} className="text-xs">
+                        {app.status === 'enabled' || app.status === 'beta' || app.status === 'dev-only' ? <EyeOff className="mr-1.5 h-3.5 w-3.5" /> : <Eye className="mr-1.5 h-3.5 w-3.5" />}
+                        Toggle Status
+                      </Button>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </ScrollArea>
+        )}
+      </div>
+
+
       {selectedApp && (
         <MicroAppDetailDrawer
           app={selectedApp}
@@ -340,3 +409,4 @@ export default function MicroAppRegistryPage() {
     </div>
   );
 }
+
