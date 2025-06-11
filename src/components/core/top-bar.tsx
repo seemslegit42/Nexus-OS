@@ -38,7 +38,7 @@ import {
   ListChecks, 
   GitMerge, 
   Info,
-  AlertTriangleIcon,
+  AlertTriangle as AlertTriangleIcon, // Renamed to avoid conflict
   CheckCircle2,
   Users, 
   ShieldCheck, 
@@ -84,7 +84,7 @@ const recentNotifications = [
 
 export function TopBar() {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-card backdrop-blur-lg border-b border-border/70 shadow-sm">
+    <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-card backdrop-blur-lg border-b border-border shadow-sm">
       <div className="container mx-auto h-full flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2">
@@ -163,9 +163,9 @@ export function TopBar() {
                   </p>
                 </div>
                 <ScrollArea className="max-h-72">
-                  <div className="grid gap-1 pr-1">
+                  <div className="grid gap-1.5 pr-1">
                     {activeAgentsInfo.map((agent) => (
-                      <div key={agent.name} className="grid grid-cols-[1fr_auto] items-center gap-x-2 p-2 rounded-md hover:bg-muted/50">
+                      <div key={agent.name} className="grid grid-cols-[1fr_auto] items-center gap-x-2 p-2.5 rounded-md border border-transparent hover:border-border/60 hover:bg-muted/50 transition-colors">
                         <div className="overflow-hidden">
                           <p className="text-sm font-medium leading-none text-foreground truncate">
                             {agent.name}
@@ -219,7 +219,7 @@ export function TopBar() {
                 <ScrollArea className="max-h-80">
                   <div className="grid gap-2 pr-2">
                     {recentNotifications.map((notif) => (
-                      <div key={notif.id} className="flex items-start gap-3 p-2.5 rounded-md border border-border/60 hover:bg-muted/50">
+                      <div key={notif.id} className="flex items-start gap-3 p-2.5 rounded-md border border-border/60 hover:bg-muted/50 transition-colors">
                         <div className="mt-0.5">{notif.icon}</div>
                         <div className="flex-1">
                           <p className="text-sm font-medium text-foreground">{notif.title}</p>
@@ -240,7 +240,7 @@ export function TopBar() {
             </PopoverContent>
           </Popover>
 
-          <div className="flex items-center gap-1.5 p-1.5 pr-2.5 rounded-md bg-muted/40 border border-transparent hover:border-border/50 transition-colors">
+          <div className="flex items-center gap-1.5 p-1.5 pr-2.5 rounded-md bg-input border border-transparent hover:border-border/50 transition-colors">
             <ShieldAlert className="h-4 w-4 text-primary" />
             <div className="text-xs hidden lg:block">
               <span className="text-foreground font-medium">Admin</span>
@@ -291,4 +291,3 @@ export function TopBar() {
     </header>
   );
 }
-
