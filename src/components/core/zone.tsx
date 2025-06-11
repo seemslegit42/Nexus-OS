@@ -51,12 +51,12 @@ export function Zone({
                      (canClose && onClose);
 
   return (
-    <Card className={cn("bg-card/60 backdrop-blur-lg shadow-xl rounded-xl border-border/30 flex flex-col overflow-hidden h-full", className)}>
+    <Card className={cn("bg-card backdrop-blur-lg shadow-xl rounded-xl border-border flex flex-col overflow-hidden h-full", className)}>
       {showHeader && (
         <CardHeader 
           className={cn(
             "draggable-zone-header", 
-            "flex flex-row items-center justify-between space-y-0 p-3 border-b border-border/30 min-h-[48px] cursor-grab"
+            "flex flex-row items-center justify-between space-y-0 p-3 border-b border-border/50 min-h-[48px] cursor-grab"
           )}
         >
           <div className="flex items-center gap-2 overflow-hidden">

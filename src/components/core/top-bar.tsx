@@ -23,7 +23,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Bell, 
   Search, 
-  Settings as SettingsIcon,
+  Settings as SettingsIcon, // Renamed to avoid conflict
   LogOut, 
   UserCircle, 
   Cpu, 
@@ -32,20 +32,18 @@ import {
   Home,
   LayoutGrid, // For Loom Studio
   Command as CommandIcon, // For Command & Cauldron
-  SlidersHorizontal, // Fallback for Modules, will use Briefcase
+  Briefcase, // For Modules
   FileArchive, // For File Vault
   BarChart3, // For Billing & Usage
   ListChecks, // For Logs & Audit
-  History, // For OS Updates (or FileText)
+  GitMerge, // For OS Updates
   Info,
   AlertTriangleIcon,
   CheckCircle2,
   Users, // For Permissions
   ShieldCheck, // For Security Center
-  Settings2, // For Settings Page
+  Settings2, // For Settings Page (actual settings icon)
   Rocket, // For Onboarding
-  Briefcase, // For Modules
-  GitMerge, // For OS Updates
   MessageSquare // For Notifications/Alerts
 } from 'lucide-react';
 
@@ -84,7 +82,7 @@ const recentNotifications = [
 
 export function TopBar() {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-card/80 backdrop-blur-lg border-b border-border shadow-sm">
+    <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-card backdrop-blur-lg border-b border-border shadow-sm">
       <div className="container mx-auto h-full flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2">
@@ -100,7 +98,7 @@ export function TopBar() {
             <Input
               type="search"
               placeholder="Command or Search (Ctrl+K)..."
-              className="w-full pl-10 pr-4 py-2 rounded-lg bg-background border-border focus:ring-primary text-sm"
+              className="w-full pl-10 pr-4 py-2 rounded-lg bg-background border-input focus:ring-primary text-sm"
             />
           </div>
         </div>
