@@ -20,12 +20,14 @@ interface QuickActionItemProps {
 
 function QuickActionItem({ href, icon, title, description }: QuickActionItemProps) {
   return (
-    <Button variant="outline" className="w-full justify-start p-3 h-auto text-left" asChild>
+    <Button variant="outline" className="w-full justify-start p-3 h-auto text-left bg-card/60 hover:bg-muted/60 border-border/70 transition-all duration-150 ease-in-out hover:shadow-lg hover:border-primary/50" asChild>
       <Link href={href}>
-        {icon}
-        <div>
-          <p className="font-semibold font-headline text-sm text-foreground">{title}</p>
-          <p className="text-xs text-muted-foreground">{description}</p>
+        <div className="flex items-center gap-3">
+          {icon}
+          <div>
+            <p className="font-semibold font-headline text-sm text-foreground">{title}</p>
+            <p className="text-xs text-muted-foreground">{description}</p>
+          </div>
         </div>
       </Link>
     </Button>
@@ -34,15 +36,15 @@ function QuickActionItem({ href, icon, title, description }: QuickActionItemProp
 
 function QuickActionsContent(): ReactNode {
   const actions: QuickActionItemProps[] = [
-    { href: "/onboarding", icon: <Cpu className="mr-2 h-5 w-5 text-primary" />, title: "Spawn New Agent", description: "Configure and deploy an AI agent." },
-    { href: "/command", icon: <Zap className="mr-2 h-5 w-5 text-primary" />, title: "Initiate Prompt Chain", description: "Open Command & Cauldron." },
-    { href: "/loom-studio", icon: <LayoutGrid className="mr-2 h-5 w-5 text-primary" />, title: "Open Loom Studio", description: "Visual workflow editor." },
+    { href: "/onboarding", icon: <Cpu className="h-5 w-5 text-primary" />, title: "Spawn New Agent", description: "Configure and deploy an AI agent." },
+    { href: "/command", icon: <Zap className="h-5 w-5 text-primary" />, title: "Initiate Prompt Chain", description: "Open Command & Cauldron." },
+    { href: "/loom-studio", icon: <LayoutGrid className="h-5 w-5 text-primary" />, title: "Open Loom Studio", description: "Visual workflow editor." },
   ];
 
   return (
     <Card className="h-full bg-transparent border-none shadow-none">
-      <CardContent className="p-2">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <CardContent className="p-1 md:p-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3">
           {actions.map((action) => (
             <QuickActionItem key={action.title} {...action} />
           ))}
@@ -62,11 +64,11 @@ function ActivityFeedContent(): ReactNode {
 
   return (
      <Card className="h-full bg-transparent border-none shadow-none">
-      <CardContent className="p-2">
+      <CardContent className="p-1 md:p-2">
         <ul className="space-y-2">
           {feedItems.map((item) => (
             <li key={item.id}>
-              <Card className="bg-background/50 hover:bg-muted/50 border-border/70 transition-colors">
+              <Card className="bg-card/60 hover:bg-muted/60 border-border/70 transition-colors duration-150 ease-in-out hover:shadow-md">
                 <CardContent className="p-2.5 text-xs flex items-start">
                   {item.icon}
                   <div className="flex-grow">
@@ -78,7 +80,7 @@ function ActivityFeedContent(): ReactNode {
             </li>
           ))}
         </ul>
-        <Button variant="link" size="sm" className="mt-1 text-primary p-0 h-auto">View all activity</Button>
+        <Button variant="link" size="sm" className="mt-1 text-primary p-0 h-auto text-xs">View all activity</Button>
       </CardContent>
     </Card>
   );
@@ -93,13 +95,13 @@ function AgentStatusContent(): ReactNode {
   ];
   return (
     <Card className="h-full bg-transparent border-none shadow-none">
-      <CardContent className="p-2">
+      <CardContent className="p-1 md:p-2">
         <div className="space-y-1.5">
           {agents.map((agent) => (
-            <Card key={agent.id} className="bg-background/50 hover:bg-muted/50 border-border/70 transition-colors">
+            <Card key={agent.id} className="bg-card/60 hover:bg-muted/60 border-border/70 transition-colors duration-150 ease-in-out hover:shadow-md">
               <CardContent className="p-2.5 flex items-center justify-between">
-                <div className="flex items-center">
-                  <Cpu className="h-5 w-5 mr-2 text-primary" />
+                <div className="flex items-center gap-2">
+                  <Cpu className="h-5 w-5 text-primary flex-shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-foreground">{agent.name}</p>
                     <p className="text-xs text-muted-foreground">{agent.status} - {agent.tasks} tasks</p>
@@ -109,7 +111,7 @@ function AgentStatusContent(): ReactNode {
                   <Progress
                     value={agent.load}
                     className={cn(
-                      "h-2 w-full",
+                      "h-1.5 w-full", // Slimmer progress bar
                       agent.load <= 50 && "[&>div]:bg-green-500",
                       agent.load > 50 && agent.load <= 80 && "[&>div]:bg-yellow-500",
                       agent.load > 80 && "[&>div]:bg-destructive"
@@ -121,7 +123,7 @@ function AgentStatusContent(): ReactNode {
             </Card>
           ))}
         </div>
-         <Button variant="link" size="sm" className="mt-1 text-primary p-0 h-auto">View agent console</Button>
+         <Button variant="link" size="sm" className="mt-1 text-primary p-0 h-auto text-xs">View agent console</Button>
       </CardContent>
     </Card>
   );
@@ -138,18 +140,18 @@ interface DashboardWidgetCardProps {
 
 function DashboardWidgetCard({ title, icon, description, valueOrStatus, valueColorClass, href }: DashboardWidgetCardProps) {
   return (
-    <Link href={href} passHref>
-      <Card asChild className="bg-background/50 hover:bg-muted/50 border-border/70 transition-colors h-full flex flex-col">
+    <Link href={href} passHref legacyBehavior>
+      <Card asChild className="bg-card/60 hover:bg-muted/60 border-border/70 transition-colors duration-150 ease-in-out hover:shadow-lg hover:border-primary/50 h-full flex flex-col cursor-pointer">
         <a>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center text-sm font-headline text-foreground">
+          <CardHeader className="pb-2 pt-3 px-3">
+            <CardTitle className="flex items-center text-sm font-headline text-foreground gap-2">
               {icon}
               {title}
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex-grow">
-            <p className="text-xs text-muted-foreground">{description}</p>
-            <p className={cn("text-xl font-bold mt-1", valueColorClass)}>{valueOrStatus}</p>
+          <CardContent className="flex-grow px-3 pb-3">
+            <p className="text-xs text-muted-foreground mb-1">{description}</p>
+            <p className={cn("text-lg font-bold", valueColorClass)}>{valueOrStatus}</p>
           </CardContent>
         </a>
       </Card>
@@ -161,7 +163,7 @@ function PinnedWidgetsContent(): ReactNode {
   const widgets: DashboardWidgetCardProps[] = [
     {
       title: "Security Pulse",
-      icon: <AlertTriangle className="h-5 w-5 mr-2 text-destructive" />,
+      icon: <AlertTriangle className="h-4 w-4 text-destructive" />,
       description: "All systems nominal. No active threats.",
       valueOrStatus: "Normal",
       valueColorClass: "text-green-500",
@@ -169,7 +171,7 @@ function PinnedWidgetsContent(): ReactNode {
     },
     {
       title: "OS Updates",
-      icon: <GitMerge className="h-5 w-5 mr-2 text-primary" />,
+      icon: <GitMerge className="h-4 w-4 text-primary" />,
       description: "v1.1.0 \"Orion\" is live. Check changelog.",
       valueOrStatus: "View Details",
       valueColorClass: "text-sm font-semibold text-accent-foreground",
@@ -177,7 +179,7 @@ function PinnedWidgetsContent(): ReactNode {
     },
     {
       title: "Notifications",
-      icon: <Bell className="h-5 w-5 mr-2 text-yellow-500" />,
+      icon: <Bell className="h-4 w-4 text-yellow-500" />,
       description: "3 Unread Alerts.",
       valueOrStatus: "View Alerts",
       valueColorClass: "text-sm font-semibold text-accent-foreground",
@@ -185,7 +187,7 @@ function PinnedWidgetsContent(): ReactNode {
     },
     {
       title: "System Status",
-      icon: <CalendarDays className="h-5 w-5 mr-2 text-blue-500" />,
+      icon: <CalendarDays className="h-4 w-4 text-blue-500" />,
       description: "All services operational.",
       valueOrStatus: "Operational",
       valueColorClass: "text-green-500",
@@ -195,8 +197,8 @@ function PinnedWidgetsContent(): ReactNode {
 
   return (
     <Card className="h-full bg-transparent border-none shadow-none">
-      <CardContent className="p-2">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <CardContent className="p-1 md:p-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3">
           {widgets.map(widget => (
             <DashboardWidgetCard key={widget.title} {...widget} />
           ))}
@@ -247,7 +249,7 @@ const dashboardZoneConfigs: ZoneConfig[] = [
     icon: <InfoIcon className="w-5 h-5" />,
     content: <PinnedWidgetsContent />,
     defaultLayout: {
-      lg: { x: 0, y: 12, w: 12, h: 6, minW: 6, minH: 4 },
+      lg: { x: 0, y: 12, w: 12, h: 6, minW: 6, minH: 4 }, // Increased height for better widget display
       md: { x: 0, y: 12, w: 10, h: 6, minW: 5, minH: 4 },
       sm: { x: 0, y: 18, w: 6, h: 7, minW: 4, minH: 4 },
     },
@@ -259,9 +261,8 @@ export default function HomePage() {
   return (
     <WorkspaceGrid
       zoneConfigs={dashboardZoneConfigs}
-      className="flex-grow"
+      className="flex-grow p-1 md:p-2" // Reduced padding for more immersive feel
       cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
     />
   );
 }
-

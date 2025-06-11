@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import { Switch } from '@/components/ui/switch';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 
 const notifications = [
   { id: 1, type: 'alert', title: 'Critical System Alert: Agent SecureGuard Offline', message: 'Agent SecureGuard has unexpectedly stopped. Immediate attention required.', time: '2m ago', urgency: 'high', agent: 'SecureGuard' },
@@ -23,53 +24,53 @@ const notifications = [
 
 const getUrgencyStyles = (urgency: string) => {
   switch (urgency) {
-    case 'high': return { icon: <AlertTriangle className="h-5 w-5 text-destructive" />, color: 'border-destructive/50 bg-destructive/10', titleColor: 'text-destructive' };
-    case 'medium': return { icon: <Info className="h-5 w-5 text-yellow-500" />, color: 'border-yellow-500/50 bg-yellow-500/10', titleColor: 'text-yellow-600 dark:text-yellow-400' };
-    default: return { icon: <Bell className="h-5 w-5 text-primary" />, color: 'border-primary/30 bg-primary/5', titleColor: 'text-primary' };
+    case 'high': return { icon: <AlertTriangle className="h-4 w-4 text-destructive" />, color: 'border-destructive/60 bg-destructive/15', titleColor: 'text-destructive' };
+    case 'medium': return { icon: <Info className="h-4 w-4 text-yellow-500" />, color: 'border-yellow-500/50 bg-yellow-500/10', titleColor: 'text-yellow-600 dark:text-yellow-400' };
+    default: return { icon: <Bell className="h-4 w-4 text-primary" />, color: 'border-primary/40 bg-primary/5', titleColor: 'text-primary' };
   }
 };
 
-function NotificationsContent() { // Notification Center
+function NotificationsContent() { 
   return (
-    <Card className="h-full flex flex-col">
-      <CardHeader className="p-3 border-b">
+    <Card className="h-full flex flex-col bg-transparent border-none shadow-none">
+      <CardHeader className="p-2 md:p-3 border-b border-border/60">
         <div className="flex justify-between items-center">
           <h2 className="text-lg font-headline text-foreground">Recent Notifications</h2>
-          <Button variant="outline" size="sm">Mark all as read</Button>
+          <Button variant="outline" size="sm" className="h-8 text-xs bg-card/60 hover:bg-muted/60">Mark all as read</Button>
         </div>
       </CardHeader>
-      <CardContent className="p-2 flex-grow overflow-hidden">
+      <CardContent className="p-1 md:p-2 flex-grow overflow-hidden">
         <ScrollArea className="h-full">
-            <div className="space-y-2 p-1">
+            <div className="space-y-2 p-0.5">
             {notifications.map((notif) => {
             const styles = getUrgencyStyles(notif.urgency);
             return (
-                <Card key={notif.id} className={`shadow-sm ${styles.color}`}>
+                <Card key={notif.id} className={cn("shadow-sm hover:shadow-md transition-shadow", styles.color)}>
                 <CardHeader className="pb-1.5 pt-2 px-2.5">
                     <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         {styles.icon}
-                        <CardTitle className={`text-sm font-headline ${styles.titleColor}`}>{notif.title}</CardTitle>
+                        <CardTitle className={`text-sm font-semibold ${styles.titleColor}`}>{notif.title}</CardTitle>
                     </div>
                     <span className="text-xs text-muted-foreground">{notif.time}</span>
                     </div>
                 </CardHeader>
                 <CardContent className="pb-2 px-2.5">
-                    <p className="text-xs text-foreground">{notif.message}</p>
-                    {notif.agent && <p className="text-xs text-muted-foreground mt-0.5">Related Agent: {notif.agent}</p>}
+                    <p className="text-xs text-foreground/90">{notif.message}</p>
+                    {notif.agent && <p className="text-xs text-muted-foreground mt-0.5">Related Agent: <span className="font-medium text-foreground/80">{notif.agent}</span></p>}
                 </CardContent>
-                <CardFooter className="flex gap-1.5 pb-2 px-2.5 border-t pt-1.5">
-                    <Button variant="outline" size="xs"><CheckCircle2 className="mr-1 h-3.5 w-3.5"/> Read</Button>
+                <CardFooter className="flex gap-1.5 pb-2 px-2.5 border-t border-border/40 pt-1.5">
+                    <Button variant="outline" size="xs" className="bg-background/50 hover:bg-muted/50"><CheckCircle2 className="mr-1 h-3.5 w-3.5"/> Read</Button>
                     {notif.urgency === 'high' && <Button variant="destructive" size="xs"><AlertTriangle className="mr-1 h-3.5 w-3.5"/> Escalate</Button>}
-                    {notif.agent && <Button variant="secondary" size="xs"><Cpu className="mr-1 h-3.5 w-3.5"/> View Agent</Button>}
-                    <Button variant="ghost" size="xs">Snooze</Button>
+                    {notif.agent && <Button variant="secondary" size="xs" className="bg-muted/50 hover:bg-muted/70"><Cpu className="mr-1 h-3.5 w-3.5"/> View Agent</Button>}
+                    <Button variant="ghost" size="xs" className="text-muted-foreground hover:text-foreground">Snooze</Button>
                 </CardFooter>
                 </Card>
             );
             })}
             {notifications.length === 0 && (
                 <div className="text-center py-8">
-                    <Bell className="mx-auto h-10 w-10 text-muted-foreground" />
+                    <Bell className="mx-auto h-10 w-10 text-muted-foreground/70" />
                     <h3 className="mt-2 text-sm font-medium text-foreground">No new notifications</h3>
                     <p className="mt-1 text-sm text-muted-foreground">You're all caught up!</p>
                 </div>
@@ -81,32 +82,32 @@ function NotificationsContent() { // Notification Center
   );
 }
 
-function AutoActionConfigContent(): ReactNode { // Auto-Action Configuration
+function AutoActionConfigContent(): ReactNode {
     return (
-        <Card className="h-full flex flex-col p-1">
-            <CardHeader className="p-2">
-                <CardTitle className="text-md font-semibold font-headline text-foreground flex items-center"><Zap className="w-4 h-4 mr-2"/>Automated Action Rules</CardTitle>
+        <Card className="h-full flex flex-col bg-transparent border-none shadow-none">
+            <CardHeader className="p-2 md:p-3">
+                <CardTitle className="text-md font-semibold font-headline text-foreground flex items-center"><Zap className="w-4 h-4 mr-2 text-primary"/>Automated Action Rules</CardTitle>
             </CardHeader>
-            <CardContent className="p-2 space-y-3 flex-grow overflow-y-auto">
-                <p className="text-xs text-muted-foreground">Configure rules for NexOS to automatically respond to notifications.</p>
+            <CardContent className="p-1 md:p-2 space-y-2 flex-grow overflow-y-auto">
+                <p className="text-xs text-muted-foreground mb-1">Configure rules for NexOS to automatically respond to notifications.</p>
                 
-                <Card className="bg-background/50">
+                <Card className="bg-card/50 border-border/50 shadow-sm">
                     <CardHeader className="p-2 flex flex-row items-center justify-between">
                         <div>
                             <CardTitle className="text-sm font-semibold">Rule: Agent Offline Critical</CardTitle>
-                            <CardDescription className="text-xs">When an agent reports critical offline status.</CardDescription>
+                            <CardDescription className="text-xs text-muted-foreground">When an agent reports critical offline status.</CardDescription>
                         </div>
                         <div className="flex items-center gap-1.5">
                             <Switch defaultChecked id={`rule-offline-active`}/>
-                            <Button variant="ghost" size="icon" className="h-6 w-6"><Edit className="h-3.5 w-3.5"/></Button>
-                            <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive"><Trash2 className="h-3.5 w-3.5"/></Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7"><Edit className="h-4 w-4 text-muted-foreground hover:text-primary"/></Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive/80"><Trash2 className="h-4 w-4"/></Button>
                         </div>
                     </CardHeader>
                     <CardContent className="p-2 space-y-1.5 text-xs">
                         <div>
-                            <Label htmlFor="action-type-offline" className="text-xs mb-0.5 block">Action Type</Label>
+                            <Label htmlFor="action-type-offline" className="text-xs mb-0.5 block text-muted-foreground">Action Type</Label>
                             <Select defaultValue="restart_agent">
-                                <SelectTrigger id="action-type-offline" className="h-7 text-xs bg-background border-input focus:ring-primary">
+                                <SelectTrigger id="action-type-offline" className="h-8 text-xs bg-background/70 border-input focus:ring-primary">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -117,28 +118,28 @@ function AutoActionConfigContent(): ReactNode { // Auto-Action Configuration
                             </Select>
                         </div>
                         <div>
-                            <Label htmlFor="notify-channel-offline" className="text-xs mb-0.5 block">Notify Channel (if applicable)</Label>
-                            <Input id="notify-channel-offline" placeholder="e.g., #ops-alerts (Slack)" className="h-7 text-xs bg-background border-input focus:ring-primary"/>
+                            <Label htmlFor="notify-channel-offline" className="text-xs mb-0.5 block text-muted-foreground">Notify Channel (if applicable)</Label>
+                            <Input id="notify-channel-offline" placeholder="e.g., #ops-alerts (Slack)" className="h-8 text-xs bg-background/70 border-input focus:ring-primary"/>
                         </div>
                     </CardContent>
                 </Card>
-                 <Card className="bg-background/50">
+                 <Card className="bg-card/50 border-border/50 shadow-sm">
                     <CardHeader className="p-2 flex flex-row items-center justify-between">
                         <div>
                              <CardTitle className="text-sm font-semibold">Rule: Low Disk Space</CardTitle>
-                            <CardDescription className="text-xs">When module storage exceeds 90% capacity.</CardDescription>
+                            <CardDescription className="text-xs text-muted-foreground">When module storage exceeds 90% capacity.</CardDescription>
                         </div>
                         <div className="flex items-center gap-1.5">
                             <Switch id={`rule-disk-active`}/>
-                            <Button variant="ghost" size="icon" className="h-6 w-6"><Edit className="h-3.5 w-3.5"/></Button>
-                            <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive"><Trash2 className="h-3.5 w-3.5"/></Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7"><Edit className="h-4 w-4 text-muted-foreground hover:text-primary"/></Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive/80"><Trash2 className="h-4 w-4"/></Button>
                         </div>
                     </CardHeader>
                      <CardContent className="p-2 space-y-1.5 text-xs">
                         <div>
-                            <Label htmlFor="action-type-disk" className="text-xs mb-0.5 block">Action Type</Label>
+                            <Label htmlFor="action-type-disk" className="text-xs mb-0.5 block text-muted-foreground">Action Type</Label>
                             <Select defaultValue="notify_user">
-                                <SelectTrigger id="action-type-disk" className="h-7 text-xs bg-background border-input focus:ring-primary">
+                                <SelectTrigger id="action-type-disk" className="h-8 text-xs bg-background/70 border-input focus:ring-primary">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -149,10 +150,10 @@ function AutoActionConfigContent(): ReactNode { // Auto-Action Configuration
                         </div>
                     </CardContent>
                 </Card>
-                <Image src="https://placehold.co/300x150.png" alt="Auto-action rule setup" width={300} height={150} className="rounded-md my-2 opacity-50" data-ai-hint="rules engine interface logic" />
+                <Image src="https://placehold.co/300x150.png" alt="Auto-action rule setup" width={300} height={150} className="rounded-md my-2 opacity-50 border border-border/60" data-ai-hint="rules engine interface logic" />
             </CardContent>
-             <CardFooter className="p-2 border-t">
-                <Button variant="outline" className="w-full" size="sm"><PlusCircle className="mr-2 h-4 w-4"/> Add New Auto-Action Rule</Button>
+             <CardFooter className="p-2 md:p-3 border-t border-border/60">
+                <Button variant="outline" className="w-full bg-card/60 hover:bg-muted/60" size="sm"><PlusCircle className="mr-2 h-4 w-4"/> Add New Auto-Action Rule</Button>
             </CardFooter>
         </Card>
     );
@@ -164,7 +165,7 @@ export default function NotificationsPage() {
     {
       id: 'notificationsCenter',
       title: 'Notification Center',
-      icon: <Bell className="w-5 h-5" />,
+      icon: <Bell className="w-4 h-4" />,
       content: <NotificationsContent />,
       defaultLayout: {
         lg: { x: 0, y: 0, w: 7, h: 16, minW: 4, minH: 8 }, 
@@ -175,7 +176,7 @@ export default function NotificationsPage() {
     {
       id: 'autoActionConfig',
       title: 'Auto-Action Configuration',
-      icon: <Zap className="w-5 h-5" />,
+      icon: <Zap className="w-4 h-4" />,
       content: <AutoActionConfigContent />,
       defaultLayout: {
         lg: { x: 7, y: 0, w: 5, h: 16, minW: 3, minH: 8 }, 
@@ -188,7 +189,7 @@ export default function NotificationsPage() {
   return (
     <WorkspaceGrid
       zoneConfigs={notificationZoneConfigs}
-      className="flex-grow"
+      className="flex-grow p-1 md:p-2"
        cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
     />
   );

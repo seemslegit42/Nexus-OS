@@ -42,7 +42,6 @@ export function Zone({
   canClose = true,
 }: ZoneProps) {
 
-  // Determine if the header should be shown
   const showHeader = title || 
                      icon || 
                      (canPin && onPinToggle) || 
@@ -51,18 +50,21 @@ export function Zone({
                      (canClose && onClose);
 
   return (
-    <Card className={cn("bg-card backdrop-blur-lg shadow-xl rounded-xl border-border flex flex-col overflow-hidden h-full", className)}>
+    <Card className={cn(
+        "bg-card/80 backdrop-blur-md shadow-xl rounded-xl border-border/70 flex flex-col overflow-hidden h-full", // Enhanced glassmorphism
+        className
+      )}
+    >
       {showHeader && (
         <CardHeader 
           className={cn(
             "draggable-zone-header", 
-            "flex flex-row items-center justify-between space-y-0 p-3 border-b border-border/50 min-h-[48px] cursor-grab"
+            "flex flex-row items-center justify-between space-y-0 p-2.5 border-b border-border/60 min-h-[44px] cursor-grab" // Slightly reduced padding
           )}
         >
           <div className="flex items-center gap-2 overflow-hidden">
-            {icon && <span className="text-primary flex-shrink-0">{icon}</span>}
-            {/* Render CardTitle only if title is provided */}
-            {title && <CardTitle className="text-base font-headline text-foreground truncate">{title}</CardTitle>}
+            {icon && <span className="text-primary flex-shrink-0 [&>svg]:w-4 [&>svg]:h-4">{icon}</span>}
+            {title && <CardTitle className="text-sm font-headline text-foreground truncate">{title}</CardTitle>}
           </div>
           <ZoneControls
             onPinToggle={onPinToggle}
@@ -81,9 +83,9 @@ export function Zone({
       )}
       <CardContent 
         className={cn(
-          "p-4 flex-grow overflow-auto transition-all duration-300 ease-in-out",
-          // If no header, CardContent's default p-4 is fine.
-          isMinimized ? "max-h-0 p-0 !pt-0 !pb-0 opacity-0 invisible" : "opacity-100 visible"
+          "flex-grow overflow-auto transition-all duration-300 ease-in-out",
+          showHeader ? "p-3" : "p-0", // Adjusted padding if header is not shown
+          isMinimized ? "max-h-0 !p-0 opacity-0 invisible" : "opacity-100 visible"
         )}
       >
         {!isMinimized && children}

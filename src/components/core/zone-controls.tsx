@@ -35,9 +35,9 @@ export function ZoneControls({
   canClose = true,
 }: ZoneControlsProps) {
   
-  const baseButtonClass = "relative h-7 w-7 p-1 rounded-full border border-white/20 bg-card/40 backdrop-blur-sm shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-30 disabled:pointer-events-none transition-all duration-200 ease-in-out overflow-hidden group";
+  const baseButtonClass = "relative h-6 w-6 p-1 rounded-full border border-white/10 bg-black/20 backdrop-blur-sm shadow-md focus:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:opacity-30 disabled:pointer-events-none transition-all duration-200 ease-in-out overflow-hidden group";
   
-  const iconBaseClass = "h-4 w-4 transition-all duration-200 ease-in-out";
+  const iconBaseClass = "h-3.5 w-3.5 transition-all duration-200 ease-in-out"; // Slightly smaller icons
 
   const controlButtons: JSX.Element[] = [];
 
@@ -49,8 +49,8 @@ export function ZoneControls({
         size="icon" 
         className={cn(
           baseButtonClass,
-          "text-muted-foreground hover:text-primary hover:border-primary/50 hover:shadow-primary/30 hover:shadow-[0_0_12px_3px_var(--tw-shadow-color)]",
-          isPinned && "text-primary border-primary/60 shadow-primary/40 shadow-[0_0_10px_2px_var(--tw-shadow-color)]"
+          "text-muted-foreground hover:text-primary hover:border-primary/40 hover:shadow-primary/20 hover:shadow-[0_0_10px_2px_var(--tw-shadow-color)]",
+          isPinned && "text-primary border-primary/50 shadow-primary/30 shadow-[0_0_8px_1px_var(--tw-shadow-color)]"
         )} 
         onClick={onPinToggle} 
         title={isPinned ? "Unpin Zone" : "Pin Zone"}
@@ -70,8 +70,8 @@ export function ZoneControls({
         size="icon" 
         className={cn(
           baseButtonClass,
-          "text-yellow-400/80 hover:text-yellow-300 hover:border-yellow-400/50 hover:shadow-yellow-400/40 hover:shadow-[0_0_12px_3px_var(--tw-shadow-color)]",
-          isMinimized && "text-yellow-300 border-yellow-400/60 shadow-yellow-400/50 shadow-[0_0_10px_2px_var(--tw-shadow-color)]"
+          "text-yellow-400/70 hover:text-yellow-300 hover:border-yellow-400/40 hover:shadow-yellow-400/30 hover:shadow-[0_0_10px_2px_var(--tw-shadow-color)]",
+          isMinimized && "text-yellow-300 border-yellow-400/50 shadow-yellow-400/40 shadow-[0_0_8px_1px_var(--tw-shadow-color)]"
         )} 
         onClick={onMinimizeToggle} 
         title={isMinimized ? "Restore Content" : "Minimize Content"}
@@ -91,8 +91,8 @@ export function ZoneControls({
         size="icon" 
         className={cn(
           baseButtonClass,
-          "text-green-400/80 hover:text-green-300 hover:border-green-400/50 hover:shadow-green-400/40 hover:shadow-[0_0_12px_3px_var(--tw-shadow-color)]",
-          isMaximized && "text-green-300 border-green-400/60 shadow-green-400/50 shadow-[0_0_10px_2px_var(--tw-shadow-color)]"
+          "text-green-400/70 hover:text-green-300 hover:border-green-400/40 hover:shadow-green-400/30 hover:shadow-[0_0_10px_2px_var(--tw-shadow-color)]",
+          isMaximized && "text-green-300 border-green-400/50 shadow-green-400/40 shadow-[0_0_8px_1px_var(--tw-shadow-color)]"
         )} 
         onClick={onMaximizeToggle} 
         title={isMaximized ? "Restore Zone" : "Maximize Zone"}
@@ -114,7 +114,7 @@ export function ZoneControls({
         size="icon" 
         className={cn(
           baseButtonClass,
-          "text-red-400/80 hover:text-red-300 hover:border-red-400/50 hover:shadow-red-400/40 hover:shadow-[0_0_12px_3px_var(--tw-shadow-color)]",
+          "text-red-400/70 hover:text-red-300 hover:border-red-400/40 hover:shadow-red-400/30 hover:shadow-[0_0_10px_2px_var(--tw-shadow-color)]",
         )} 
         onClick={onClose} 
         title="Close Zone"
@@ -131,7 +131,7 @@ export function ZoneControls({
   }
 
   return (
-    <div className="flex items-center gap-2 flex-shrink-0">
+    <div className="flex items-center gap-1.5 flex-shrink-0"> {/* Reduced gap */}
       {controlButtons}
     </div>
   );

@@ -31,27 +31,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={cn("dark", comfortaa.variable, lexend.variable)} suppressHydrationWarning>
-      <head>
-        {/* Removed direct font links, next/font handles this */}
-      </head>
-      <body className="font-body antialiased flex flex-col min-h-screen bg-background">
+      <body className="font-body antialiased flex flex-col min-h-screen bg-background text-foreground">
         <TopBar />
-        {/* main provides top padding for TopBar and flex context. Added overflow-hidden */}
         <main className="flex-grow flex flex-col pt-[4rem] overflow-hidden"> 
           <Zone
-            title="" // No title for the main app canvas, header should hide
-            // No icon for the main app canvas
-            className="flex-grow !border-none !shadow-none !bg-transparent !rounded-none" // Zone takes available space, removes card-like appearance
-            // All controls are disabled for the main app canvas, so header effectively hides
+            title="" 
+            className="flex-grow !border-none !shadow-none !bg-transparent !p-0 !rounded-none" 
             canPin={false}
             canMaximize={false}
             canMinimize={false}
             canClose={false}
           >
-            {/* 
-              Children (page content, typically a WorkspaceGrid) will be rendered 
-              inside Zone's CardContent. CardContent has p-4 by default and overflow-auto.
-            */}
             {children}
           </Zone>
         </main>

@@ -23,29 +23,31 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Bell, 
   Search, 
-  Settings as SettingsIcon, // Renamed to avoid conflict
+  Settings as SettingsIcon, 
   LogOut, 
   UserCircle, 
   Cpu, 
   ShieldAlert, 
   Grid3x3,
   Home,
-  LayoutGrid, // For Loom Studio
-  Command as CommandIcon, // For Command & Cauldron
-  Briefcase, // For Modules
-  FileArchive, // For File Vault
-  BarChart3, // For Billing & Usage
-  ListChecks, // For Logs & Audit
-  GitMerge, // For OS Updates
+  LayoutGrid, 
+  Command as CommandIcon, 
+  Briefcase, 
+  FileArchive, 
+  BarChart3, 
+  ListChecks, 
+  GitMerge, 
   Info,
   AlertTriangleIcon,
   CheckCircle2,
-  Users, // For Permissions
-  ShieldCheck, // For Security Center
-  Settings2, // For Settings Page (actual settings icon)
-  Rocket, // For Onboarding
-  MessageSquare // For Notifications/Alerts
+  Users, 
+  ShieldCheck, 
+  Settings2, 
+  Rocket, 
+  MessageSquare,
+  ChevronsUpDown
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const modules = [
   { name: 'Dashboard', href: '/', icon: <Home className="mr-2 h-4 w-4" /> },
@@ -82,31 +84,47 @@ const recentNotifications = [
 
 export function TopBar() {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-card backdrop-blur-lg border-b border-border shadow-sm">
+    <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-card/80 backdrop-blur-lg border-b border-border/70 shadow-sm">
       <div className="container mx-auto h-full flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2">
             <NexosLogo className="h-8 w-8 text-primary" />
             <span className="text-2xl font-headline font-bold text-foreground">NexOS</span>
           </Link>
-          <span className="text-sm text-muted-foreground hidden md:block">/ CurrentContext</span>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="hidden md:flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 px-2 py-1 h-auto">
+                <span>/ CurrentContext</span>
+                <ChevronsUpDown className="h-3.5 w-3.5 opacity-70" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuLabel>Switch Context</DropdownMenuLabel>
+              <DropdownMenuSeparator/>
+              <DropdownMenuItem>Project Alpha</DropdownMenuItem>
+              <DropdownMenuItem>Personal Workspace</DropdownMenuItem>
+              <DropdownMenuItem>Shared Dev Environment</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
         </div>
 
         <div className="flex-1 max-w-lg px-4 hidden md:block">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Command or Search (Ctrl+K)..."
-              className="w-full pl-10 pr-4 py-2 rounded-lg bg-background border-input focus:ring-primary text-sm"
+              className="w-full pl-10 pr-4 py-2 rounded-md bg-background/70 border-input focus:ring-primary text-sm h-9"
             />
           </div>
         </div>
 
-        <div className="flex items-center gap-2 md:gap-3">
+        <div className="flex items-center gap-1 md:gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground h-9 w-9">
                 <Grid3x3 className="h-5 w-5" />
                 <span className="sr-only">Quick Switch Modules</span>
               </Button>
@@ -131,7 +149,7 @@ export function TopBar() {
 
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground h-9 w-9">
                 <Cpu className="h-5 w-5" />
                 <span className="sr-only">Agent Status</span>
               </Button>
@@ -147,7 +165,7 @@ export function TopBar() {
                 <ScrollArea className="max-h-72">
                   <div className="grid gap-1 pr-1">
                     {activeAgentsInfo.map((agent) => (
-                      <div key={agent.name} className="grid grid-cols-[1fr_auto] items-center gap-x-2 p-2 rounded-md hover:bg-muted/30">
+                      <div key={agent.name} className="grid grid-cols-[1fr_auto] items-center gap-x-2 p-2 rounded-md hover:bg-muted/50">
                         <div className="overflow-hidden">
                           <p className="text-sm font-medium leading-none text-foreground truncate">
                             {agent.name}
@@ -161,11 +179,10 @@ export function TopBar() {
                             agent.status === 'Active' || agent.status === 'Processing' ? 'default' : 
                             agent.status === 'Error' ? 'destructive' : 'secondary'
                           }
-                          className={
-                            agent.status === 'Active' || agent.status === 'Processing' ? 'bg-green-500/80 text-white min-w-[70px] text-center justify-center' : 
-                            agent.status === 'Error' ? 'min-w-[70px] text-center justify-center' :
-                            'min-w-[70px] text-center justify-center'
-                          }
+                          className={cn(
+                            "min-w-[70px] text-center justify-center text-xs py-0.5 px-2 h-5",
+                            (agent.status === 'Active' || agent.status === 'Processing') && 'bg-green-500/80 text-white'
+                          )}
                         >
                           {agent.status}
                         </Badge>
@@ -182,10 +199,10 @@ export function TopBar() {
           
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground relative">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground relative h-9 w-9">
                 <Bell className="h-5 w-5" />
                 {recentNotifications.length > 0 && (
-                  <span className="absolute top-1 right-1 flex h-2 w-2">
+                  <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
                   </span>
@@ -202,7 +219,7 @@ export function TopBar() {
                 <ScrollArea className="max-h-80">
                   <div className="grid gap-2 pr-2">
                     {recentNotifications.map((notif) => (
-                      <div key={notif.id} className="flex items-start gap-3 p-2.5 rounded-md border border-border/50 hover:bg-muted/50">
+                      <div key={notif.id} className="flex items-start gap-3 p-2.5 rounded-md border border-border/60 hover:bg-muted/50">
                         <div className="mt-0.5">{notif.icon}</div>
                         <div className="flex-1">
                           <p className="text-sm font-medium text-foreground">{notif.title}</p>
@@ -223,7 +240,7 @@ export function TopBar() {
             </PopoverContent>
           </Popover>
 
-          <div className="flex items-center gap-2 p-2 rounded-md bg-muted/50 border border-transparent hover:border-border transition-colors">
+          <div className="flex items-center gap-1.5 p-1.5 pr-2.5 rounded-md bg-muted/40 border border-transparent hover:border-border/50 transition-colors">
             <ShieldAlert className="h-4 w-4 text-primary" />
             <div className="text-xs hidden lg:block">
               <span className="text-foreground font-medium">Admin</span>
@@ -233,8 +250,8 @@ export function TopBar() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                <Avatar className="h-9 w-9">
+              <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0">
+                <Avatar className="h-8 w-8">
                   <AvatarImage src="https://placehold.co/100x100.png" alt="User Avatar" data-ai-hint="user avatar" />
                   <AvatarFallback>NX</AvatarFallback>
                 </Avatar>
@@ -243,9 +260,9 @@ export function TopBar() {
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none font-headline">User Name</p>
+                  <p className="text-sm font-medium leading-none font-headline">Alex Ryder</p>
                   <p className="text-xs leading-none text-muted-foreground">
-                    user@nexos.ai
+                    alex.ryder@nexos.ai
                   </p>
                 </div>
               </DropdownMenuLabel>

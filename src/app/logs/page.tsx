@@ -61,19 +61,17 @@ function LogStreamFilterContent(): ReactNode {
   };
 
   useEffect(() => {
-    if (logEntries.length !== lastSummarizedLogCount && aiSummary) {
-        // Summary might be outdated
-    }
+    // Logic for outdated summary notification (already present)
   }, [logEntries, lastSummarizedLogCount, aiSummary]);
 
 
   return (
-    <Card className="h-full flex flex-col">
-      <CardHeader className="p-3 border-b">
+    <Card className="h-full flex flex-col bg-transparent border-none shadow-none">
+      <CardHeader className="p-2 md:p-3 border-b border-border/60">
         <div className="flex flex-wrap gap-2 items-center">
-            <Input type="text" placeholder="Search logs (keywords, user, module...)" className="flex-grow min-w-[200px] bg-background border-input focus:ring-primary h-8 text-sm" />
+            <Input type="text" placeholder="Search logs (keywords, user, module...)" className="flex-grow min-w-[200px] bg-background/70 border-input focus:ring-primary h-8 text-sm" />
             <Select>
-            <SelectTrigger className="w-full md:w-[130px] bg-background border-input focus:ring-primary h-8 text-xs">
+            <SelectTrigger className="w-full md:w-[130px] bg-background/70 border-input focus:ring-primary h-8 text-xs">
                 <SelectValue placeholder="Log Type" />
             </SelectTrigger>
             <SelectContent>
@@ -86,7 +84,7 @@ function LogStreamFilterContent(): ReactNode {
             </SelectContent>
             </Select>
             <Select>
-            <SelectTrigger className="w-full md:w-[110px] bg-background border-input focus:ring-primary h-8 text-xs">
+            <SelectTrigger className="w-full md:w-[110px] bg-background/70 border-input focus:ring-primary h-8 text-xs">
                 <SelectValue placeholder="Severity" />
             </SelectTrigger>
             <SelectContent>
@@ -97,23 +95,23 @@ function LogStreamFilterContent(): ReactNode {
                 <SelectItem value="critical">CRITICAL</SelectItem>
             </SelectContent>
             </Select>
-            <Input type="date" placeholder="Date" className="w-full md:w-[120px] bg-background border-input focus:ring-primary h-8 text-xs"/>
-            <Button variant="outline" size="sm" className="h-8 text-xs"><Filter className="mr-1.5 h-3.5 w-3.5" />Apply Filters</Button>
-            <Button onClick={handleSummarizeLogs} disabled={isSummarizing} variant="outline" size="sm" className="text-primary border-primary/50 hover:bg-primary/10 h-8 text-xs">
+            <Input type="date" placeholder="Date" className="w-full md:w-[120px] bg-background/70 border-input focus:ring-primary h-8 text-xs"/>
+            <Button variant="outline" size="sm" className="h-8 text-xs bg-card/60 hover:bg-muted/60"><Filter className="mr-1.5 h-3.5 w-3.5" />Apply Filters</Button>
+            <Button onClick={handleSummarizeLogs} disabled={isSummarizing} variant="outline" size="sm" className="text-primary border-primary/50 hover:bg-primary/10 h-8 text-xs bg-card/60">
             {isSummarizing ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Sparkles className="mr-1.5 h-3.5 w-3.5" />}
             AI Summary
             </Button>
         </div>
       </CardHeader>
 
-      <CardContent className="p-2 flex-grow overflow-hidden flex flex-col">
-        <Card className="mb-2 bg-background/70 backdrop-blur-sm shadow-md">
+      <CardContent className="p-1 md:p-2 flex-grow overflow-hidden flex flex-col">
+        <Card className="mb-2 bg-card/70 backdrop-blur-sm shadow-md border-border/60">
             <CardHeader className="p-2">
                 <CardTitle className="font-headline text-sm text-primary flex items-center">
                     <Sparkles className="h-4 w-4 mr-1.5" />AI Log Summary
                 </CardTitle>
                 {logEntries.length !== lastSummarizedLogCount && aiSummary && (
-                     <CardDescription className="text-xs text-yellow-500">Log view has changed since last summary.</CardDescription>
+                     <CardDescription className="text-xs text-yellow-500 dark:text-yellow-400">Log view has changed since last summary.</CardDescription>
                 )}
             </CardHeader>
             <CardContent className="p-2 min-h-[40px]">
@@ -127,10 +125,10 @@ function LogStreamFilterContent(): ReactNode {
         <ScrollArea className="flex-grow">
             <Table>
             <TableHeader>
-                <TableRow>
-                <TableHead className="w-[150px] text-xs"><CalendarDays className="inline h-3.5 w-3.5 mr-1" />Timestamp</TableHead>
-                <TableHead className="text-xs"><User className="inline h-3.5 w-3.5 mr-1" />User/Agent</TableHead>
-                <TableHead className="text-xs"><Cpu className="inline h-3.5 w-3.5 mr-1" />Module</TableHead>
+                <TableRow className="border-border/60">
+                <TableHead className="w-[150px] text-xs"><CalendarDays className="inline h-3.5 w-3.5 mr-1 text-muted-foreground" />Timestamp</TableHead>
+                <TableHead className="text-xs"><User className="inline h-3.5 w-3.5 mr-1 text-muted-foreground" />User/Agent</TableHead>
+                <TableHead className="text-xs"><Cpu className="inline h-3.5 w-3.5 mr-1 text-muted-foreground" />Module</TableHead>
                 <TableHead className="text-xs">Action</TableHead>
                 <TableHead className="text-xs">Details</TableHead>
                 <TableHead className="text-xs">Level</TableHead>
@@ -143,11 +141,12 @@ function LogStreamFilterContent(): ReactNode {
                 <TableRow 
                     key={i} 
                     className={cn(
-                        log.level === 'CRITICAL' && 'bg-destructive/30 hover:bg-destructive/40 border-l-4 border-destructive', 
+                        "border-border/60 hover:bg-muted/30",
+                        log.level === 'CRITICAL' && 'bg-destructive/20 hover:bg-destructive/30 border-l-4 border-destructive', 
                         log.level === 'ERROR' && !log.action.toLowerCase().includes('failed') && 'bg-destructive/10 hover:bg-destructive/20',
                         log.level === 'ERROR' && log.action.toLowerCase().includes('failed') && 'bg-destructive/15 hover:bg-destructive/25 border-l-2 border-destructive/70',
                         log.level === 'WARN' && 'bg-yellow-500/10 hover:bg-yellow-500/20',
-                        log.type === 'Security' && log.level === 'CRITICAL' && 'border-l-4 border-destructive font-semibold',
+                        log.type === 'Security' && log.level === 'CRITICAL' && 'font-semibold',
                     )}
                 >
                     <TableCell className="text-xs text-muted-foreground whitespace-nowrap py-1.5">{log.timestamp}</TableCell>
@@ -157,10 +156,10 @@ function LogStreamFilterContent(): ReactNode {
                     <TableCell className="text-xs text-muted-foreground max-w-[200px] truncate py-1.5" title={log.details}>{log.details}</TableCell>
                     <TableCell className="py-1.5">
                     <span className={cn("px-1.5 py-0.5 rounded-full text-[10px] font-semibold",
-                        log.level === 'INFO' && "bg-blue-500/10 text-blue-700 dark:text-blue-400",
-                        log.level === 'WARN' && "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
-                        log.level === 'ERROR' && "bg-red-500/10 text-red-700 dark:text-red-400",
-                        log.level === 'CRITICAL' && "bg-red-700/20 text-red-800 dark:text-red-300"
+                        log.level === 'INFO' && "bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-500/30",
+                        log.level === 'WARN' && "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border border-yellow-500/30",
+                        log.level === 'ERROR' && "bg-red-500/10 text-red-700 dark:text-red-400 border border-red-500/30",
+                        log.level === 'CRITICAL' && "bg-red-700/20 text-red-800 dark:text-red-300 border border-red-700/40"
                     )}>{log.level}</span>
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground whitespace-nowrap py-1.5">{log.type}</TableCell>
@@ -179,17 +178,17 @@ function LogStreamFilterContent(): ReactNode {
 
 function EventTimelineContent(): ReactNode { 
   return (
-    <Card className="h-full">
-      <CardHeader className="p-3">
+    <Card className="h-full bg-transparent border-none shadow-none">
+      <CardHeader className="p-2 md:p-3">
         <CardTitle className="text-md font-semibold font-headline text-foreground">Event Timeline &amp; State Diff</CardTitle>
         <CardDescription className="text-xs text-muted-foreground">Replay critical action: 'Payment processing failed' (User Beta).</CardDescription>
       </CardHeader>
-      <CardContent className="p-3 text-center">
-        <Image src="https://placehold.co/600x300.png" alt="Event Timeline with State Diff" width={600} height={300} className="rounded-md border" data-ai-hint="gantt chart events state comparison" />
+      <CardContent className="p-2 md:p-3 text-center">
+        <Image src="https://placehold.co/600x300.png" alt="Event Timeline with State Diff" width={600} height={300} className="rounded-md border border-border/60 opacity-70" data-ai-hint="gantt chart events state comparison" />
         <div className="flex gap-2 mt-2 justify-center">
-          <Button variant="outline" size="sm"><PlaySquare className="mr-1.5 h-3.5 w-3.5"/>Play</Button>
-          <Button variant="outline" size="sm">Step Back</Button>
-          <Button variant="outline" size="sm">Step Forward</Button>
+          <Button variant="outline" size="sm" className="bg-card/60 hover:bg-muted/60"><PlaySquare className="mr-1.5 h-3.5 w-3.5"/>Play</Button>
+          <Button variant="outline" size="sm" className="bg-card/60 hover:bg-muted/60">Step Back</Button>
+          <Button variant="outline" size="sm" className="bg-card/60 hover:bg-muted/60">Step Forward</Button>
         </div>
         <p className="text-xs text-muted-foreground mt-2">Red alert trigger zones are highlighted on timeline.</p>
       </CardContent>
@@ -199,18 +198,18 @@ function EventTimelineContent(): ReactNode {
 
 function UserSessionDetailsContent(): ReactNode { 
   return (
-    <Card className="h-full">
-        <CardHeader className="p-3">
+    <Card className="h-full bg-transparent border-none shadow-none">
+        <CardHeader className="p-2 md:p-3">
             <CardTitle className="text-md font-semibold font-headline text-foreground">User Session: <span className="text-primary">User Beta</span></CardTitle>
             <CardDescription className="text-xs text-muted-foreground">ID: sess_userbeta_xyz789</CardDescription>
         </CardHeader>
-        <CardContent className="p-3 text-xs space-y-1">
-            <p><span className="font-semibold">Start Time:</span> 2023-10-26 10:01:00</p>
-            <p><span className="font-semibold">Duration:</span> 45 minutes</p>
-            <p><span className="font-semibold">IP Address:</span> 198.51.100.12</p>
-            <p><span className="font-semibold">Key Actions:</span> Viewed Billing, Attempted Payment, Logged Out.</p>
-            <p><span className="font-semibold">Agent Interactions:</span> DataMinerX (Viewed Report), BillingAgent (Payment Attempt)</p>
-            <Image src="https://placehold.co/300x200.png" alt="User Activity Heatmap" width={300} height={200} className="rounded-md mt-2 mx-auto border" data-ai-hint="activity heatmap user clicks" />
+        <CardContent className="p-2 md:p-3 text-xs space-y-1.5">
+            <p><span className="font-semibold text-muted-foreground">Start Time:</span> <span className="text-foreground">2023-10-26 10:01:00</span></p>
+            <p><span className="font-semibold text-muted-foreground">Duration:</span> <span className="text-foreground">45 minutes</span></p>
+            <p><span className="font-semibold text-muted-foreground">IP Address:</span> <span className="text-foreground">198.51.100.12</span></p>
+            <p><span className="font-semibold text-muted-foreground">Key Actions:</span> <span className="text-foreground">Viewed Billing, Attempted Payment, Logged Out.</span></p>
+            <p><span className="font-semibold text-muted-foreground">Agent Interactions:</span> <span className="text-foreground">DataMinerX (Viewed Report), BillingAgent (Payment Attempt)</span></p>
+            <Image src="https://placehold.co/300x200.png" alt="User Activity Heatmap" width={300} height={200} className="rounded-md mt-2 mx-auto border border-border/60 opacity-70" data-ai-hint="activity heatmap user clicks" />
       </CardContent>
     </Card>
   );
@@ -221,7 +220,7 @@ export default function LogsAuditPage() {
     {
       id: 'logStreamFilter',
       title: 'Log Explorer & AI Summary', 
-      icon: <ListFilter className="w-5 h-5" />,
+      icon: <ListFilter className="w-4 h-4" />,
       content: <LogStreamFilterContent />,
       defaultLayout: {
         lg: { x: 0, y: 0, w: 12, h: 12, minW: 6, minH: 8 },
@@ -232,7 +231,7 @@ export default function LogsAuditPage() {
     {
       id: 'eventTimeline',
       title: 'Replayable Event Timeline & Diff',
-      icon: <Repeat className="w-5 h-5" />,
+      icon: <Repeat className="w-4 h-4" />,
       content: <EventTimelineContent />,
       defaultLayout: {
         lg: { x: 0, y: 12, w: 8, h: 8, minW: 4, minH: 5 },
@@ -243,7 +242,7 @@ export default function LogsAuditPage() {
     {
       id: 'userSessionDetails',
       title: 'User Session Details', 
-      icon: <Users className="w-5 h-5" />,
+      icon: <Users className="w-4 h-4" />,
       content: <UserSessionDetailsContent />,
       defaultLayout: {
         lg: { x: 8, y: 12, w: 4, h: 8, minW: 3, minH: 5 },
@@ -256,7 +255,7 @@ export default function LogsAuditPage() {
   return (
     <WorkspaceGrid
       zoneConfigs={logsPageZoneConfigs}
-      className="flex-grow"
+      className="flex-grow p-1 md:p-2"
        cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
     />
   );
