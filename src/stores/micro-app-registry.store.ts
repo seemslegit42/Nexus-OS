@@ -16,6 +16,7 @@ export interface MicroAppRegistryState {
   // Selectors
   getAppsByStatus: (statusFilter: MicroApp['status']) => MicroApp[];
   searchApps: (term: string) => MicroApp[];
+  getAppsByFlag: (flagName: keyof MicroApp['flags'] | 'monetized') => MicroApp[];
 }
 
 export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get) => ({
@@ -79,6 +80,14 @@ export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get)
       (app.tags && app.tags.some(tag => tag.toLowerCase().includes(lowercasedTerm))) ||
       (app.agentDependencies && app.agentDependencies.some(agent => agent.toLowerCase().includes(lowercasedTerm)))
     );
+  },
+  getAppsByFlag: (flagName) => {
+    const allApps = get().apps;
+    if (flagName === 'monetized') {
+      return allApps.filter(app => app.monetization?.enabled === true);
+    }
+    // Ensure flags object exists and the specific flag is true
+    return allApps.filter(app => app.flags && app.flags[flagName as keyof MicroApp['flags']] === true);
   },
 }));
 
