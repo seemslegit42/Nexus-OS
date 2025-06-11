@@ -44,7 +44,7 @@ function QuickActionsContent(): ReactNode {
   return (
     <Card className="h-full bg-transparent border-none shadow-none">
       <CardContent className="p-1 md:p-2">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
           {actions.map((action) => (
             <QuickActionItem key={action.title} {...action} />
           ))}
@@ -140,18 +140,20 @@ interface DashboardWidgetCardProps {
 
 function DashboardWidgetCard({ title, icon, description, valueOrStatus, valueColorClass, href }: DashboardWidgetCardProps) {
   return (
-    <Link href={href} className="block h-full">
+    <Link href={href} passHref className="block h-full">
       <Card className="bg-card hover:bg-muted/70 border-border/70 transition-colors h-full flex flex-col cursor-pointer">
-        <CardHeader className="pb-2 pt-3 px-3">
-          <CardTitle className="flex items-center text-sm font-headline text-foreground gap-2">
-            {icon}
-            {title}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex-grow px-3 pb-3">
-          <p className="text-xs text-muted-foreground mb-1">{description}</p>
-          <p className={cn("text-lg font-bold", valueColorClass)}>{valueOrStatus}</p>
-        </CardContent>
+        <a> {/* This <a> tag is now the direct child of Link and will receive the href */}
+          <CardHeader className="pb-2 pt-3 px-3">
+            <CardTitle className="flex items-center text-sm font-headline text-foreground gap-2">
+              {icon}
+              {title}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex-grow px-3 pb-3">
+            <p className="text-xs text-muted-foreground mb-1">{description}</p>
+            <p className={cn("text-lg font-bold", valueColorClass)}>{valueOrStatus}</p>
+          </CardContent>
+        </a>
       </Card>
     </Link>
   );
@@ -196,7 +198,7 @@ function PinnedWidgetsContent(): ReactNode {
   return (
     <Card className="h-full bg-transparent border-none shadow-none">
       <CardContent className="p-1 md:p-2">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
           {widgets.map(widget => (
             <DashboardWidgetCard key={widget.title} {...widget} />
           ))}
@@ -247,8 +249,8 @@ const dashboardZoneConfigs: ZoneConfig[] = [
     icon: <InfoIcon className="w-5 h-5" />,
     content: <PinnedWidgetsContent />,
     defaultLayout: {
-      lg: { x: 0, y: 12, w: 12, h: 6, minW: 6, minH: 4 },
-      md: { x: 0, y: 12, w: 10, h: 6, minW: 5, minH: 4 },
+      lg: { x: 0, y: 12, w: 12, h: 6, minW: 6, minH: 4 }, // Adjusted minH for lg
+      md: { x: 0, y: 12, w: 10, h: 6, minW: 5, minH: 4 }, // Adjusted minH for md
       sm: { x: 0, y: 18, w: 6, h: 7, minW: 4, minH: 4 },
     },
   },
