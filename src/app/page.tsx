@@ -3,7 +3,7 @@
 
 import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
-import { Activity, Users, AlertTriangle, LayoutGrid, Cpu, Rocket, Info as InfoIcon, Zap, Newspaper, BarChartHorizontalBig, Shield, CalendarDays } from 'lucide-react';
+import { Activity, Users, AlertTriangle, LayoutGrid, Cpu, Rocket, Info as InfoIcon, Zap, Newspaper, BarChartHorizontalBig, Shield, CalendarDays, GitMerge, Bell } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { WorkspaceGrid, type ZoneConfig } from '@/components/core/workspace-grid';
