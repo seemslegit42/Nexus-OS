@@ -2,7 +2,7 @@
 // src/app/admin/micro-apps/page.tsx
 'use client';
 
-import { useState, type ReactNode, useMemo, FormEvent } from 'react';
+import { useState, type ReactNode, useMemo, FormEvent, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -42,11 +42,13 @@ const getStatusBadgeColorClass = (status: MicroApp['status']): string => {
 
 
 export default function MicroAppRegistryPage() {
-  const apps = useMicroAppRegistryStore(state => state.apps);
+  const allApps = useMicroAppRegistryStore(state => state.apps);
   const getMicroApp = useMicroAppRegistryStore(state => state.getMicroApp);
   const updateMicroApp = useMicroAppRegistryStore(state => state.updateMicroApp);
   const registerMicroApp = useMicroAppRegistryStore(state => state.registerMicroApp);
   const toggleAppStatus = useMicroAppRegistryStore(state => state.toggleAppStatus);
+  const searchApps = useMicroAppRegistryStore(state => state.searchApps);
+  // const getAppsByStatus = useMicroAppRegistryStore(state => state.getAppsByStatus); // Available if UI for status filter is added
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
@@ -63,16 +65,10 @@ export default function MicroAppRegistryPage() {
     return getMicroApp(selectedAppId) || null;
   }, [selectedAppId, getMicroApp]);
 
-  const filteredApps = useMemo(() => {
-    if (!searchTerm) return apps;
-    return apps.filter(app =>
-      app.displayName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.internalName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (app.tags && app.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))) ||
-      (app.agentDependencies && app.agentDependencies.some(agent => agent.toLowerCase().includes(searchTerm.toLowerCase())))
-    );
-  }, [apps, searchTerm]);
+  const displayedApps = useMemo(() => {
+    return searchApps(searchTerm);
+  }, [searchApps, searchTerm]);
+
 
   const handleEditApp = (appId: string) => {
     setSelectedAppId(appId);
@@ -104,9 +100,9 @@ export default function MicroAppRegistryPage() {
   // Dummy available agents for the drawer, in a real app this would come from an agent store/service
   const availableAgentsList = useMemo(() => {
     const allDeps = new Set<string>();
-    apps.forEach(app => app.agentDependencies?.forEach(dep => allDeps.add(dep)));
+    allApps.forEach(app => app.agentDependencies?.forEach(dep => allDeps.add(dep)));
     return Array.from(allDeps).length > 0 ? Array.from(allDeps) : ['OptimizerPrime', 'Aegis', 'Orion', 'Proxy', 'LogSentinel', 'BillingProxy', 'None'];
-  }, [apps]);
+  }, [allApps]);
 
 
   return (
@@ -181,7 +177,7 @@ export default function MicroAppRegistryPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredApps.map((app) => (
+                {displayedApps.map((app) => (
                   <TableRow key={app.id} className="border-border/60 hover:bg-muted/30">
                     <TableCell className="text-center">
                       <SlidersHorizontal className="h-5 w-5 text-primary/70 mx-auto" />
@@ -243,7 +239,7 @@ export default function MicroAppRegistryPage() {
                 ))}
               </TableBody>
             </Table>
-             {filteredApps.length === 0 && (
+             {displayedApps.length === 0 && (
                 <div className="text-center p-8 text-muted-foreground">
                     <SlidersHorizontal className="mx-auto h-12 w-12 opacity-50 mb-2" />
                     <p>No micro-apps found matching your criteria.</p>
@@ -265,3 +261,4 @@ export default function MicroAppRegistryPage() {
     </div>
   );
 }
+

@@ -13,7 +13,9 @@ export interface MicroAppRegistryState {
   updateMicroApp: (id: string, updatedData: Partial<MicroApp>) => void;
   registerMicroApp: (newAppData: Partial<Omit<MicroApp, 'id' | 'createdAt' | 'updatedAt'>> & { internalName: string, displayName: string }) => void;
   toggleAppStatus: (id: string) => void;
-  // getMicroApps is achieved by selecting state.apps directly
+  // Selectors
+  getAppsByStatus: (statusFilter: MicroApp['status']) => MicroApp[];
+  searchApps: (term: string) => MicroApp[];
 }
 
 export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get) => ({
@@ -62,4 +64,21 @@ export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get)
       }),
     }));
   },
+  // Selectors
+  getAppsByStatus: (statusFilter) => {
+    return get().apps.filter(app => app.status === statusFilter);
+  },
+  searchApps: (term) => {
+    const lowercasedTerm = term.toLowerCase().trim();
+    if (!lowercasedTerm) return get().apps;
+    return get().apps.filter(app =>
+      app.displayName.toLowerCase().includes(lowercasedTerm) ||
+      app.internalName.toLowerCase().includes(lowercasedTerm) ||
+      app.description.toLowerCase().includes(lowercasedTerm) ||
+      app.category.toLowerCase().includes(lowercasedTerm) ||
+      (app.tags && app.tags.some(tag => tag.toLowerCase().includes(lowercasedTerm))) ||
+      (app.agentDependencies && app.agentDependencies.some(agent => agent.toLowerCase().includes(lowercasedTerm)))
+    );
+  },
 }));
+
