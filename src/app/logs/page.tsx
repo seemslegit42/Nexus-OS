@@ -3,14 +3,14 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { WorkspaceGrid, type ZoneConfig } from '@/components/core/workspace-grid';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { FileText, CalendarDays, User, Cpu, Filter, AlertTriangle, Layers, Sparkles, Loader2, PlaySquare, ShieldCheck, ListFilter, Users, Repeat, Eye } from 'lucide-react';
+import { CalendarDays, User, Cpu, Filter, AlertTriangle, Sparkles, Loader2, PlaySquare, Eye, ListFilter, Users, Repeat } from 'lucide-react';
 import Image from 'next/image';
 import { summarizeLogs, type SummarizeLogsInput } from '@/ai/flows/summarize-logs';
 import { cn } from '@/lib/utils';
@@ -31,6 +31,7 @@ function LogStreamFilterContent(): ReactNode { // Security logs, audit trails, s
   const [aiSummary, setAiSummary] = useState<string | null>(null);
   const [isSummarizing, setIsSummarizing] = useState<boolean>(false);
   const [summaryError, setSummaryError] = useState<string | null>(null);
+  const [lastSummarizedLogCount, setLastSummarizedLogCount] = useState<number>(0);
 
   const handleSummarizeLogs = async () => {
     setIsSummarizing(true);
@@ -40,6 +41,7 @@ function LogStreamFilterContent(): ReactNode { // Security logs, audit trails, s
       const logsString = logEntries.map(log => 
         `${log.timestamp} [${log.level}] (${log.type}) ${log.user} (${log.module}): ${log.action} - ${log.details}`
       ).join('\n');
+      
       if (!logsString.trim()) {
         setSummaryError("No logs to summarize.");
         setIsSummarizing(false);
@@ -48,6 +50,7 @@ function LogStreamFilterContent(): ReactNode { // Security logs, audit trails, s
       const input: SummarizeLogsInput = { logs: logsString };
       const result = await summarizeLogs(input);
       setAiSummary(result.summary);
+      setLastSummarizedLogCount(logEntries.length);
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'An unknown error occurred.';
       setSummaryError(errorMsg);
@@ -56,6 +59,15 @@ function LogStreamFilterContent(): ReactNode { // Security logs, audit trails, s
       setIsSummarizing(false);
     }
   };
+
+  useEffect(() => {
+    // Basic effect to show summary might be outdated
+    if (logEntries.length !== lastSummarizedLogCount && aiSummary) {
+        // Optionally, you could auto-refresh or just indicate outdated
+        // For now, let's keep it simple.
+    }
+  }, [logEntries, lastSummarizedLogCount, aiSummary]);
+
 
   return (
     <Card className="h-full flex flex-col">
@@ -96,18 +108,26 @@ function LogStreamFilterContent(): ReactNode { // Security logs, audit trails, s
         </div>
       </CardHeader>
 
-      <CardContent className="p-2 flex-grow overflow-hidden relative">
-        {(isSummarizing || aiSummary || summaryError) && (
-            <Card className="mb-2 bg-background/70 backdrop-blur-sm sticky top-0 z-10 shadow-md">
-            <CardHeader className="p-2"><CardTitle className="font-headline text-sm text-primary flex items-center"><Sparkles className="h-4 w-4 mr-1.5" />AI Log Summary</CardTitle></CardHeader>
-            <CardContent className="p-2">
-                {isSummarizing && <div className="flex items-center text-muted-foreground text-xs"><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />Generating...</div>}
-                {summaryError && <p className="text-destructive text-xs">{summaryError}</p>}
-                {aiSummary && <p className="text-xs text-foreground whitespace-pre-wrap">{aiSummary}</p>}
+      <CardContent className="p-2 flex-grow overflow-hidden flex flex-col">
+        {/* AI Summary Card - Always visible unless zone is minimized */}
+        <Card className="mb-2 bg-background/70 backdrop-blur-sm shadow-md">
+            <CardHeader className="p-2">
+                <CardTitle className="font-headline text-sm text-primary flex items-center">
+                    <Sparkles className="h-4 w-4 mr-1.5" />AI Log Summary
+                </CardTitle>
+                {logEntries.length !== lastSummarizedLogCount && aiSummary && (
+                     <CardDescription className="text-xs text-yellow-500">Log view has changed since last summary.</CardDescription>
+                )}
+            </CardHeader>
+            <CardContent className="p-2 min-h-[40px]">
+                {isSummarizing && <div className="flex items-center text-muted-foreground text-xs"><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />Generating summary...</div>}
+                {summaryError && <p className="text-destructive text-xs">Error: {summaryError}</p>}
+                {aiSummary && !isSummarizing && <p className="text-xs text-foreground whitespace-pre-wrap">{aiSummary}</p>}
+                {!aiSummary && !isSummarizing && !summaryError && <p className="text-xs text-muted-foreground">Click "AI Summary" to generate insights from the current log view.</p>}
             </CardContent>
-            </Card>
-        )}
-        <ScrollArea className="h-full">
+        </Card>
+        
+        <ScrollArea className="flex-grow">
             <Table>
             <TableHeader>
                 <TableRow>
@@ -123,7 +143,16 @@ function LogStreamFilterContent(): ReactNode { // Security logs, audit trails, s
             </TableHeader>
             <TableBody>
                 {logEntries.map((log, i) => (
-                <TableRow key={i} className={cn(log.level === 'CRITICAL' && 'bg-destructive/30 hover:bg-destructive/40', log.level === 'ERROR' && 'bg-destructive/10 hover:bg-destructive/20', log.level === 'WARN' && 'bg-yellow-500/10 hover:bg-yellow-500/20', log.type === 'Security' && log.level === 'CRITICAL' && 'border-l-4 border-destructive')}>
+                <TableRow 
+                    key={i} 
+                    className={cn(
+                        log.level === 'CRITICAL' && 'bg-destructive/30 hover:bg-destructive/40 border-l-4 border-destructive', 
+                        log.level === 'ERROR' && !log.action.toLowerCase().includes('failed') && 'bg-destructive/10 hover:bg-destructive/20',
+                        log.level === 'ERROR' && log.action.toLowerCase().includes('failed') && 'bg-destructive/15 hover:bg-destructive/25 border-l-2 border-destructive/70',
+                        log.level === 'WARN' && 'bg-yellow-500/10 hover:bg-yellow-500/20',
+                        log.type === 'Security' && log.level === 'CRITICAL' && 'border-l-4 border-destructive font-semibold', // Emphasize critical security
+                    )}
+                >
                     <TableCell className="text-xs text-muted-foreground whitespace-nowrap py-1.5">{log.timestamp}</TableCell>
                     <TableCell className="font-medium text-foreground whitespace-nowrap text-xs py-1.5">{log.user}</TableCell>
                     <TableCell className="text-muted-foreground whitespace-nowrap text-xs py-1.5">{log.module}</TableCell>
@@ -155,7 +184,7 @@ function EventTimelineContent(): ReactNode { // Replayable event timelines, visu
   return (
     <Card className="h-full">
       <CardHeader className="p-3">
-        <CardTitle className="text-md font-semibold font-headline text-foreground">Event Timeline & State Diff</CardTitle>
+        <CardTitle className="text-md font-semibold font-headline text-foreground">Event Timeline &amp; State Diff</CardTitle>
         <CardDescription className="text-xs text-muted-foreground">Replay critical action: 'Payment processing failed' (User Beta).</CardDescription>
       </CardHeader>
       <CardContent className="p-3 text-center">
@@ -183,6 +212,7 @@ function UserSessionDetailsContent(): ReactNode { // User sessions
             <p><span className="font-semibold">Duration:</span> 45 minutes</p>
             <p><span className="font-semibold">IP Address:</span> 198.51.100.12</p>
             <p><span className="font-semibold">Key Actions:</span> Viewed Billing, Attempted Payment, Logged Out.</p>
+            <p><span className="font-semibold">Agent Interactions:</span> DataMinerX (Viewed Report), BillingAgent (Payment Attempt)</p>
             <Image src="https://placehold.co/300x200.png" alt="User Activity Heatmap" width={300} height={200} className="rounded-md mt-2 mx-auto border" data-ai-hint="activity heatmap user clicks" />
       </CardContent>
     </Card>
@@ -194,7 +224,7 @@ export default function LogsAuditPage() {
     {
       id: 'logStreamFilter',
       title: 'Log Explorer & AI Summary', 
-      icon: <ListFilter className="w-5 h-5" />, // Changed Icon
+      icon: <ListFilter className="w-5 h-5" />,
       content: <LogStreamFilterContent />,
       defaultLayout: {
         lg: { x: 0, y: 0, w: 12, h: 12, minW: 6, minH: 8 },
@@ -204,8 +234,8 @@ export default function LogsAuditPage() {
     },
     {
       id: 'eventTimeline',
-      title: 'Replayable Event Timeline & Diff', // Updated title
-      icon: <Repeat className="w-5 h-5" />, // Changed Icon
+      title: 'Replayable Event Timeline & Diff',
+      icon: <Repeat className="w-5 h-5" />,
       content: <EventTimelineContent />,
       defaultLayout: {
         lg: { x: 0, y: 12, w: 8, h: 8, minW: 4, minH: 5 },
@@ -216,7 +246,7 @@ export default function LogsAuditPage() {
     {
       id: 'userSessionDetails',
       title: 'User Session Details', 
-      icon: <Users className="w-5 h-5" />, // Changed Icon
+      icon: <Users className="w-5 h-5" />,
       content: <UserSessionDetailsContent />,
       defaultLayout: {
         lg: { x: 8, y: 12, w: 4, h: 8, minW: 3, minH: 5 },
@@ -230,7 +260,10 @@ export default function LogsAuditPage() {
     <WorkspaceGrid
       zoneConfigs={logsPageZoneConfigs}
       className="flex-grow"
-       cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }} // Ensure 12 columns for lg
+       cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
     />
   );
 }
+
+
+    
