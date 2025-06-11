@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Workflow, Palette as PaletteIcon, ListChecks, GanttChartSquare, Terminal, Users,
-  Link as LinkIcon, FileText, Clock, Zap, Timer, Eye, Ear, Repeat, HelpCircle, Mail, Database, CheckSquare, Bell, Server, Settings2, Sigma, Edit3, Aperture, SquareStack, MousePointerSquare, PenTool, Eraser, CaseUpper, StopCircle, FastForward, PlayCircle
+  Link as LinkIcon, FileText, Clock, Zap, Timer, Eye, Ear, Repeat, HelpCircle, Mail, Database, CheckSquare, Bell, Server, Settings2, Sigma, Edit3, Aperture, SquareStack, MousePointerSquare, PenTool, Eraser, CaseUpper, StopCircle, FastForward, PlayCircle, Sparkles, Shield
 } from 'lucide-react';
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,6 +18,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import React from 'react';
+import { Label } from '@/components/ui/label';
+import { PromptSandbox } from '@/components/loom-studio/prompt-sandbox';
 
 
 function CanvasNode({ title, details, className }: { title: string; details: string; className?: string }) {
@@ -65,23 +68,25 @@ function CanvasContent(): ReactNode {
 
 function AgentBlocksPaletteContent(): ReactNode { 
   const inputBlocks = [
-    { name: 'Webhook', icon: <LinkIcon /> },
-    { name: 'Form Submit', icon: <FileText /> },
-    { name: 'Time Trigger', icon: <Clock /> },
+    { name: 'Webhook Trigger', icon: <LinkIcon /> },
+    { name: 'Form Submission', icon: <FileText /> },
+    { name: 'Scheduled Trigger', icon: <Clock /> },
     { name: 'External Event', icon: <Zap /> },
   ];
   const stateBlocks = [
-    { name: 'Wait', icon: <Timer /> },
-    { name: 'Monitor', icon: <Eye /> },
-    { name: 'Listen', icon: <Ear /> },
-    { name: 'Loop', icon: <Repeat /> },
-    { name: 'Condition', icon: <HelpCircle /> },
+    { name: 'Wait / Delay', icon: <Timer /> },
+    { name: 'Monitor Condition', icon: <Eye /> },
+    { name: 'Listen for Event', icon: <Ear /> },
+    { name: 'Loop / Iterate', icon: <Repeat /> },
+    { name: 'If/Else Branch', icon: <HelpCircle /> },
   ];
   const actionBlocks = [
     { name: 'Send Email', icon: <Mail /> },
-    { name: 'Update CRM', icon: <Database /> },
+    { name: 'Update Database', icon: <Database /> },
     { name: 'Create Task', icon: <CheckSquare /> },
-    { name: 'Notify Team', icon: <Bell /> },
+    { name: 'Send Notification', icon: <Bell /> },
+    { name: 'Call Agent', icon: <Aperture /> },
+    { name: 'Run Script', icon: <Terminal /> },
   ];
 
   return (
@@ -90,7 +95,7 @@ function AgentBlocksPaletteContent(): ReactNode {
         <ScrollArea className="h-full p-1">
           <Accordion type="multiple" defaultValue={['inputs', 'state-blocks', 'actions']} className="w-full">
             <AccordionItem value="inputs">
-              <AccordionTrigger className="text-xs font-semibold uppercase tracking-wider px-2 py-1.5 hover:no-underline text-muted-foreground hover:text-foreground">Inputs</AccordionTrigger>
+              <AccordionTrigger className="text-xs font-semibold uppercase tracking-wider px-2 py-1.5 hover:no-underline text-muted-foreground hover:text-foreground">Inputs & Triggers</AccordionTrigger>
               <AccordionContent className="pb-1">
                 {inputBlocks.map(tool => (
                   <Button key={tool.name} variant="ghost" className="w-full justify-start text-sm h-8 px-2 draggable-palette-item">
@@ -101,7 +106,7 @@ function AgentBlocksPaletteContent(): ReactNode {
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="state-blocks">
-              <AccordionTrigger className="text-xs font-semibold uppercase tracking-wider px-2 py-1.5 hover:no-underline text-muted-foreground hover:text-foreground">State Blocks</AccordionTrigger>
+              <AccordionTrigger className="text-xs font-semibold uppercase tracking-wider px-2 py-1.5 hover:no-underline text-muted-foreground hover:text-foreground">State & Logic Blocks</AccordionTrigger>
               <AccordionContent className="pb-1">
                 {stateBlocks.map(tool => (
                   <Button key={tool.name} variant="ghost" className="w-full justify-start text-sm h-8 px-2 draggable-palette-item">
@@ -112,7 +117,7 @@ function AgentBlocksPaletteContent(): ReactNode {
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="actions" className="border-b-0">
-              <AccordionTrigger className="text-xs font-semibold uppercase tracking-wider px-2 py-1.5 hover:no-underline text-muted-foreground hover:text-foreground">Actions</AccordionTrigger>
+              <AccordionTrigger className="text-xs font-semibold uppercase tracking-wider px-2 py-1.5 hover:no-underline text-muted-foreground hover:text-foreground">Actions & Outputs</AccordionTrigger>
               <AccordionContent className="pb-1">
                 {actionBlocks.map(tool => (
                   <Button key={tool.name} variant="ghost" className="w-full justify-start text-sm h-8 px-2 draggable-palette-item">
@@ -152,15 +157,15 @@ function ConsoleContent(): ReactNode {
 function InspectorContent(): ReactNode {
   return (
     <Card className="h-full">
-      <CardContent className="p-2">
+      <CardContent className="p-2 h-full">
         <ScrollArea className="h-full p-1">
           <div className="text-center text-xs text-muted-foreground space-y-2 py-4">
              <Sparkles className="h-10 w-10 text-primary mx-auto mb-2 opacity-70" />
             <p className="font-semibold text-foreground">Select a node on the canvas to inspect and configure its properties.</p>
             <p>The canvas is your playground for building agentic workflows!</p>
           </div>
-          {/* Placeholder for when a node IS selected */}
           {/* 
+          // Placeholder for when a node IS selected
           <div className="text-xs space-y-3 p-1">
             <div>
               <p className="font-semibold text-sm text-foreground mb-0.5">Selected: <span className="text-primary font-bold">Send Welcome Email</span></p>
@@ -254,14 +259,13 @@ export default function LoomStudioPage() {
   const loomStudioPageZoneConfigs: ZoneConfig[] = [
     {
       id: 'canvas',
-      title: 'Loom Canvas', 
+      title: 'Loom Canvas - Main Workflow Editor', 
       icon: <Workflow className="w-5 h-5" />, 
       content: <CanvasContent />,
       defaultLayout: { 
-        // Central, large, and static
-        lg: { x: 3, y: 0, w: 6, h: 24, static: true }, 
-        md: { x: 2, y: 0, w: 6, h: 24, static: true },
-        sm: { x: 0, y: 0, w: 6, h: 12, static: true },
+        lg: { x: 3, y: 0, w: 6, h: 16, minW: 4, minH: 10 }, 
+        md: { x: 2, y: 0, w: 6, h: 16, minW: 4, minH: 10 },
+        sm: { x: 0, y: 0, w: 6, h: 10, minW: 4, minH: 8 },
       },
       isDraggable: false, 
       isResizable: false, 
@@ -271,58 +275,69 @@ export default function LoomStudioPage() {
       canClose: false, 
     },
     {
-      id: 'agentBlocksPalette', // Renamed from toolsPalette
-      title: 'Palette (Agent Blocks)', 
+      id: 'agentBlocksPalette',
+      title: 'Palette (Agent Blocks & Prompts)', 
       icon: <PaletteIcon className="w-5 h-5" />,
       content: <AgentBlocksPaletteContent />,
       defaultLayout: {
-        lg: { x: 0, y: 0, w: 3, h: 16, minW: 2, minH: 8 }, 
-        md: { x: 0, y: 0, w: 2, h: 16, minW: 2, minH: 8 },
-        sm: { x: 0, y: 12, w: 6, h: 8, minW: 3, minH: 5 },
+        lg: { x: 0, y: 0, w: 3, h: 24, minW: 2, minH: 12 }, 
+        md: { x: 0, y: 0, w: 2, h: 24, minW: 2, minH: 12 },
+        sm: { x: 0, y: 10, w: 6, h: 8, minW: 3, minH: 6 },
       },
     },
     {
       id: 'inspector',
-      title: 'Inspector',
+      title: 'Inspector (Properties & Metadata)',
       icon: <ListChecks className="w-5 h-5" />,
       content: <InspectorContent />,
       defaultLayout: {
-        lg: { x: 9, y: 0, w: 3, h: 16, minW: 2, minH: 8 }, 
-        md: { x: 8, y: 0, w: 2, h: 16, minW: 2, minH: 8 },
-        sm: { x: 0, y: 20, w: 6, h: 7, minW: 3, minH: 4 }, 
+        lg: { x: 9, y: 0, w: 3, h: 24, minW: 2, minH: 12 }, 
+        md: { x: 8, y: 0, w: 2, h: 24, minW: 2, minH: 12 },
+        sm: { x: 0, y: 18, w: 6, h: 7, minW: 3, minH: 5 }, 
       },
     },
      {
-      id: 'console', // Renamed from promptLayerEditor
-      title: 'Console',
+      id: 'console',
+      title: 'Console (Live Output & Feedback)',
       icon: <Terminal className="w-5 h-5" />,
       content: <ConsoleContent />,
       defaultLayout: {
-        lg: { x: 0, y: 16, w: 3, h: 8, minW: 3, minH: 4 }, 
-        md: { x: 0, y: 16, w: 4, h: 8, minW: 2, minH: 4 },
-        sm: { x: 0, y: 27, w: 6, h: 6, minW: 3, minH: 3 },
+        lg: { x: 3, y: 16, w: 3, h: 8, minW: 3, minH: 4 }, 
+        md: { x: 2, y: 16, w: 3, h: 8, minW: 2, minH: 4 },
+        sm: { x: 0, y: 25, w: 6, h: 6, minW: 3, minH: 4 },
       },
     },
     {
-      id: 'timeline', // Renamed from timelineRecordings
-      title: 'Timeline', 
+      id: 'timeline',
+      title: 'Timeline (Execution & Debug)', 
       icon: <GanttChartSquare className="w-5 h-5" />, 
       content: <TimelineContent />,
       defaultLayout: {
-        lg: { x: 9, y: 16, w: 3, h: 8, minW: 3, minH: 4 }, 
-        md: { x: 8, y: 16, w: 2, h: 8, minW: 2, minH: 4 },
-        sm: { x: 0, y: 33, w: 6, h: 6, minW: 3, minH: 4 }, 
+        lg: { x: 6, y: 16, w: 3, h: 8, minW: 3, minH: 4 }, 
+        md: { x: 5, y: 16, w: 3, h: 8, minW: 2, minH: 4 },
+        sm: { x: 0, y: 31, w: 6, h: 6, minW: 3, minH: 4 }, 
       },
     },
     {
       id: 'agentHub',
-      title: 'Agent Hub',
+      title: 'Agent Hub (Connected Agents)',
       icon: <Users className="w-5 h-5" />,
       content: <AgentHubContent />,
       defaultLayout: {
-        lg: { x: 0, y: 24, w: 12, h: 6, minW: 4, minH: 4 }, // Example: bottom full width
-        md: { x: 4, y: 16, w: 4, h: 8, minW: 3, minH: 4 },
-        sm: { x: 0, y: 39, w: 6, h: 6, minW: 3, minH: 4 },
+        lg: { x: 0, y: 24, w: 12, h: 8, minW: 6, minH: 5 }, 
+        md: { x: 0, y: 24, w: 10, h: 8, minW: 5, minH: 5 },
+        sm: { x: 0, y: 37, w: 6, h: 7, minW: 4, minH: 4 },
+      },
+    },
+     {
+      id: 'aiPromptSandbox',
+      title: 'AI Prompt Injection Sandbox',
+      icon: <Sparkles className="h-5 w-5" />,
+      content: <PromptSandbox />,
+      defaultLayout: {
+        lg: {x: 0, y: 32, w: 12, h: 10, minW: 6, minH: 6},
+        md: {x: 0, y: 32, w: 10, h: 10, minW: 5, minH: 6},
+        sm: {x: 0, y: 44, w: 6, h: 9, minW: 4, minH: 5},
       },
     }
   ];
@@ -332,7 +347,10 @@ export default function LoomStudioPage() {
       zoneConfigs={loomStudioPageZoneConfigs}
       className="flex-grow p-1" 
       cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }} 
+      // Add rowHeight if you want more granular control, otherwise it's auto-calculated.
+      // rowHeight={30} 
     />
   );
 }
 
+    
