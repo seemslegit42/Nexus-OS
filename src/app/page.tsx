@@ -142,7 +142,7 @@ function DashboardWidgetCard({ title, icon, description, valueOrStatus, valueCol
   return (
     <Link href={href} passHref className="block h-full">
       <Card className="bg-card hover:bg-muted/70 border-border/70 transition-colors h-full flex flex-col cursor-pointer">
-        <a> {/* This <a> tag is now the direct child of Link and will receive the href */}
+        <a>
           <CardHeader className="pb-2 pt-3 px-3">
             <CardTitle className="flex items-center text-sm font-headline text-foreground gap-2">
               {icon}
@@ -249,8 +249,8 @@ const dashboardZoneConfigs: ZoneConfig[] = [
     icon: <InfoIcon className="w-5 h-5" />,
     content: <PinnedWidgetsContent />,
     defaultLayout: {
-      lg: { x: 0, y: 12, w: 12, h: 6, minW: 6, minH: 4 }, // Adjusted minH for lg
-      md: { x: 0, y: 12, w: 10, h: 6, minW: 5, minH: 4 }, // Adjusted minH for md
+      lg: { x: 0, y: 12, w: 12, h: 6, minW: 6, minH: 4 }, 
+      md: { x: 0, y: 12, w: 10, h: 6, minW: 5, minH: 4 }, 
       sm: { x: 0, y: 18, w: 6, h: 7, minW: 4, minH: 4 },
     },
   },
