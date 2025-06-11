@@ -1,8 +1,8 @@
 
-'use client'; // Added 'use client' as TopBar now uses useState
+'use client'; 
 
 import Link from 'next/link';
-import { useState } from 'react'; // Added useState
+import { useState } from 'react'; 
 import { NexosLogo } from '@/components/icons/nexos-logo';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -14,15 +14,12 @@ import {
   DropdownMenuLabel, 
   DropdownMenuSeparator, 
   DropdownMenuTrigger,
-  DropdownMenuGroup
 } from '@/components/ui/dropdown-menu';
 import { 
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Bell, 
   Search, 
@@ -49,17 +46,19 @@ import {
   Rocket, 
   MessageSquare,
   ChevronsUpDown,
-  Zap as LightningIcon // Added Zap for command launcher
+  Zap as LightningIcon 
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { CommandLauncherDialog } from './command-launcher'; // Import the new component
+import { CommandLauncherDialog } from './command-launcher'; 
+import { ActiveAgentsPopoverContent } from './ActiveAgentsPopoverContent';
+import { RecentNotificationsPopoverContent, type NotificationItem } from './RecentNotificationsPopoverContent';
+import { ModuleSwitcherDropdownContent } from './ModuleSwitcherDropdownContent';
 
 const modules = [
   { name: 'Dashboard', href: '/', icon: <Home className="mr-2 h-4 w-4" /> },
   { name: 'Loom Studio', href: '/loom-studio', icon: <LayoutGrid className="mr-2 h-4 w-4" /> },
   { name: 'Agent Console', href: '/agents', icon: <Cpu className="mr-2 h-4 w-4" /> },
   { name: 'Command & Cauldron', href: '/command', icon: <CommandIcon className="mr-2 h-4 w-4" /> },
-  { name: 'Modules', href: '/modules', icon: <Briefcase className="mr-2 h-4 w-4" /> }, // Changed icon to Briefcase
+  { name: 'Modules', href: '/modules', icon: <Briefcase className="mr-2 h-4 w-4" /> },
   { name: 'Logs & Audit', href: '/logs', icon: <ListChecks className="mr-2 h-4 w-4" /> },
   { name: 'Security Center', href: '/security', icon: <ShieldCheck className="mr-2 h-4 w-4" /> },
   { name: 'Permissions', href: '/permissions', icon: <Users className="mr-2 h-4 w-4" /> },
@@ -79,7 +78,7 @@ const activeAgentsInfo = [
   { name: "SysMonitor", status: "Active", tasks: 5, lastLog: "Network latency check normal, CPU usage stable." },
 ];
 
-const recentNotifications = [
+const recentNotifications: NotificationItem[] = [
   { id: 1, type: 'error', title: 'Agent SecureGuard Offline', message: 'Agent has unexpectedly stopped.', time: '2m ago', icon: <AlertTriangleIcon className="h-4 w-4 text-destructive" /> },
   { id: 2, type: 'info', title: 'OS Update v1.1.0 Available', message: 'New version of NexOS ready for installation.', time: '1h ago', icon: <Info className="h-4 w-4 text-primary" /> },
   { id: 3, type: 'success', title: 'Task Completed by DataMinerX', message: 'Q3 sales data analysis finished.', time: '3h ago', icon: <CheckCircle2 className="h-4 w-4 text-green-500" /> },
@@ -89,6 +88,12 @@ const recentNotifications = [
 
 export function TopBar() {
   const [isCommandLauncherOpen, setIsCommandLauncherOpen] = useState(false);
+
+  // Placeholder for marking all notifications as read
+  const handleMarkAllNotificationsRead = () => {
+    console.log("Marking all notifications as read...");
+    // Here you would typically update state or call an API
+  };
 
   return (
     <>
@@ -125,12 +130,12 @@ export function TopBar() {
                 type="search"
                 placeholder="Command or Search (Ctrl+K)..."
                 className="w-full pl-10 pr-4 py-2 rounded-md bg-input border-input focus:ring-primary text-sm h-9"
-                onFocus={() => setIsCommandLauncherOpen(true)} // Optionally open launcher on search focus
+                onFocus={() => setIsCommandLauncherOpen(true)} 
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-0.5 md:gap-1"> {/* Adjusted gap for tighter packing */}
+          <div className="flex items-center gap-0.5 md:gap-1"> 
              <Button
                 variant="ghost"
                 size="icon"
@@ -149,20 +154,7 @@ export function TopBar() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-64" align="end">
-                <DropdownMenuLabel>Switch Module</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <ScrollArea className="h-[calc(100vh_-_10rem)] max-h-[400px]">
-                  <DropdownMenuGroup>
-                    {modules.map((mod) => (
-                      <DropdownMenuItem key={mod.name} asChild>
-                        <Link href={mod.href}>
-                          {mod.icon}
-                          <span>{mod.name}</span>
-                        </Link>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuGroup>
-                </ScrollArea>
+                <ModuleSwitcherDropdownContent modules={modules} />
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -174,45 +166,7 @@ export function TopBar() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-80" align="end">
-                <div className="grid gap-4">
-                  <div className="space-y-2">
-                    <h4 className="font-medium leading-none font-headline text-foreground">Active Agents</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Quick overview of agent states.
-                    </p>
-                  </div>
-                  <ScrollArea className="max-h-72">
-                    <div className="grid gap-1.5 pr-1">
-                      {activeAgentsInfo.map((agent) => (
-                        <div key={agent.name} className="p-2.5 rounded-md border border-transparent hover:border-border/60 hover:bg-muted/50 transition-colors">
-                          <div className="flex justify-between items-center">
-                            <p className="text-sm font-medium leading-none text-foreground truncate">
-                              {agent.name}
-                            </p>
-                            <Badge 
-                              variant={
-                                agent.status === 'Active' || agent.status === 'Processing' ? 'default' : 
-                                agent.status === 'Error' ? 'destructive' : 'secondary'
-                              }
-                              className={cn(
-                                "min-w-[70px] text-center justify-center text-xs py-0.5 px-2 h-5",
-                                (agent.status === 'Active' || agent.status === 'Processing') && 'bg-green-500/80 text-white'
-                              )}
-                            >
-                              {agent.status}
-                            </Badge>
-                          </div>
-                           <p className="text-xs text-muted-foreground truncate mt-0.5" title={agent.lastLog}>
-                            {agent.tasks} tasks - {agent.lastLog}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                  <Button variant="outline" size="sm" className="w-full" asChild>
-                    <Link href="/agents">View All Agents</Link>
-                  </Button>
-                </div>
+                <ActiveAgentsPopoverContent agents={activeAgentsInfo} />
               </PopoverContent>
             </Popover>
             
@@ -230,32 +184,10 @@ export function TopBar() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-96" align="end">
-                <div className="grid gap-4">
-                  <div className="flex justify-between items-center">
-                    <h4 className="font-medium leading-none font-headline text-foreground">Recent Notifications</h4>
-                    <Button variant="link" size="sm" className="text-xs p-0 h-auto text-primary">Mark all as read</Button>
-                  </div>
-                  <ScrollArea className="max-h-80">
-                    <div className="grid gap-2 pr-2">
-                      {recentNotifications.map((notif) => (
-                        <div key={notif.id} className="flex items-start gap-3 p-2.5 rounded-md border border-border/60 hover:bg-muted/50 transition-colors">
-                          <div className="mt-0.5">{notif.icon}</div>
-                          <div className="flex-1">
-                            <p className="text-sm font-medium text-foreground">{notif.title}</p>
-                            <p className="text-xs text-muted-foreground">{notif.message}</p>
-                          </div>
-                          <p className="text-xs text-muted-foreground whitespace-nowrap">{notif.time}</p>
-                        </div>
-                      ))}
-                      {recentNotifications.length === 0 && (
-                        <p className="text-sm text-muted-foreground text-center py-4">No new notifications.</p>
-                      )}
-                    </div>
-                  </ScrollArea>
-                  <Button variant="outline" size="sm" className="w-full" asChild>
-                    <Link href="/notifications">View All Notifications</Link>
-                  </Button>
-                </div>
+                <RecentNotificationsPopoverContent 
+                  notifications={recentNotifications} 
+                  onMarkAllRead={handleMarkAllNotificationsRead} 
+                />
               </PopoverContent>
             </Popover>
 
@@ -287,7 +219,7 @@ export function TopBar() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                   <Link href="/account/profile"> {/* Updated link to match new structure */}
+                   <Link href="/account/profile"> 
                       <UserCircle className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                    </Link>
