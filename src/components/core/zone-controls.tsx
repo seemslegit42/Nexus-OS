@@ -39,89 +39,100 @@ export function ZoneControls({
   
   const iconBaseClass = "h-4 w-4 transition-all duration-200 ease-in-out";
 
-  const pinButton = onPinToggle && (
-    <Button 
-      variant="ghost" 
-      size="icon" 
-      className={cn(
-        baseButtonClass,
-        "text-muted-foreground hover:text-primary hover:border-primary/50 hover:shadow-primary/30 hover:shadow-[0_0_12px_3px_var(--tw-shadow-color)]",
-        isPinned && "text-primary border-primary/60 shadow-primary/40 shadow-[0_0_10px_2px_var(--tw-shadow-color)]"
-      )} 
-      onClick={onPinToggle} 
-      title={isPinned ? "Unpin Zone" : "Pin Zone"}
-      disabled={!canPin}
-    >
-      <Pin className={cn(iconBaseClass, isPinned ? "rotate-45 scale-110" : "group-hover:rotate-[-15deg]")} />
-      <span className="sr-only">{isPinned ? "Unpin" : "Pin"}</span>
-    </Button>
-  );
+  const controlButtons: JSX.Element[] = [];
 
-  const minimizeButton = onMinimizeToggle && (
-    <Button 
-      variant="ghost" 
-      size="icon" 
-      className={cn(
-        baseButtonClass,
-        "text-yellow-400/80 hover:text-yellow-300 hover:border-yellow-400/50 hover:shadow-yellow-400/40 hover:shadow-[0_0_12px_3px_var(--tw-shadow-color)]", // Using a generic yellow for minimize
-        isMinimized && "text-yellow-300 border-yellow-400/60 shadow-yellow-400/50 shadow-[0_0_10px_2px_var(--tw-shadow-color)]"
-      )} 
-      onClick={onMinimizeToggle} 
-      title={isMinimized ? "Restore Content" : "Minimize Content"}
-      disabled={!canMinimize}
-    >
-      <Minus className={cn(iconBaseClass, "group-hover:scale-x-125")} />
-      <span className="sr-only">{isMinimized ? "Restore Content" : "Minimize Content"}</span>
-    </Button>
-  );
+  if (onPinToggle) {
+    controlButtons.push(
+      <Button 
+        key="pin-control"
+        variant="ghost" 
+        size="icon" 
+        className={cn(
+          baseButtonClass,
+          "text-muted-foreground hover:text-primary hover:border-primary/50 hover:shadow-primary/30 hover:shadow-[0_0_12px_3px_var(--tw-shadow-color)]",
+          isPinned && "text-primary border-primary/60 shadow-primary/40 shadow-[0_0_10px_2px_var(--tw-shadow-color)]"
+        )} 
+        onClick={onPinToggle} 
+        title={isPinned ? "Unpin Zone" : "Pin Zone"}
+        disabled={!canPin}
+      >
+        <Pin className={cn(iconBaseClass, isPinned ? "rotate-45 scale-110" : "group-hover:rotate-[-15deg]")} />
+        <span className="sr-only">{isPinned ? "Unpin" : "Pin"}</span>
+      </Button>
+    );
+  }
 
-  const maximizeButton = onMaximizeToggle && (
-     <Button 
-      variant="ghost" 
-      size="icon" 
-      className={cn(
-        baseButtonClass,
-        "text-green-400/80 hover:text-green-300 hover:border-green-400/50 hover:shadow-green-400/40 hover:shadow-[0_0_12px_3px_var(--tw-shadow-color)]", // Using a generic green for maximize
-        isMaximized && "text-green-300 border-green-400/60 shadow-green-400/50 shadow-[0_0_10px_2px_var(--tw-shadow-color)]"
-      )} 
-      onClick={onMaximizeToggle} 
-      title={isMaximized ? "Restore Zone" : "Maximize Zone"}
-      disabled={!canMaximize}
-    >
-      {isMaximized ? 
-        <Minimize2 className={cn(iconBaseClass, "group-hover:rotate-[-45deg] group-hover:scale-90")} /> : 
-        <Maximize2 className={cn(iconBaseClass, "group-hover:rotate-[45deg] group-hover:scale-110")} />}
-      <span className="sr-only">{isMaximized ? "Restore" : "Maximize"}</span>
-    </Button>
-  );
+  if (onMinimizeToggle) {
+    controlButtons.push(
+      <Button 
+        key="minimize-control"
+        variant="ghost" 
+        size="icon" 
+        className={cn(
+          baseButtonClass,
+          "text-yellow-400/80 hover:text-yellow-300 hover:border-yellow-400/50 hover:shadow-yellow-400/40 hover:shadow-[0_0_12px_3px_var(--tw-shadow-color)]",
+          isMinimized && "text-yellow-300 border-yellow-400/60 shadow-yellow-400/50 shadow-[0_0_10px_2px_var(--tw-shadow-color)]"
+        )} 
+        onClick={onMinimizeToggle} 
+        title={isMinimized ? "Restore Content" : "Minimize Content"}
+        disabled={!canMinimize}
+      >
+        <Minus className={cn(iconBaseClass, "group-hover:scale-x-125")} />
+        <span className="sr-only">{isMinimized ? "Restore Content" : "Minimize Content"}</span>
+      </Button>
+    );
+  }
 
-  const closeButton = onClose && (
-    <Button 
-      variant="ghost" 
-      size="icon" 
-      className={cn(
-        baseButtonClass,
-        "text-red-400/80 hover:text-red-300 hover:border-red-400/50 hover:shadow-red-400/40 hover:shadow-[0_0_12px_3px_var(--tw-shadow-color)]", // Using a generic red for close (destructive action)
-        // No specific "active" state for close as it removes the zone
-      )} 
-      onClick={onClose} 
-      title="Close Zone"
-      disabled={!canClose}
-    >
-      <X className={cn(iconBaseClass, "group-hover:rotate-90 group-hover:scale-125")} />
-      <span className="sr-only">Close</span>
-    </Button>
-  );
+  if (onMaximizeToggle) {
+    controlButtons.push(
+      <Button 
+        key="maximize-control"
+        variant="ghost" 
+        size="icon" 
+        className={cn(
+          baseButtonClass,
+          "text-green-400/80 hover:text-green-300 hover:border-green-400/50 hover:shadow-green-400/40 hover:shadow-[0_0_12px_3px_var(--tw-shadow-color)]",
+          isMaximized && "text-green-300 border-green-400/60 shadow-green-400/50 shadow-[0_0_10px_2px_var(--tw-shadow-color)]"
+        )} 
+        onClick={onMaximizeToggle} 
+        title={isMaximized ? "Restore Zone" : "Maximize Zone"}
+        disabled={!canMaximize}
+      >
+        {isMaximized ? 
+          <Minimize2 className={cn(iconBaseClass, "group-hover:rotate-[-45deg] group-hover:scale-90")} /> : 
+          <Maximize2 className={cn(iconBaseClass, "group-hover:rotate-[45deg] group-hover:scale-110")} />}
+        <span className="sr-only">{isMaximized ? "Restore" : "Maximize"}</span>
+      </Button>
+    );
+  }
 
-  const buttons = [pinButton, minimizeButton, maximizeButton, closeButton].filter(Boolean);
+  if (onClose) {
+    controlButtons.push(
+      <Button 
+        key="close-control"
+        variant="ghost" 
+        size="icon" 
+        className={cn(
+          baseButtonClass,
+          "text-red-400/80 hover:text-red-300 hover:border-red-400/50 hover:shadow-red-400/40 hover:shadow-[0_0_12px_3px_var(--tw-shadow-color)]",
+        )} 
+        onClick={onClose} 
+        title="Close Zone"
+        disabled={!canClose}
+      >
+        <X className={cn(iconBaseClass, "group-hover:rotate-90 group-hover:scale-125")} />
+        <span className="sr-only">Close</span>
+      </Button>
+    );
+  }
 
-  if (buttons.length === 0) {
+  if (controlButtons.length === 0) {
     return null;
   }
 
   return (
     <div className="flex items-center gap-2 flex-shrink-0">
-      {buttons}
+      {controlButtons}
     </div>
   );
 }
