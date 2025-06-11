@@ -60,9 +60,7 @@ function LogStreamFilterContent(): ReactNode {
     }
   };
 
-  useEffect(() => {
-    // Logic for outdated summary notification (already present)
-  }, [logEntries, lastSummarizedLogCount, aiSummary]);
+  const isSummaryStale = logEntries.length !== lastSummarizedLogCount && aiSummary !== null;
 
 
   return (
@@ -96,7 +94,7 @@ function LogStreamFilterContent(): ReactNode {
             </SelectContent>
             </Select>
             <Input type="date" placeholder="Date" className="w-full md:w-[120px] bg-input border-input focus:ring-primary h-8 text-xs"/>
-            <Button variant="outline" size="sm" className="h-8 text-xs bg-card hover:bg-muted/60"><Filter className="mr-1.5 h-3.5 w-3.5" />Apply Filters</Button>
+            <Button variant="outline" size="sm" className="h-8 text-xs bg-card hover:bg-muted/70"><Filter className="mr-1.5 h-3.5 w-3.5" />Apply Filters</Button>
             <Button onClick={handleSummarizeLogs} disabled={isSummarizing} variant="outline" size="sm" className="text-primary border-primary/50 hover:bg-primary/10 h-8 text-xs bg-card">
             {isSummarizing ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Sparkles className="mr-1.5 h-3.5 w-3.5" />}
             AI Summary
@@ -110,14 +108,16 @@ function LogStreamFilterContent(): ReactNode {
                 <CardTitle className="font-headline text-sm text-primary flex items-center">
                     <Sparkles className="h-4 w-4 mr-1.5" />AI Log Summary
                 </CardTitle>
-                {logEntries.length !== lastSummarizedLogCount && aiSummary && (
-                     <CardDescription className="text-xs text-yellow-500 dark:text-yellow-400">Log view has changed since last summary.</CardDescription>
+                {isSummaryStale && (
+                     <CardDescription className="text-xs text-yellow-500 dark:text-yellow-400 flex items-center mt-0.5">
+                        <AlertTriangle className="h-3.5 w-3.5 mr-1"/> Log view has changed since last summary.
+                     </CardDescription>
                 )}
             </CardHeader>
-            <CardContent className="p-2 min-h-[40px]">
+            <CardContent className="p-2 min-h-[60px]">
                 {isSummarizing && <div className="flex items-center text-muted-foreground text-xs"><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />Generating summary...</div>}
-                {summaryError && <p className="text-destructive text-xs">Error: {summaryError}</p>}
-                {aiSummary && !isSummarizing && <p className="text-xs text-foreground whitespace-pre-wrap">{aiSummary}</p>}
+                {summaryError && <p className="text-xs text-destructive">Error: {summaryError}</p>}
+                {aiSummary && !isSummarizing && <pre className="text-xs text-foreground whitespace-pre-wrap font-code">{aiSummary}</pre>}
                 {!aiSummary && !isSummarizing && !summaryError && <p className="text-xs text-muted-foreground">Click "AI Summary" to generate insights from the current log view.</p>}
             </CardContent>
         </Card>
@@ -186,9 +186,9 @@ function EventTimelineContent(): ReactNode {
       <CardContent className="p-2 md:p-3 text-center">
         <Image src="https://placehold.co/600x300.png" alt="Event Timeline with State Diff" width={600} height={300} className="rounded-md border border-border/60 opacity-70" data-ai-hint="gantt chart events state comparison" />
         <div className="flex gap-2 mt-2 justify-center">
-          <Button variant="outline" size="sm" className="bg-card hover:bg-muted/60"><PlaySquare className="mr-1.5 h-3.5 w-3.5"/>Play</Button>
-          <Button variant="outline" size="sm" className="bg-card hover:bg-muted/60">Step Back</Button>
-          <Button variant="outline" size="sm" className="bg-card hover:bg-muted/60">Step Forward</Button>
+          <Button variant="outline" size="sm" className="bg-card hover:bg-muted/70"><PlaySquare className="mr-1.5 h-3.5 w-3.5"/>Play</Button>
+          <Button variant="outline" size="sm" className="bg-card hover:bg-muted/70">Step Back</Button>
+          <Button variant="outline" size="sm" className="bg-card hover:bg-muted/70">Step Forward</Button>
         </div>
         <p className="text-xs text-muted-foreground mt-2">Red alert trigger zones are highlighted on timeline.</p>
       </CardContent>
@@ -209,7 +209,7 @@ function UserSessionDetailsContent(): ReactNode {
             <p><span className="font-semibold text-muted-foreground">IP Address:</span> <span className="text-foreground">198.51.100.12</span></p>
             <p><span className="font-semibold text-muted-foreground">Key Actions:</span> <span className="text-foreground">Viewed Billing, Attempted Payment, Logged Out.</span></p>
             <p><span className="font-semibold text-muted-foreground">Agent Interactions:</span> <span className="text-foreground">DataMinerX (Viewed Report), BillingAgent (Payment Attempt)</span></p>
-            <Image src="https://placehold.co/300x200.png" alt="User Activity Heatmap" width={300} height={200} className="rounded-md mt-2 mx-auto border border-border/60 opacity-70" data-ai-hint="activity heatmap user clicks" />
+            <Image src="https://placehold.co/300x200.png" alt="User Activity Heatmap" width={300} height={200} data-ai-hint="activity heatmap user clicks" className="rounded-md mt-2 mx-auto border border-border/60 opacity-70" />
       </CardContent>
     </Card>
   );
