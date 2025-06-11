@@ -10,18 +10,18 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Save, UserCircle, Building, Palette, Settings as AppSettingsIcon, BellRing, UserCog, KeyRound, Terminal, CreditCard } from 'lucide-react';
+import { Save, UserCircle, Building, Palette, Settings as AppSettingsIcon, BellRing, UserCog, KeyRound, Terminal, CreditCard, Settings2 as PageSettingsIcon } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { WorkspaceGrid, type ZoneConfig } from '@/components/core/workspace-grid';
 
 // Content Functions (previously in ZoneConfig.content)
 
 function UserProfileSettingsContent(): ReactNode {
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
-        <CardTitle className="flex items-center"><UserCircle className="mr-2 h-5 w-5" /> User Profile</CardTitle>
+        <CardTitle className="flex items-center text-md"><UserCircle className="mr-2 h-5 w-5" /> User Profile</CardTitle>
         <CardDescription>Manage your personal information.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -44,9 +44,9 @@ function UserProfileSettingsContent(): ReactNode {
 
 function OrganizationSettingsContent(): ReactNode {
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
-        <CardTitle className="flex items-center"><Building className="mr-2 h-5 w-5" /> Organization</CardTitle>
+        <CardTitle className="flex items-center text-md"><Building className="mr-2 h-5 w-5" /> Organization</CardTitle>
         <CardDescription>Manage your organization's details.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -65,9 +65,9 @@ function OrganizationSettingsContent(): ReactNode {
 
 function ThemeCustomizationContent(): ReactNode {
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
-        <CardTitle className="flex items-center"><Palette className="mr-2 h-5 w-5" /> Theme Customization</CardTitle>
+        <CardTitle className="flex items-center text-md"><Palette className="mr-2 h-5 w-5" /> Theme Customization</CardTitle>
         <CardDescription>Personalize the look and feel of NexOS.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -95,9 +95,9 @@ function ThemeCustomizationContent(): ReactNode {
 
 function AppSettingsContent(): ReactNode {
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
-        <CardTitle className="flex items-center"><AppSettingsIcon className="mr-2 h-5 w-5" /> Application Settings</CardTitle>
+        <CardTitle className="flex items-center text-md"><AppSettingsIcon className="mr-2 h-5 w-5" /> Application Settings</CardTitle>
         <CardDescription>Configure core application behaviors.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -138,9 +138,9 @@ function AppSettingsContent(): ReactNode {
 
 function NotificationPreferencesContent(): ReactNode {
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
-        <CardTitle className="flex items-center"><BellRing className="mr-2 h-5 w-5" /> Notification Preferences</CardTitle>
+        <CardTitle className="flex items-center text-md"><BellRing className="mr-2 h-5 w-5" /> Notification Preferences</CardTitle>
         <CardDescription>Choose how you receive notifications.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -163,9 +163,9 @@ function NotificationPreferencesContent(): ReactNode {
 
 function AgentBehavioralDefaultsContent(): ReactNode {
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
-        <CardTitle className="flex items-center"><UserCog className="mr-2 h-5 w-5" /> Agent Defaults</CardTitle>
+        <CardTitle className="flex items-center text-md"><UserCog className="mr-2 h-5 w-5" /> Agent Defaults</CardTitle>
         <CardDescription>Set default behaviors for new agents.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -206,9 +206,9 @@ function AgentBehavioralDefaultsContent(): ReactNode {
 
 function ApiKeyManagementContent(): ReactNode {
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
-        <CardTitle className="flex items-center"><KeyRound className="mr-2 h-5 w-5" /> API Key Management</CardTitle>
+        <CardTitle className="flex items-center text-md"><KeyRound className="mr-2 h-5 w-5" /> API Key Management</CardTitle>
         <CardDescription>Manage API keys for accessing NexOS programmatically.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
@@ -234,9 +234,9 @@ function ApiKeyManagementContent(): ReactNode {
 
 function DeveloperModeContent(): ReactNode {
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
-        <CardTitle className="flex items-center"><Terminal className="mr-2 h-5 w-5" /> Developer Mode</CardTitle>
+        <CardTitle className="flex items-center text-md"><Terminal className="mr-2 h-5 w-5" /> Developer Mode</CardTitle>
         <CardDescription>Access advanced tools and experimental features.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -256,9 +256,9 @@ function DeveloperModeContent(): ReactNode {
 
 function PlanBillingSummaryContent(): ReactNode {
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
-        <CardTitle className="flex items-center"><CreditCard className="mr-2 h-5 w-5" /> Plan & Billing</CardTitle>
+        <CardTitle className="flex items-center text-md"><CreditCard className="mr-2 h-5 w-5" /> Plan & Billing</CardTitle>
         <CardDescription>View your current plan and manage billing.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
@@ -272,71 +272,96 @@ function PlanBillingSummaryContent(): ReactNode {
           </CardContent>
         </Card>
         <Link href="/billing" className="block w-full">
-          <Button className="w-full">Manage Subscription & Billing</Button>
+          <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">Manage Subscription & Billing</Button>
         </Link>
       </CardContent>
     </Card>
   );
 }
 
-// Main Page Component
+const SaveSettingsButton = () => (
+    <div className="p-4 flex justify-end sticky bottom-0 bg-background/80 backdrop-blur-sm border-t border-border z-10 mt-auto">
+      <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+          <Save className="mr-2 h-5 w-5"/>Save All Settings
+      </Button>
+    </div>
+);
+
 export default function SettingsPage() {
+  const settingsPageZoneConfigs: ZoneConfig[] = [
+    {
+      id: 'userProfileSettings',
+      title: 'User Profile',
+      icon: <UserCircle className="w-5 h-5" />,
+      content: <UserProfileSettingsContent />,
+      defaultLayout: { lg: { x: 0, y: 0, w: 4, h: 7, minW: 3, minH: 5 } },
+    },
+    {
+      id: 'organizationSettings',
+      title: 'Organization',
+      icon: <Building className="w-5 h-5" />,
+      content: <OrganizationSettingsContent />,
+      defaultLayout: { lg: { x: 4, y: 0, w: 4, h: 7, minW: 3, minH: 5 } },
+    },
+    {
+      id: 'themeCustomization',
+      title: 'Theme Customization',
+      icon: <Palette className="w-5 h-5" />,
+      content: <ThemeCustomizationContent />,
+      defaultLayout: { lg: { x: 8, y: 0, w: 4, h: 7, minW: 3, minH: 5 } },
+    },
+    {
+      id: 'appSettings',
+      title: 'Application Settings',
+      icon: <AppSettingsIcon className="w-5 h-5" />,
+      content: <AppSettingsContent />,
+      defaultLayout: { lg: { x: 0, y: 7, w: 4, h: 8, minW: 3, minH: 6 } },
+    },
+    {
+      id: 'notificationPreferences',
+      title: 'Notification Preferences',
+      icon: <BellRing className="w-5 h-5" />,
+      content: <NotificationPreferencesContent />,
+      defaultLayout: { lg: { x: 4, y: 7, w: 4, h: 8, minW: 3, minH: 5 } },
+    },
+    {
+      id: 'agentBehavioralDefaults',
+      title: 'Agent Defaults',
+      icon: <UserCog className="w-5 h-5" />,
+      content: <AgentBehavioralDefaultsContent />,
+      defaultLayout: { lg: { x: 8, y: 7, w: 4, h: 8, minW: 3, minH: 6 } },
+    },
+    {
+      id: 'apiKeyManagement',
+      title: 'API Key Management',
+      icon: <KeyRound className="w-5 h-5" />,
+      content: <ApiKeyManagementContent />,
+      defaultLayout: { lg: { x: 0, y: 15, w: 4, h: 7, minW: 3, minH: 6 } },
+    },
+    {
+      id: 'developerMode',
+      title: 'Developer Mode',
+      icon: <Terminal className="w-5 h-5" />,
+      content: <DeveloperModeContent />,
+      defaultLayout: { lg: { x: 4, y: 15, w: 4, h: 7, minW: 3, minH: 5 } },
+    },
+    {
+      id: 'planBillingSummary',
+      title: 'Plan & Billing',
+      icon: <CreditCard className="w-5 h-5" />,
+      content: <PlanBillingSummaryContent />,
+      defaultLayout: { lg: { x: 8, y: 15, w: 4, h: 7, minW: 3, minH: 6 } },
+    },
+  ];
   
-  const SaveSettingsButton = () => (
-      <div className="p-4 flex justify-end sticky bottom-0 bg-background/80 backdrop-blur-sm border-t border-border z-10">
-        <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-            <Save className="mr-2 h-5 w-5"/>Save All Settings
-        </Button>
-      </div>
-  );
-
   return (
-    <div className="flex flex-col flex-grow h-full p-2 md:p-4">
-      <Tabs defaultValue="account" className="flex-grow flex flex-col">
-        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 mb-4">
-          <TabsTrigger value="account">Account</TabsTrigger>
-          <TabsTrigger value="appearance">Appearance</TabsTrigger>
-          <TabsTrigger value="application">Application</TabsTrigger>
-          <TabsTrigger value="agent_api">Agent & API</TabsTrigger>
-          <TabsTrigger value="developer">Developer</TabsTrigger>
-          <TabsTrigger value="billing">Billing</TabsTrigger>
-        </TabsList>
-
-        <ScrollArea className="flex-grow">
-          <div className="space-y-4 pb-4 pr-1"> {/* Added padding for scrollbar */}
-            <TabsContent value="account" className="mt-0">
-              <div className="grid gap-4 md:grid-cols-2">
-                <UserProfileSettingsContent />
-                <OrganizationSettingsContent />
-              </div>
-            </TabsContent>
-            <TabsContent value="appearance" className="mt-0">
-              <ThemeCustomizationContent />
-            </TabsContent>
-            <TabsContent value="application" className="mt-0">
-              <div className="grid gap-4 md:grid-cols-2">
-                <AppSettingsContent />
-                <NotificationPreferencesContent />
-              </div>
-            </TabsContent>
-            <TabsContent value="agent_api" className="mt-0">
-              <div className="grid gap-4 md:grid-cols-2">
-                <AgentBehavioralDefaultsContent />
-                <ApiKeyManagementContent />
-              </div>
-            </TabsContent>
-            <TabsContent value="developer" className="mt-0">
-              <DeveloperModeContent />
-            </TabsContent>
-            <TabsContent value="billing" className="mt-0">
-              <PlanBillingSummaryContent />
-            </TabsContent>
-          </div>
-        </ScrollArea>
-      </Tabs>
-      <SaveSettingsButton/>
+    <div className="flex flex-col flex-grow h-full">
+        <WorkspaceGrid
+            zoneConfigs={settingsPageZoneConfigs}
+            className="flex-grow p-2 md:p-4" 
+            cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+        />
+        <SaveSettingsButton />
     </div>
   );
 }
-
-    
