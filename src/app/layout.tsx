@@ -6,6 +6,7 @@ import { TopBar } from '@/components/core/top-bar';
 import { Toaster } from "@/components/ui/toaster";
 import { Zone } from '@/components/core/zone';
 import { cn } from '@/lib/utils';
+import { LogProvider } from '@/contexts/LogContext'; // Added import
 
 export const metadata: Metadata = {
   title: 'NexOS',
@@ -32,20 +33,24 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn("dark", comfortaa.variable, lexend.variable)} suppressHydrationWarning>
       <body className="font-body antialiased flex flex-col min-h-screen bg-background text-foreground">
-        <TopBar />
-        <main className="flex-grow flex flex-col pt-[4rem] overflow-hidden"> 
-          <Zone
-            title="" 
-            className="flex-grow !border-none !shadow-none !bg-transparent !p-0 !rounded-none" 
-            canPin={false}
-            canMaximize={false}
-            canMinimize={false}
-            canClose={false}
-          >
-            {children}
-          </Zone>
-        </main>
-        <Toaster />
+        <LogProvider> {/* Added LogProvider here */}
+          <TopBar />
+          <main className="flex-grow flex flex-col pt-[4rem] overflow-hidden"> 
+            <Zone
+              id="root-content-zone" // Added an ID for the root zone
+              title="" 
+              className="flex-grow !border-none !shadow-none !bg-transparent !p-0 !rounded-none" 
+              canPin={false}
+              canMaximize={false}
+              canMinimize={false}
+              canClose={false}
+              canSettings={false} // Explicitly disable settings for the root content wrapper
+            >
+              {children}
+            </Zone>
+          </main>
+          <Toaster />
+        </LogProvider> {/* Closed LogProvider here */}
       </body>
     </html>
   );

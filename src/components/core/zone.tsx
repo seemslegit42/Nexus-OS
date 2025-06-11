@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { ZoneControls } from "./zone-controls"; 
 
 interface ZoneProps {
+  id: string; // Added id prop
   title: string;
   children: ReactNode;
   className?: string;
@@ -17,17 +18,22 @@ interface ZoneProps {
   onMinimizeToggle?: () => void;
   isMinimized?: boolean;
   onClose?: () => void;
-  onSettingsToggle?: () => void; // New prop for settings
+  onSettingsToggle?: () => void;
 
   canPin?: boolean;
   canMaximize?: boolean;
   canMinimize?: boolean;
   canClose?: boolean;
-  canSettings?: boolean; // New prop
-  hasActiveAutomation?: boolean; // New prop for shimmer
+  canSettings?: boolean;
+  hasActiveAutomation?: boolean;
+
+  onOpenApp?: (zoneId: string, zoneTitle: string) => void;
+  onRunTask?: (zoneId: string, zoneTitle: string) => Promise<void>;
+  onViewLogs?: (zoneId: string, zoneTitle: string) => void;
 }
 
 export function Zone({ 
+  id, // Destructure id
   title, 
   children, 
   className, 
@@ -39,13 +45,16 @@ export function Zone({
   onMinimizeToggle,
   isMinimized,
   onClose,
-  onSettingsToggle, // New prop
+  onSettingsToggle,
   canPin = true,
   canMaximize = true,
   canMinimize = true,
   canClose = true,
-  canSettings = true, // New prop
-  hasActiveAutomation = false, // New prop
+  canSettings = true,
+  hasActiveAutomation = false,
+  onOpenApp,
+  onRunTask,
+  onViewLogs,
 }: ZoneProps) {
 
   const showHeader = title || 
@@ -53,13 +62,14 @@ export function Zone({
                      (canPin && onPinToggle) || 
                      (canMaximize && onMaximizeToggle) || 
                      (canMinimize && onMinimizeToggle) || 
-                     (canSettings && onSettingsToggle) || // Include settings in showHeader check
-                     (canClose && onClose);
+                    //  (canSettings && onSettingsToggle) || // Settings is now part of ellipsis menu primarily
+                    //  (canClose && onClose) || // Close is now part of ellipsis menu primarily
+                     onOpenApp || onRunTask || onViewLogs; // Check if any menu actions are provided
 
   return (
     <Card className={cn(
         "bg-card backdrop-blur-md shadow-xl rounded-xl border-border/70 flex flex-col overflow-hidden h-full", 
-        hasActiveAutomation && "zone-shimmer-border border-2 border-transparent", // Apply shimmer class
+        hasActiveAutomation && "zone-shimmer-border border-2 border-transparent",
         className
       )}
     >
@@ -75,19 +85,24 @@ export function Zone({
             {title && <CardTitle className="text-sm font-headline text-foreground truncate">{title}</CardTitle>}
           </div>
           <ZoneControls
+            zoneId={id} // Pass id
+            zoneTitle={title} // Pass title
             onPinToggle={onPinToggle}
             isPinned={isPinned}
             onMaximizeToggle={onMaximizeToggle}
             isMaximized={isMaximized}
             onMinimizeToggle={onMinimizeToggle}
             isMinimized={isMinimized}
-            onClose={onClose}
-            onSettingsToggle={onSettingsToggle} // Pass to controls
+            onClose={onClose} // Keep for direct close if needed, or menu will use it
+            onSettingsToggle={onSettingsToggle} // Keep for direct settings or menu
             canPin={canPin}
             canMaximize={canMaximize}
             canMinimize={canMinimize}
             canClose={canClose}
-            canSettings={canSettings} // Pass to controls
+            canSettings={canSettings}
+            onOpenApp={onOpenApp}
+            onRunTask={onRunTask}
+            onViewLogs={onViewLogs}
           />
         </CardHeader>
       )}

@@ -6,8 +6,9 @@ import type { ReactNode } from 'react';
 import { useState, useEffect, useCallback } from 'react';
 import { Responsive, WidthProvider, type Layout, type Layouts } from 'react-grid-layout';
 import { Zone } from '@/components/core/zone';
-import { ZoneSettingsDrawer } from '@/components/core/zone-settings-drawer'; // Import new component
+import { ZoneSettingsDrawer } from '@/components/core/zone-settings-drawer';
 import { cn } from '@/lib/utils';
+import { useLogs } from '@/contexts/LogContext'; // Import useLogs
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -19,7 +20,7 @@ export interface ZoneSpecificSettings {
   linkedAgent: string | null;
   scheduleTime: string | null;
   notificationsEnabled: boolean;
-  hasActiveAutomation?: boolean; // Optional, will be derived
+  hasActiveAutomation?: boolean;
 }
 
 export interface ZoneConfig {
@@ -43,8 +44,12 @@ export interface ZoneConfig {
   canMaximize?: boolean;
   canMinimize?: boolean;
   canClose?: boolean;
-  canSettings?: boolean; // New prop to control if settings button appears
-  defaultZoneSettings?: Partial<ZoneSpecificSettings>; // Default settings for this zone type
+  canSettings?: boolean;
+  defaultZoneSettings?: Partial<ZoneSpecificSettings>;
+  // New action props, will be populated by WorkspaceGrid
+  onOpenApp?: (zoneId: string, zoneTitle: string) => void;
+  onRunTask?: (zoneId: string, zoneTitle: string) => Promise<void>;
+  onViewLogs?: (zoneId: string, zoneTitle: string) => void;
 }
 
 interface WorkspaceGridProps {
@@ -56,7 +61,7 @@ interface WorkspaceGridProps {
 }
 
 export function WorkspaceGrid({
-  zoneConfigs,
+  zoneConfigs: initialZoneConfigs, // Renamed to avoid conflict
   className,
   cols = { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
   onLayoutChange,
@@ -75,9 +80,39 @@ export function WorkspaceGrid({
 
   const [calculatedRowHeight, setCalculatedRowHeight] = useState(DEFAULT_ROW_HEIGHT_PIXELS);
 
-  // State for zone settings
   const [zoneSettingsMap, setZoneSettingsMap] = useState<Record<string, ZoneSpecificSettings>>({});
   const [editingSettingsForZoneId, setEditingSettingsForZoneId] = useState<string | null>(null);
+
+  const { addLog } = useLogs(); // Get addLog from context
+
+  // Define action handlers
+  const handleOpenApp = useCallback((zoneId: string, zoneTitle: string) => {
+    addLog(`'Open App' action triggered for zone: ${zoneTitle} (ID: ${zoneId})`, 'WorkspaceAction');
+    // Placeholder: Implement actual app opening logic, e.g., navigation or modal
+    alert(`Simulating opening app: ${zoneTitle}`);
+  }, [addLog]);
+
+  const handleRunTask = useCallback(async (zoneId: string, zoneTitle: string) => {
+    addLog(`'Run Task Now' initiated for zone: ${zoneTitle} (ID: ${zoneId})`, 'WorkspaceAction');
+    // Simulate task execution
+    await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate 2s task
+    addLog(`Task completed for zone: ${zoneTitle} (ID: ${zoneId})`, 'WorkspaceAction');
+  }, [addLog]);
+
+  const handleViewLogs = useCallback((zoneId: string, zoneTitle: string) => {
+    addLog(`'View Logs' action triggered for zone: ${zoneTitle} (ID: ${zoneId})`, 'WorkspaceAction');
+    // Placeholder: Implement actual log viewing logic, e.g., navigate to log page or open modal
+    alert(`Simulating viewing logs for: ${zoneTitle}. Check persistent console.`);
+  }, [addLog]);
+
+  // Augment initialZoneConfigs with action handlers
+  const zoneConfigs = initialZoneConfigs.map(zc => ({
+    ...zc,
+    onOpenApp: handleOpenApp,
+    onRunTask: handleRunTask,
+    onViewLogs: handleViewLogs,
+  }));
+
 
   useEffect(() => {
     const dummyHeader = document.createElement('div');
@@ -91,7 +126,6 @@ export function WorkspaceGrid({
     setCalculatedRowHeight(Math.max(10, Math.ceil(headerPixelHeight / MINIMIZED_ZONE_HEADER_ROWS)));
   }, []);
 
-  // Initialize zone settings
   useEffect(() => {
     const initialSettings: Record<string, ZoneSpecificSettings> = {};
     zoneConfigs.forEach(zc => {
@@ -100,9 +134,8 @@ export function WorkspaceGrid({
         linkedAgent: zc.defaultZoneSettings?.linkedAgent ?? null,
         scheduleTime: zc.defaultZoneSettings?.scheduleTime ?? null,
         notificationsEnabled: zc.defaultZoneSettings?.notificationsEnabled ?? true,
-        hasActiveAutomation: false, // Will be derived
+        hasActiveAutomation: false, 
       };
-      // Derive initial hasActiveAutomation
       initialSettings[zc.id].hasActiveAutomation = 
         !!(initialSettings[zc.id].scheduleTime || initialSettings[zc.id].linkedAgent);
     });
@@ -138,7 +171,7 @@ export function WorkspaceGrid({
       });
     });
     setCurrentLayouts(initialLayouts);
-  }, [zoneConfigs, cols, calculatedRowHeight, locallyClosedZoneIds, zoneSettingsMap]); // Added zoneSettingsMap
+  }, [zoneConfigs, cols, calculatedRowHeight, locallyClosedZoneIds, zoneSettingsMap]);
 
   const handleLayoutChange = (currentLayout: Layout[], allLayouts: Layouts) => {
     if (JSON.stringify(allLayouts) !== JSON.stringify(currentLayouts)) {
@@ -271,6 +304,7 @@ export function WorkspaceGrid({
 
   const handleActualClose = (id: string) => {
     if (maximizedZoneId) return; 
+    addLog(`Zone '${zoneConfigs.find(zc => zc.id === id)?.title || id}' removed.`, 'WorkspaceAction');
     if (onZoneClose) {
       onZoneClose(id); 
     } else {
@@ -294,18 +328,16 @@ export function WorkspaceGrid({
       ...prev,
       [zoneId]: { ...newSettings, hasActiveAutomation: derivedHasActiveAutomation },
     }));
-    // If zone is hidden, ensure it's also "closed" in RGL terms locally
     if (!newSettings.isVisible && !locallyClosedZoneIds.includes(zoneId)) {
-        // No direct call to handleActualClose to avoid onZoneClose prop if defined
-        // Layout will update based on zoneSettingsMap filter
+        if(!onZoneClose){ // Only manage locally if no parent handler
+             setLocallyClosedZoneIds(prev => [...prev, zoneId]);
+        }
     } else if (newSettings.isVisible && locallyClosedZoneIds.includes(zoneId)) {
-        // This scenario needs careful handling if onZoneClose prop is used,
-        // as this local save shouldn't magically "reopen" a zone closed by parent.
-        // For now, assume if onZoneClose is NOT used, we can manage locally.
         if(!onZoneClose){
             setLocallyClosedZoneIds(prev => prev.filter(id => id !== zoneId));
         }
     }
+    addLog(`Settings saved for zone: ${zoneConfigs.find(zc => zc.id === zoneId)?.title || zoneId}`, 'WorkspaceAction');
   };
 
 
@@ -357,14 +389,15 @@ export function WorkspaceGrid({
           const canPinZone = zoneConfig.canPin !== false && !isCurrentlyMaximized;
           const canMaximizeZone = zoneConfig.canMaximize !== false && !isActuallyMinimized && (!maximizedZoneId || isCurrentlyMaximized) ;
           const canMinimizeZone = zoneConfig.canMinimize !== false && !isCurrentlyMaximized;
-          const canCloseZone = zoneConfig.canClose !== false && !isCurrentlyMaximized;
-          const canSettingsZone = zoneConfig.canSettings !== false && !isCurrentlyMaximized; // Control settings button
+          const canCloseZone = zoneConfig.canClose !== false && !isCurrentlyMaximized; // Ellipsis menu will handle actual close action
+          const canSettingsZone = zoneConfig.canSettings !== false && !isCurrentlyMaximized;
           const currentZoneSettings = zoneSettingsMap[zoneConfig.id];
 
           return (
             <div key={zoneConfig.id} data-grid={rglItem} 
                  className={cn(isCurrentlyMaximized && "rgl-maximized-item z-50")}>
               <Zone
+                id={zoneConfig.id} // Pass id to Zone
                 title={zoneConfig.title}
                 icon={zoneConfig.icon}
                 onPinToggle={canPinZone ? () => handleTogglePin(zoneConfig.id) : undefined}
@@ -373,14 +406,17 @@ export function WorkspaceGrid({
                 isMaximized={isCurrentlyMaximized}
                 onMinimizeToggle={canMinimizeZone ? () => handleToggleMinimize(zoneConfig.id) : undefined}
                 isMinimized={isActuallyMinimized}
-                onClose={canCloseZone ? () => handleActualClose(zoneConfig.id) : undefined}
-                onSettingsToggle={canSettingsZone ? () => handleOpenSettingsDrawer(zoneConfig.id) : undefined} // Pass handler
+                onClose={() => handleActualClose(zoneConfig.id)} // Direct handler for "Remove App"
+                onSettingsToggle={canSettingsZone ? () => handleOpenSettingsDrawer(zoneConfig.id) : undefined} // For "Configure"
                 canPin={canPinZone}
                 canMaximize={canMaximizeZone}
                 canMinimize={canMinimizeZone}
-                canClose={canCloseZone}
-                canSettings={canSettingsZone} // Pass ability to Zone
-                hasActiveAutomation={currentZoneSettings?.hasActiveAutomation ?? false} // Pass shimmer state
+                canClose={canCloseZone} 
+                canSettings={canSettingsZone}
+                hasActiveAutomation={currentZoneSettings?.hasActiveAutomation ?? false}
+                onOpenApp={zoneConfig.onOpenApp}
+                onRunTask={zoneConfig.onRunTask}
+                onViewLogs={zoneConfig.onViewLogs}
                 className="h-full" 
               >
                 {zoneConfig.content}

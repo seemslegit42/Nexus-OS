@@ -10,7 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Workflow, Palette as PaletteIcon, ListChecks, GanttChartSquare, Terminal, Users,
   FileText as PromptIcon, Aperture as AgentCallIcon, GitFork as DecisionIcon, Zap as TriggerIcon, FunctionSquare as CustomLogicIcon,
-  PlusCircle, Play, PauseCircle, Sparkles, Edit3, Sigma, Blocks, LinkIcon, Clock, Timer, Eye, Ear, Repeat, HelpCircle, Mail, Database, CheckSquare, Bell, PackagePlus
+  PlusCircle, Play, PauseCircle, Sparkles, Edit3, Sigma, Blocks, LinkIcon, Clock, Timer, Eye, Ear, Repeat, HelpCircle, Mail, Database, CheckSquare, Bell, PackagePlus, Trash2
 } from 'lucide-react';
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,13 +22,14 @@ import React from 'react';
 import { Label } from '@/components/ui/label';
 import { PromptSandbox } from '@/components/loom-studio/prompt-sandbox';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { useLogs } from '@/contexts/LogContext'; // LogProvider removed, useLogs remains for PersistentConsoleContent
 
 interface CanvasNodeProps {
   title: string;
   details: string;
   className?: string;
   icon?: ReactNode;
-  status?: 'queued' | 'running' | 'failed' | 'completed'; // For future badge
+  status?: 'queued' | 'running' | 'failed' | 'completed';
 }
 
 const CanvasNode: React.FC<CanvasNodeProps> = ({ title, details, className, icon, status }) => {
@@ -42,7 +43,6 @@ const CanvasNode: React.FC<CanvasNodeProps> = ({ title, details, className, icon
         <h4 className="text-xs font-semibold text-foreground truncate">{title}</h4>
       </div>
       <p className="text-[10px] text-muted-foreground leading-tight">{details}</p>
-      {/* Future status badge: <Badge variant="outline" className="absolute top-1 right-1 px-1 py-0 text-[8px] h-4">Queued</Badge> */}
     </div>
   );
 };
@@ -71,15 +71,14 @@ function CanvasContent(): ReactNode {
         </p>
       </div>
 
-      {/* Placeholder nodes & connectors */}
       <div className="absolute top-[20%] left-[15%] z-10">
         <CanvasNode title="New Lead Trigger" details="Webhook: new_lead_hook" icon={<LinkIcon />} />
       </div>
-      <div className="absolute top-[21.5%] left-[calc(15%_+_12rem_+_0.5rem)] w-10 h-0.5 bg-border/70 z-0"></div> {/* Connector */}
+      <div className="absolute top-[21.5%] left-[calc(15%_+_12rem_+_0.5rem)] w-10 h-0.5 bg-border/70 z-0"></div>
       <div className="absolute top-[18%] left-[calc(15%_+_12rem_+_3.5rem)] z-10">
          <CanvasNode title="Send Welcome Email" details="Agent: EmailBot" icon={<Mail />} />
       </div>
-      <div className="absolute top-[35%] left-[calc(15%_+_12rem_+_6rem)] w-0.5 h-12 bg-border/70 z-0"></div> {/* Connector */}
+      <div className="absolute top-[35%] left-[calc(15%_+_12rem_+_6rem)] w-0.5 h-12 bg-border/70 z-0"></div>
        <div className="absolute top-[45%] left-[calc(15%_+_12rem_+_3.5rem)] z-10">
          <CanvasNode title="Log Email Sent" details="Action: Update CRM" icon={<Database/>} />
       </div>
@@ -99,7 +98,7 @@ function AgentBlocksPaletteContent(): ReactNode {
       icon: <PackagePlus/>,
       blocks: [
         { name: 'Webhook', icon: <LinkIcon /> }, { name: 'Form Submit', icon: <FileText /> },
-        { name: 'Time Trigger', icon: <Clock /> }, { name: 'Internal Event', icon: <Zap /> },
+        { name: 'Time Trigger', icon: <Clock /> }, { name: 'Internal Event', icon: <TriggerIcon /> },
       ]
     },
     { 
@@ -107,16 +106,16 @@ function AgentBlocksPaletteContent(): ReactNode {
       icon: <Blocks/>,
       blocks: [
         { name: 'Wait', icon: <Timer /> }, { name: 'Monitor', icon: <Eye /> },
-        { name: 'Listen', icon: <Ear /> }, { name: 'Loop', icon: <Repeat /> }, { name: 'Condition', icon: <HelpCircle /> }
+        { name: 'Listen', icon: <Ear /> }, { name: 'Loop', icon: <Repeat /> }, { name: 'Condition', icon: <GitFork /> } // Changed icon
       ]
     },
     { 
       name: "Actions", 
-      icon: <Zap/>,
+      icon: <TriggerIcon/>, // Changed icon for consistency
       blocks: [
         { name: 'Send Email', icon: <Mail /> }, { name: 'Update CRM', icon: <Database /> },
         { name: 'Create Task', icon: <CheckSquare /> }, { name: 'Notify Team', icon: <Bell /> },
-        { name: 'Call Agent', icon: <Aperture /> }, { name: 'Run Script', icon: <Terminal /> },
+        { name: 'Call Agent', icon: <AgentCallIcon /> }, { name: 'Run Script', icon: <Terminal /> },
       ]
     }
   ];
@@ -162,38 +161,6 @@ function InspectorContent(): ReactNode {
                 <Sparkles className="h-8 w-8 mx-auto mb-2 opacity-50"/>
                 <p className="text-xs">Select a node on the canvas to inspect and configure its properties.</p>
              </div>
-            {/* 
-            // Example of selected node properties:
-            <div>
-                <Label htmlFor="node-name" className="text-xs text-muted-foreground">Node Name</Label>
-                <Input id="node-name" defaultValue="Send Welcome Email" placeholder="Enter node name" className="mt-0.5 h-8 text-sm bg-input border-input focus:ring-primary"/>
-            </div>
-            <div>
-                <Label htmlFor="node-type" className="text-xs text-muted-foreground">Type</Label>
-                <Input id="node-type" defaultValue="Agent Call" disabled className="mt-0.5 h-8 text-sm bg-muted/50 border-input"/>
-            </div>
-             <div>
-                <Label className="text-xs text-muted-foreground">Status</Label>
-                <div className="mt-0.5"><Badge variant="default" className="bg-green-500/80 text-white">Completed</Badge></div>
-            </div>
-            <Separator className="my-3 border-border/60"/>
-             <div>
-                <Label htmlFor="agent-select" className="text-xs text-muted-foreground">Agent</Label>
-                <Input id="agent-select" defaultValue="EmailBot" className="mt-0.5 h-8 text-sm bg-input border-input focus:ring-primary"/>
-            </div>
-            <div>
-                <Label htmlFor="email-template" className="text-xs text-muted-foreground">Email Template</Label>
-                <Textarea id="email-template" placeholder="Select or create email template..." className="mt-0.5 min-h-[60px] text-sm bg-input border-input focus:ring-primary"/>
-            </div>
-            <Separator className="my-3 border-border/60"/>
-            <div>
-              <h4 className="font-medium text-xs text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center">
-                <ShieldCheck className="h-3.5 w-3.5 mr-1.5 text-primary/80"/>Security Context
-              </h4>
-              <p className="text-xs text-muted-foreground mb-1">Role Permissions: <Badge variant="outline">agent:execute</Badge> <Badge variant="outline">email:send</Badge></p>
-              <Button variant="link" size="sm" className="text-xs p-0 h-auto mt-0.5 text-primary">Manage Permissions</Button>
-            </div>
-            */}
           </div>
         </ScrollArea>
       </CardContent>
@@ -214,18 +181,31 @@ function TimelineContent(): ReactNode {
   );
 }
 
-function ConsoleContent(): ReactNode { 
+function PersistentConsoleContent(): ReactNode { 
+  const { logEntries, clearLogs } = useLogs();
   return (
     <Card className="h-full flex flex-col bg-transparent border-none shadow-none">
-      <CardContent className="p-1.5 flex-grow flex flex-col gap-1.5">
+      <CardHeader className="p-1.5 border-b border-border/60 flex flex-row items-center justify-between">
+        <CardTitle className="text-sm font-headline text-foreground">System Console</CardTitle>
+        <Button variant="ghost" size="icon" onClick={clearLogs} className="h-6 w-6 text-muted-foreground hover:text-destructive" title="Clear logs">
+          <Trash2 className="h-3.5 w-3.5"/>
+        </Button>
+      </CardHeader>
+      <CardContent className="p-1.5 flex-grow flex flex-col gap-1.5 overflow-hidden">
         <ScrollArea className="flex-grow border border-input/70 bg-background/60 rounded-sm p-1.5 min-h-[80px]">
-          <pre className="text-xs text-muted-foreground whitespace-pre-wrap font-code">
-            {`[${new Date().toLocaleTimeString()}] Canvas initialized.
-[${new Date().toLocaleTimeString()}] Palette loaded with 15 blocks.
-[${new Date().toLocaleTimeString()}] Awaiting user interaction...`}
-          </pre>
+          {logEntries.length === 0 ? (
+            <p className="text-xs text-muted-foreground p-2 text-center">Console initialized. Waiting for log entries...</p>
+          ) : (
+            logEntries.map(entry => (
+              <div key={entry.id} className="text-xs font-code mb-1 last:mb-0">
+                <span className="text-muted-foreground/80 mr-1.5">{entry.timestamp}</span>
+                {entry.source && <span className="text-primary/90 mr-1.5">[{entry.source}]</span>}
+                <span className="text-foreground/90">{entry.message}</span>
+              </div>
+            ))
+          )}
         </ScrollArea>
-        <Input placeholder="Enter command or query..." className="h-8 bg-input border-input/70 focus:ring-primary font-code text-sm" />
+        <Input placeholder="Enter command or query (read-only for logs)..." className="h-8 bg-input border-input/70 focus:ring-primary font-code text-sm" readOnly />
       </CardContent>
     </Card>
   );
@@ -284,7 +264,6 @@ function AgentHubContent(): ReactNode {
   );
 }
 
-
 export default function LoomStudioPage() {
   const loomStudioPageZoneConfigs: ZoneConfig[] = [
     {
@@ -323,9 +302,9 @@ export default function LoomStudioPage() {
     },
      {
       id: 'console',
-      title: 'Console',
+      title: 'System Console', // Updated title
       icon: <Terminal className="w-4 h-4" />,
-      content: <ConsoleContent />, 
+      content: <PersistentConsoleContent />, // Use new PersistentConsoleContent
       defaultLayout: {
         lg: { x: 0, y: 12, w: 3, h: 8, minW: 2, minH: 4 }, 
         md: { x: 0, y: 12, w: 2, h: 8, minW: 2, minH: 4 },
@@ -368,6 +347,7 @@ export default function LoomStudioPage() {
   ];
 
   return (
+    // LogProvider removed from here as it's now in the root layout
     <WorkspaceGrid
       zoneConfigs={loomStudioPageZoneConfigs}
       className="flex-grow p-1" 
@@ -376,4 +356,3 @@ export default function LoomStudioPage() {
     />
   );
 }
-
