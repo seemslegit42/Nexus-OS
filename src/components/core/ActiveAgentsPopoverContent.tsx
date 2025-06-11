@@ -14,11 +14,18 @@ interface AgentInfo {
   lastLog: string;
 }
 
-interface ActiveAgentsPopoverContentProps {
-  agents: AgentInfo[];
-}
+// Moved mock data inside the component
+const activeAgentsInfo: AgentInfo[] = [
+  { name: "OptimizerPrime", status: "Active", tasks: 3, lastLog: "Optimized frontend performance module for Project Zeta." },
+  { name: "DataMinerX", status: "Idle", tasks: 0, lastLog: "Quarterly sales data scan complete, no new anomalies." },
+  { name: "SecureGuard", status: "Error", tasks: 1, lastLog: "Critical: Anomaly detected in auth service. Escalated." },
+  { name: "ContentCreatorAI", status: "Processing", tasks: 1, lastLog: "Generating weekly social media engagement report." },
+  { name: "SysMonitor", status: "Active", tasks: 5, lastLog: "Network latency check normal, CPU usage stable." },
+];
 
-export function ActiveAgentsPopoverContent({ agents }: ActiveAgentsPopoverContentProps) {
+export function ActiveAgentsPopoverContent() {
+  const agents = activeAgentsInfo; // Use internal data
+
   return (
     <div className="grid gap-4">
       <div className="space-y-2">

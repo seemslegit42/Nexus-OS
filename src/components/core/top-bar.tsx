@@ -38,8 +38,6 @@ import {
   ListChecks, 
   GitMerge, 
   Info,
-  AlertTriangle as AlertTriangleIcon,
-  CheckCircle2,
   Users, 
   ShieldCheck, 
   Settings2, 
@@ -47,17 +45,17 @@ import {
   MessageSquare,
   ChevronsUpDown,
   Zap as LightningIcon,
-  RadioTower // Added RadioTower
+  RadioTower
 } from 'lucide-react';
 import { CommandLauncherDialog } from './command-launcher'; 
 import { ActiveAgentsPopoverContent } from './ActiveAgentsPopoverContent';
-import { RecentNotificationsPopoverContent, type NotificationItem } from './RecentNotificationsPopoverContent';
+import { RecentNotificationsPopoverContent } from './RecentNotificationsPopoverContent';
 import { ModuleSwitcherDropdownContent } from './ModuleSwitcherDropdownContent';
 
 const modules = [
   { name: 'Dashboard', href: '/', icon: <Home className="mr-2 h-4 w-4" /> },
   { name: 'Loom Studio', href: '/loom-studio', icon: <LayoutGrid className="mr-2 h-4 w-4" /> },
-  { name: 'Pulse', href: '/pulse', icon: <RadioTower className="mr-2 h-4 w-4" /> }, // Added Pulse
+  { name: 'Pulse', href: '/pulse', icon: <RadioTower className="mr-2 h-4 w-4" /> },
   { name: 'Agent Console', href: '/agents', icon: <Cpu className="mr-2 h-4 w-4" /> },
   { name: 'Command & Cauldron', href: '/command', icon: <CommandIcon className="mr-2 h-4 w-4" /> },
   { name: 'Modules', href: '/modules', icon: <Briefcase className="mr-2 h-4 w-4" /> },
@@ -72,29 +70,12 @@ const modules = [
   { name: 'Onboarding Wizard', href: '/onboarding', icon: <Rocket className="mr-2 h-4 w-4" /> },
 ];
 
-const activeAgentsInfo = [
-  { name: "OptimizerPrime", status: "Active", tasks: 3, lastLog: "Optimized frontend performance module for Project Zeta." },
-  { name: "DataMinerX", status: "Idle", tasks: 0, lastLog: "Quarterly sales data scan complete, no new anomalies." },
-  { name: "SecureGuard", status: "Error", tasks: 1, lastLog: "Critical: Anomaly detected in auth service. Escalated." },
-  { name: "ContentCreatorAI", status: "Processing", tasks: 1, lastLog: "Generating weekly social media engagement report." },
-  { name: "SysMonitor", status: "Active", tasks: 5, lastLog: "Network latency check normal, CPU usage stable." },
-];
-
-const recentNotifications: NotificationItem[] = [
-  { id: 1, type: 'error', title: 'Agent SecureGuard Offline', message: 'Agent has unexpectedly stopped.', time: '2m ago', icon: <AlertTriangleIcon className="h-4 w-4 text-destructive" /> },
-  { id: 2, type: 'info', title: 'OS Update v1.1.0 Available', message: 'New version of NexOS ready for installation.', time: '1h ago', icon: <Info className="h-4 w-4 text-primary" /> },
-  { id: 3, type: 'success', title: 'Task Completed by DataMinerX', message: 'Q3 sales data analysis finished.', time: '3h ago', icon: <CheckCircle2 className="h-4 w-4 text-green-500" /> },
-  { id: 4, type: 'warning', title: 'Low Disk Space', message: 'Module storage is at 92% capacity.', time: '5h ago', icon: <AlertTriangleIcon className="h-4 w-4 text-yellow-500" /> },
-];
-
-
 export function TopBar() {
   const [isCommandLauncherOpen, setIsCommandLauncherOpen] = useState(false);
 
-  // Placeholder for marking all notifications as read
   const handleMarkAllNotificationsRead = () => {
     console.log("Marking all notifications as read...");
-    // Here you would typically update state or call an API
+    // In a real app, update state or call an API
   };
 
   return (
@@ -168,7 +149,7 @@ export function TopBar() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-80" align="end">
-                <ActiveAgentsPopoverContent agents={activeAgentsInfo} />
+                <ActiveAgentsPopoverContent />
               </PopoverContent>
             </Popover>
             
@@ -176,7 +157,8 @@ export function TopBar() {
               <PopoverTrigger asChild>
                 <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground relative h-9 w-9">
                   <Bell className="h-5 w-5" />
-                  {recentNotifications.length > 0 && (
+                  {/* Simulate unread notifications badge - logic would be dynamic */}
+                  {true && ( 
                     <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
@@ -187,7 +169,6 @@ export function TopBar() {
               </PopoverTrigger>
               <PopoverContent className="w-96" align="end">
                 <RecentNotificationsPopoverContent 
-                  notifications={recentNotifications} 
                   onMarkAllRead={handleMarkAllNotificationsRead} 
                 />
               </PopoverContent>
