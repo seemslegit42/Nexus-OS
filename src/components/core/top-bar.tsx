@@ -84,7 +84,7 @@ const recentNotifications = [
 
 export function TopBar() {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-card/80 backdrop-blur-lg border-b border-border/70 shadow-sm">
+    <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-card backdrop-blur-lg border-b border-border/70 shadow-sm">
       <div className="container mx-auto h-full flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2">
@@ -116,7 +116,7 @@ export function TopBar() {
             <Input
               type="search"
               placeholder="Command or Search (Ctrl+K)..."
-              className="w-full pl-10 pr-4 py-2 rounded-md bg-background/70 border-input focus:ring-primary text-sm h-9"
+              className="w-full pl-10 pr-4 py-2 rounded-md bg-input border-input focus:ring-primary text-sm h-9"
             />
           </div>
         </div>
@@ -291,3 +291,4 @@ export function TopBar() {
     </header>
   );
 }
+

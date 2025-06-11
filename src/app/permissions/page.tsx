@@ -35,7 +35,7 @@ function VisualMatrixContent(): ReactNode {
     <Card className="h-full flex flex-col bg-transparent border-none shadow-none">
       <CardHeader className="p-2 md:p-3 border-b border-border/60">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
-            <Input placeholder="Filter roles or resources..." className="h-9 text-sm sm:max-w-xs bg-background/70 border-input focus:ring-primary"/>
+            <Input placeholder="Filter roles or resources..." className="h-9 text-sm sm:max-w-xs bg-input border-input focus:ring-primary"/>
             <Button size="sm" className="h-9 text-sm w-full sm:w-auto"><Save className="mr-2 h-4 w-4"/> Save Permissions</Button>
         </div>
       </CardHeader>
@@ -44,14 +44,14 @@ function VisualMatrixContent(): ReactNode {
             <Table className="min-w-full">
             <TableHeader>
                 <TableRow className="border-border/60">
-                <TableHead className="sticky left-0 bg-card/90 backdrop-blur-sm z-10 w-[150px] text-xs p-2">Role/Agent</TableHead>
+                <TableHead className="sticky left-0 bg-card backdrop-blur-sm z-10 w-[150px] text-xs p-2">Role/Agent</TableHead>
                 {resources.map(res => <TableHead key={res} className="text-center min-w-[100px] text-xs p-1">{res.split(':')[0]}<br/><span className="text-xs font-normal text-muted-foreground">({res.split(':')[1]})</span></TableHead>)}
                 </TableRow>
             </TableHeader>
             <TableBody>
                 {permissionsData.map(row => (
                 <TableRow key={row.role} className="border-border/60 hover:bg-muted/30">
-                    <TableCell className="font-medium text-foreground sticky left-0 bg-card/80 backdrop-blur-sm z-10 text-xs py-1.5 px-2">{row.role}</TableCell>
+                    <TableCell className="font-medium text-foreground sticky left-0 bg-card backdrop-blur-sm z-10 text-xs py-1.5 px-2">{row.role}</TableCell>
                     {row.permissions.map((perm, i) => (
                     <TableCell key={`perm-${i}`} className="text-center py-1.5">
                         <Checkbox checked={perm} aria-label={`${row.role} access to ${resources[i]}`} className="h-3.5 w-3.5"/>
@@ -78,14 +78,14 @@ function TraceAccessContent(): ReactNode {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
                 <Label htmlFor="trace-entity1" className="text-xs text-muted-foreground">Entity 1 (Role, Agent, Resource)</Label>
-                <Input id="trace-entity1" placeholder="e.g., Developer or FileVault:sensitive_data" className="bg-background/70 border-input focus:ring-primary h-9 text-sm mt-0.5"/>
+                <Input id="trace-entity1" placeholder="e.g., Developer or FileVault:sensitive_data" className="bg-input border-input focus:ring-primary h-9 text-sm mt-0.5"/>
             </div>
              <div>
                 <Label htmlFor="trace-entity2" className="text-xs text-muted-foreground">Entity 2 (Optional for Compare)</Label>
-                <Input id="trace-entity2" placeholder="e.g., Analyst" className="bg-background/70 border-input focus:ring-primary h-9 text-sm mt-0.5"/>
+                <Input id="trace-entity2" placeholder="e.g., Analyst" className="bg-input border-input focus:ring-primary h-9 text-sm mt-0.5"/>
             </div>
         </div>
-        <Button variant="outline" size="sm" className="w-full h-9 text-sm bg-card/60 hover:bg-muted/60"><Search className="mr-2 h-4 w-4"/>Trace / Compare</Button>
+        <Button variant="outline" size="sm" className="w-full h-9 text-sm bg-card hover:bg-muted/60"><Search className="mr-2 h-4 w-4"/>Trace / Compare</Button>
         <div className="flex-grow bg-muted/20 rounded-md p-2 mt-2 min-h-[150px] border border-border/50">
              <Image src="https://placehold.co/600x300.png" alt="Access Trace Visual Graph / Comparison View" width={600} height={300} className="rounded-md opacity-70" data-ai-hint="graph relationship diagram comparison list" />
         </div>
@@ -106,7 +106,7 @@ function SimulateBreachEscalationContent(): ReactNode {
       </CardContent>
       <CardFooter className="p-2 md:p-3 border-t border-border/60 flex gap-3">
         <Button variant="destructive" className="flex-1" size="sm">Simulate Breach Scenario</Button>
-        <Button variant="outline" className="flex-1 bg-card/60 hover:bg-muted/60" size="sm">Test Escalation Path</Button>
+        <Button variant="outline" className="flex-1 bg-card hover:bg-muted/60" size="sm">Test Escalation Path</Button>
       </CardFooter>
     </Card>
   );
@@ -158,3 +158,4 @@ export default function PermissionsPage() {
     />
   );
 }
+

@@ -29,9 +29,9 @@ function ModuleMarketplaceContent(): ReactNode {
     <Card className="h-full flex flex-col bg-transparent border-none shadow-none">
       <CardHeader className="p-2 md:p-3 border-b border-border/60">
         <div className="flex flex-col md:flex-row justify-between items-center gap-2">
-          <Input placeholder="Search modules (functions, flows, API bridges)..." className="md:max-w-xs bg-background/70 border-input focus:ring-primary h-9 text-sm" />
+          <Input placeholder="Search modules (functions, flows, API bridges)..." className="md:max-w-xs bg-input border-input focus:ring-primary h-9 text-sm" />
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="h-9 text-sm bg-card/60 hover:bg-muted/60"><Filter className="mr-2 h-4 w-4" /> Filter</Button>
+            <Button variant="outline" size="sm" className="h-9 text-sm bg-card hover:bg-muted/60"><Filter className="mr-2 h-4 w-4" /> Filter</Button>
           </div>
         </div>
       </CardHeader>
@@ -39,7 +39,7 @@ function ModuleMarketplaceContent(): ReactNode {
         <ScrollArea className="h-full">
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 p-1 md:p-2">
             {modules.map((mod, i) => (
-              <Card key={i} className="bg-card/70 backdrop-blur-sm shadow-md hover:shadow-lg transition-shadow flex flex-col border-border/60">
+              <Card key={i} className="bg-card backdrop-blur-sm shadow-md hover:shadow-lg transition-shadow flex flex-col border-border/60">
                 <CardHeader className="p-3">
                   <div className="flex justify-between items-start">
                     <CardTitle className="font-headline text-base text-primary leading-tight">{mod.name}</CardTitle>
@@ -72,7 +72,7 @@ function ModuleMarketplaceContent(): ReactNode {
                   <Image src={`https://placehold.co/200x100.png`} alt={`${mod.name} Diagram`} width={200} height={100} className="mt-1 rounded border border-border/50 opacity-60" data-ai-hint="workflow diagram permissions tree" />
                 </CardContent>
                 <CardFooter className="flex justify-between p-2.5 border-t border-border/60">
-                  <Button variant="outline" size="sm" className="text-xs bg-card/60 hover:bg-muted/60">Details / Edit</Button>
+                  <Button variant="outline" size="sm" className="text-xs bg-card hover:bg-muted/60">Details / Edit</Button>
                   <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80 text-xs">
                     <Cpu className="mr-1.5 h-3.5 w-3.5"/>
                     {mod.agentsAttached > 0 ? 'Manage Agents' : 'Attach Agent'}
@@ -98,11 +98,11 @@ function ModuleEditorContent(): ReactNode {
       <CardContent className="p-2 md:p-3 space-y-3 flex-grow">
         <div>
           <Label htmlFor="module-name" className="text-xs">Module Name</Label>
-          <Input id="module-name" defaultValue="Data Ingestion Pipeline" className="bg-background/70 border-input focus:ring-primary h-8 text-sm mt-0.5" />
+          <Input id="module-name" defaultValue="Data Ingestion Pipeline" className="bg-input border-input focus:ring-primary h-8 text-sm mt-0.5" />
         </div>
         <div>
           <Label htmlFor="module-description" className="text-xs">Description</Label>
-          <Textarea id="module-description" defaultValue="Handles ETL processes for various data sources." className="bg-background/70 border-input focus:ring-primary min-h-[50px] text-sm mt-0.5" />
+          <Textarea id="module-description" defaultValue="Handles ETL processes for various data sources." className="bg-input border-input focus:ring-primary min-h-[50px] text-sm mt-0.5" />
         </div>
         <div className="flex-grow bg-muted/20 rounded-md p-2 flex items-center justify-center border border-border/50">
           <Image src="https://placehold.co/400x250.png" alt="Workflow Visual Editor" width={400} height={250} className="w-full h-full object-contain rounded opacity-70" data-ai-hint="visual editor graph permissions" />
@@ -123,18 +123,18 @@ function ApiExtensionManagerContent(): ReactNode {
         </CardHeader>
         <CardContent className="p-2 md:p-3 space-y-2 flex-grow overflow-y-auto">
             <p className="text-xs text-muted-foreground mb-2">Manage external API integrations and keys.</p>
-            <Card className="bg-card/50 border-border/50">
+            <Card className="bg-card border-border/50">
             <CardHeader className="p-2"><CardTitle className="text-sm">OpenAI API <Badge variant="secondary" className="ml-2 text-xs bg-green-500/20 text-green-700 dark:text-green-300 border-green-500/30">Active</Badge></CardTitle></CardHeader>
             <CardContent className="p-2 text-xs text-muted-foreground">Status: Connected | Usage: Moderate</CardContent>
             </Card>
-            <Card className="bg-card/50 border-border/50">
+            <Card className="bg-card border-border/50">
             <CardHeader className="p-2"><CardTitle className="text-sm">Google Maps API <Badge variant="outline" className="ml-2 text-xs border-yellow-500/50 text-yellow-600 dark:text-yellow-400">Needs Config</Badge></CardTitle></CardHeader>
             <CardContent className="p-2 text-xs text-muted-foreground">Status: Needs Configuration</CardContent>
             </Card>
             <Image src="https://placehold.co/300x150.png" alt="API Key Management" width={300} height={150} className="rounded-md my-2 opacity-50 border border-border/50" data-ai-hint="api keys list form" />
         </CardContent>
         <CardFooter className="p-2 md:p-3 border-t border-border/60">
-            <Button variant="outline" className="w-full bg-card/60 hover:bg-muted/60" size="sm"><PlusCircle className="mr-2 h-4 w-4" /> Add New API Extension</Button>
+            <Button variant="outline" className="w-full bg-card hover:bg-muted/60" size="sm"><PlusCircle className="mr-2 h-4 w-4" /> Add New API Extension</Button>
         </CardFooter>
     </Card>
   );
@@ -150,7 +150,7 @@ function IntegrationManagerContent(): ReactNode {
         <p className="text-xs text-muted-foreground mb-2">Connect NexOS with other platforms and services.</p>
         <div className="grid grid-cols-2 gap-2">
             {[ { name: "Slack", hint: "slack logo"}, { name: "Zapier", hint: "zapier logo"}, { name: "GitHub", hint: "github logo"}, { name: "Jira", hint: "jira logo"}].map(item => (
-                 <Button key={item.name} variant="outline" className="h-auto p-2 flex-col items-center justify-center bg-card/60 hover:bg-muted/60">
+                 <Button key={item.name} variant="outline" className="h-auto p-2 flex-col items-center justify-center bg-card hover:bg-muted/60">
                     <Image src="https://placehold.co/48x48.png" alt={item.name} width={24} height={24} data-ai-hint={item.hint} className="opacity-80"/>
                     <span className="text-xs mt-1 text-muted-foreground">{item.name}</span>
                 </Button>
@@ -159,7 +159,7 @@ function IntegrationManagerContent(): ReactNode {
         <Image src="https://placehold.co/300x100.png" alt="Integration Setup" width={300} height={100} className="rounded-md my-2 opacity-50 border border-border/50" data-ai-hint="integration connection form" />
       </CardContent>
        <CardFooter className="p-2 md:p-3 border-t border-border/60">
-        <Button variant="outline" className="w-full bg-card/60 hover:bg-muted/60" size="sm"><PlusCircle className="mr-2 h-4 w-4" /> Add New Integration</Button>
+        <Button variant="outline" className="w-full bg-card hover:bg-muted/60" size="sm"><PlusCircle className="mr-2 h-4 w-4" /> Add New Integration</Button>
        </CardFooter>
     </Card>
   );
@@ -222,3 +222,4 @@ export default function ModulesPage() {
     />
   );
 }
+

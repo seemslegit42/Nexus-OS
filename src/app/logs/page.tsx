@@ -69,9 +69,9 @@ function LogStreamFilterContent(): ReactNode {
     <Card className="h-full flex flex-col bg-transparent border-none shadow-none">
       <CardHeader className="p-2 md:p-3 border-b border-border/60">
         <div className="flex flex-wrap gap-2 items-center">
-            <Input type="text" placeholder="Search logs (keywords, user, module...)" className="flex-grow min-w-[200px] bg-background/70 border-input focus:ring-primary h-8 text-sm" />
+            <Input type="text" placeholder="Search logs (keywords, user, module...)" className="flex-grow min-w-[200px] bg-input border-input focus:ring-primary h-8 text-sm" />
             <Select>
-            <SelectTrigger className="w-full md:w-[130px] bg-background/70 border-input focus:ring-primary h-8 text-xs">
+            <SelectTrigger className="w-full md:w-[130px] bg-input border-input focus:ring-primary h-8 text-xs">
                 <SelectValue placeholder="Log Type" />
             </SelectTrigger>
             <SelectContent>
@@ -84,7 +84,7 @@ function LogStreamFilterContent(): ReactNode {
             </SelectContent>
             </Select>
             <Select>
-            <SelectTrigger className="w-full md:w-[110px] bg-background/70 border-input focus:ring-primary h-8 text-xs">
+            <SelectTrigger className="w-full md:w-[110px] bg-input border-input focus:ring-primary h-8 text-xs">
                 <SelectValue placeholder="Severity" />
             </SelectTrigger>
             <SelectContent>
@@ -95,9 +95,9 @@ function LogStreamFilterContent(): ReactNode {
                 <SelectItem value="critical">CRITICAL</SelectItem>
             </SelectContent>
             </Select>
-            <Input type="date" placeholder="Date" className="w-full md:w-[120px] bg-background/70 border-input focus:ring-primary h-8 text-xs"/>
-            <Button variant="outline" size="sm" className="h-8 text-xs bg-card/60 hover:bg-muted/60"><Filter className="mr-1.5 h-3.5 w-3.5" />Apply Filters</Button>
-            <Button onClick={handleSummarizeLogs} disabled={isSummarizing} variant="outline" size="sm" className="text-primary border-primary/50 hover:bg-primary/10 h-8 text-xs bg-card/60">
+            <Input type="date" placeholder="Date" className="w-full md:w-[120px] bg-input border-input focus:ring-primary h-8 text-xs"/>
+            <Button variant="outline" size="sm" className="h-8 text-xs bg-card hover:bg-muted/60"><Filter className="mr-1.5 h-3.5 w-3.5" />Apply Filters</Button>
+            <Button onClick={handleSummarizeLogs} disabled={isSummarizing} variant="outline" size="sm" className="text-primary border-primary/50 hover:bg-primary/10 h-8 text-xs bg-card">
             {isSummarizing ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Sparkles className="mr-1.5 h-3.5 w-3.5" />}
             AI Summary
             </Button>
@@ -105,7 +105,7 @@ function LogStreamFilterContent(): ReactNode {
       </CardHeader>
 
       <CardContent className="p-1 md:p-2 flex-grow overflow-hidden flex flex-col">
-        <Card className="mb-2 bg-card/70 backdrop-blur-sm shadow-md border-border/60">
+        <Card className="mb-2 bg-card backdrop-blur-sm shadow-md border-border/60">
             <CardHeader className="p-2">
                 <CardTitle className="font-headline text-sm text-primary flex items-center">
                     <Sparkles className="h-4 w-4 mr-1.5" />AI Log Summary
@@ -186,9 +186,9 @@ function EventTimelineContent(): ReactNode {
       <CardContent className="p-2 md:p-3 text-center">
         <Image src="https://placehold.co/600x300.png" alt="Event Timeline with State Diff" width={600} height={300} className="rounded-md border border-border/60 opacity-70" data-ai-hint="gantt chart events state comparison" />
         <div className="flex gap-2 mt-2 justify-center">
-          <Button variant="outline" size="sm" className="bg-card/60 hover:bg-muted/60"><PlaySquare className="mr-1.5 h-3.5 w-3.5"/>Play</Button>
-          <Button variant="outline" size="sm" className="bg-card/60 hover:bg-muted/60">Step Back</Button>
-          <Button variant="outline" size="sm" className="bg-card/60 hover:bg-muted/60">Step Forward</Button>
+          <Button variant="outline" size="sm" className="bg-card hover:bg-muted/60"><PlaySquare className="mr-1.5 h-3.5 w-3.5"/>Play</Button>
+          <Button variant="outline" size="sm" className="bg-card hover:bg-muted/60">Step Back</Button>
+          <Button variant="outline" size="sm" className="bg-card hover:bg-muted/60">Step Forward</Button>
         </div>
         <p className="text-xs text-muted-foreground mt-2">Red alert trigger zones are highlighted on timeline.</p>
       </CardContent>
@@ -260,3 +260,4 @@ export default function LogsAuditPage() {
     />
   );
 }
+

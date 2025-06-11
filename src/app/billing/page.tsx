@@ -81,7 +81,7 @@ function CurrentPlanUsageContent(): ReactNode {
           </div>
           <Progress value={40} className="h-2 [&>div]:bg-chart-2" />
         </div>
-        <Button variant="outline" className="w-full bg-card/60 hover:bg-muted/60">Manage Subscription</Button>
+        <Button variant="outline" className="w-full bg-card hover:bg-muted/60">Manage Subscription</Button>
       </CardContent>
     </Card>
   );
@@ -123,7 +123,7 @@ function BillingHistoryContent(): ReactNode {
                     { id: "INV-2023-002", date: "September 1, 2023", amount: "$99.00", status: "Paid" },
                     { id: "INV-2023-001", date: "August 1, 2023", amount: "$99.00", status: "Paid" },
                 ].map(invoice => (
-                    <div key={invoice.id} className="flex justify-between items-center p-2.5 bg-card/60 rounded-md border border-border/60 shadow-sm">
+                    <div key={invoice.id} className="flex justify-between items-center p-2.5 bg-card rounded-md border border-border/60 shadow-sm">
                     <div>
                         <p className="font-medium text-sm text-foreground">{invoice.id}</p>
                         <p className="text-xs text-muted-foreground">{invoice.date} - {invoice.amount}</p>
@@ -196,3 +196,4 @@ export default function BillingPage() {
     />
   );
 }
+

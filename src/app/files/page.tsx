@@ -27,7 +27,7 @@ function FileBrowserContent(): ReactNode {
         <div className="flex flex-col md:flex-row justify-between items-center gap-2">
             <div className="relative w-full md:max-w-sm">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search files..." className="pl-9 bg-background/70 border-input focus:ring-primary h-9 text-sm" />
+            <Input placeholder="Search files..." className="pl-9 bg-input border-input focus:ring-primary h-9 text-sm" />
             </div>
             <Button className="w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground h-9 text-sm">
             <UploadCloud className="mr-2 h-4 w-4" /> Upload File
@@ -96,7 +96,7 @@ function VersionHistoryAgentAttachmentsContent(): ReactNode {
         </CardHeader>
         <CardContent className="p-2 md:p-3 space-y-3">
             <p className="text-sm text-muted-foreground mb-1">Select a file to see its version history and manage agent attachments.</p>
-            <Card className="bg-card/50 border-border/50">
+            <Card className="bg-card border-border/50">
                 <CardHeader className="p-2"><CardTitle className="text-sm">Q3_Sales_Report.pdf - <span className="text-primary">Version 3</span></CardTitle></CardHeader>
                 <CardContent className="p-2 text-xs">
                     <p className="text-muted-foreground">Modified by User Alpha on 2023-10-25</p>
@@ -153,3 +153,4 @@ export default function FileVaultPage() {
     />
   );
 }
+

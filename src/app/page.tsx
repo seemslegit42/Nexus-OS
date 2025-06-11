@@ -3,7 +3,7 @@
 
 import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
-import { Activity, Users, AlertTriangle as AlertTriangleIconLucide, LayoutGrid, Cpu, Rocket, Info as InfoIcon, Zap, Newspaper, BarChartHorizontalBig, Shield, CalendarDays, GitMerge, Bell } from 'lucide-react'; // Renamed AlertTriangle
+import { Activity, Users, AlertTriangle as AlertTriangleIconLucide, LayoutGrid, Cpu, Rocket, Info as InfoIcon, Zap, Newspaper, BarChartHorizontalBig, Shield, CalendarDays, GitMerge, Bell } from 'lucide-react'; 
 import Link from 'next/link';
 import Image from 'next/image';
 import { WorkspaceGrid, type ZoneConfig } from '@/components/core/workspace-grid';
@@ -20,7 +20,7 @@ interface QuickActionItemProps {
 
 function QuickActionItem({ href, icon, title, description }: QuickActionItemProps) {
   return (
-    <Button variant="outline" className="w-full justify-start p-3 h-auto text-left bg-card/70 hover:bg-muted/70 border-border/70 transition-all duration-150 ease-in-out hover:shadow-lg hover:border-primary/50" asChild>
+    <Button variant="outline" className="w-full justify-start p-3 h-auto text-left bg-card hover:bg-muted/70 border-border/70 transition-all duration-150 ease-in-out hover:shadow-lg hover:border-primary/50" asChild>
       <Link href={href}>
         <div className="flex items-center gap-3">
           {icon}
@@ -68,7 +68,7 @@ function ActivityFeedContent(): ReactNode {
         <ul className="space-y-2">
           {feedItems.map((item) => (
             <li key={item.id}>
-              <Card className="bg-card/70 hover:bg-muted/70 border-border/70 transition-colors duration-150 ease-in-out hover:shadow-md">
+              <Card className="bg-card hover:bg-muted/70 border-border/70 transition-colors duration-150 ease-in-out hover:shadow-md">
                 <CardContent className="p-2.5 text-xs flex items-start">
                   {item.icon}
                   <div className="flex-grow">
@@ -98,7 +98,7 @@ function AgentStatusContent(): ReactNode {
       <CardContent className="p-1 md:p-2">
         <div className="space-y-1.5">
           {agents.map((agent) => (
-            <Card key={agent.id} className="bg-card/70 hover:bg-muted/70 border-border/70 transition-colors duration-150 ease-in-out hover:shadow-md">
+            <Card key={agent.id} className="bg-card hover:bg-muted/70 border-border/70 transition-colors duration-150 ease-in-out hover:shadow-md">
               <CardContent className="p-2.5 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Cpu className="h-5 w-5 text-primary flex-shrink-0" />
@@ -141,7 +141,7 @@ interface DashboardWidgetCardProps {
 function DashboardWidgetCard({ title, icon, description, valueOrStatus, valueColorClass, href }: DashboardWidgetCardProps) {
   return (
     <Link href={href} passHref>
-      <Card asChild className="bg-card/70 hover:bg-muted/70 border-border/70 transition-colors duration-150 ease-in-out hover:shadow-lg hover:border-primary/50 h-full flex flex-col cursor-pointer">
+      <Card asChild className="bg-card hover:bg-muted/70 border-border/70 transition-colors h-full flex flex-col cursor-pointer">
         <>
           <CardHeader className="pb-2 pt-3 px-3">
             <CardTitle className="flex items-center text-sm font-headline text-foreground gap-2">
@@ -191,7 +191,7 @@ function PinnedWidgetsContent(): ReactNode {
       description: "All services operational.",
       valueOrStatus: "Operational",
       valueColorClass: "text-green-500",
-      href: "/logs" // Changed from "/system" to "/logs" as per previous refinement
+      href: "/logs" 
     }
   ];
 
@@ -266,3 +266,4 @@ export default function HomePage() {
     />
   );
 }
+

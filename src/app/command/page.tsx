@@ -31,7 +31,7 @@ Last login: ${new Date().toLocaleString()}
         <div className="flex gap-2 items-center">
           <Input
             placeholder="Enter natural language command, structured prompt, or script..."
-            className="flex-grow bg-background/70 border-input focus:ring-primary h-9 text-sm font-code"
+            className="flex-grow bg-input border-input focus:ring-primary h-9 text-sm font-code"
           />
           <Button className="bg-primary hover:bg-primary/90 text-primary-foreground h-9">
             <Send className="mr-2 h-4 w-4" /> Execute
@@ -49,14 +49,14 @@ function SpellbookContent(): ReactNode {
         <ScrollArea className="flex-grow">
           <ul className="space-y-1.5">
             {['Analyze sales data Q3', 'Optimize frontend performance', 'Draft blog post on AI ethics', 'Security scan all services'].map((spell, i) => (
-              <li key={i} className="p-2.5 bg-card/60 rounded-md hover:bg-muted/60 cursor-pointer border border-border/60 shadow-sm transition-colors hover:border-primary/50">
+              <li key={i} className="p-2.5 bg-card rounded-md hover:bg-muted/60 cursor-pointer border border-border/60 shadow-sm transition-colors hover:border-primary/50">
                 <p className="text-sm font-medium text-foreground">{spell}</p>
                 <p className="text-xs text-muted-foreground">Type: {i % 2 === 0 ? 'Prompt Chain' : 'Script'}</p>
               </li>
             ))}
           </ul>
         </ScrollArea>
-        <Button variant="outline" className="w-full mt-2 bg-card/60 hover:bg-muted/60" size="sm">
+        <Button variant="outline" className="w-full mt-2 bg-card hover:bg-muted/60" size="sm">
           <PlusCircle className="mr-2 h-4 w-4"/> Add New Spell
         </Button>
       </CardContent>
@@ -122,3 +122,4 @@ export default function CommandCauldronPage() {
     />
   );
 }
+

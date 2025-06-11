@@ -29,7 +29,7 @@ function OsChangelogContent(): ReactNode {
         <ScrollArea className="h-full">
             <div className="space-y-2 p-1 md:p-2">
             {updates.map((update, i) => (
-            <Card key={i} className="bg-card/70 backdrop-blur-sm shadow-md border-border/60 hover:shadow-lg transition-shadow">
+            <Card key={i} className="bg-card backdrop-blur-sm shadow-md border-border/60 hover:shadow-lg transition-shadow">
                 <CardHeader className="p-2.5">
                 <div className="flex justify-between items-center">
                     <CardTitle className="font-headline text-base text-primary">{update.version}</CardTitle>
@@ -72,7 +72,7 @@ function RoadmapPreviewContent(): ReactNode {
           <li className="flex items-center"><Sparkles className="h-3.5 w-3.5 mr-1.5 text-accent" /> AI-Powered Module Suggestions</li>
         </ul>
         <Image src="https://placehold.co/400x250.png" alt="Roadmap Visual Timeline" width={400} height={250} className="rounded-md my-2 border border-border/60 opacity-70" data-ai-hint="timeline graph future features" />
-        <Button variant="outline" className="w-full text-xs bg-card/60 hover:bg-muted/60" size="sm">
+        <Button variant="outline" className="w-full text-xs bg-card hover:bg-muted/60" size="sm">
           <Eye className="mr-2 h-4 w-4" /> Test Upcoming UX Modules (Beta Program)
         </Button>
       </CardContent>
@@ -143,3 +143,4 @@ export default function UpdatesPage() {
     />
   );
 }
+

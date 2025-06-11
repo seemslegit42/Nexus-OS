@@ -69,7 +69,7 @@ function BehavioralFingerprintContent(): ReactNode {
       </CardContent>
       <CardFooter className="p-2 md:p-3 border-t border-border/60 flex items-center justify-between">
         <p className="text-xs text-muted-foreground">Anomalies: <span className="text-yellow-500 font-semibold">2</span> | Risk Score: <span className="text-yellow-500 font-semibold">Elevated</span></p>
-        <Button variant="outline" size="sm" className="text-xs bg-card/60 hover:bg-muted/60">Investigate</Button>
+        <Button variant="outline" size="sm" className="text-xs bg-card hover:bg-muted/60">Investigate</Button>
       </CardFooter>
     </Card>
   );
@@ -88,7 +88,7 @@ function SecurityProtocolEditorContent(): ReactNode {
           { title: "Data Exfiltration Alert", details: "Threshold: >1GB/hr by single agent. Action: Notify admin, suspend agent." },
           { title: "New Agent Permission Scope", details: "Default: Read-only for critical modules. Action: Manual approval for write access." }
         ].map(protocol => (
-          <Card key={protocol.title} className="bg-card/50 border-border/50 shadow-sm">
+          <Card key={protocol.title} className="bg-card border-border/50 shadow-sm">
             <CardHeader className="p-2 flex flex-row justify-between items-center">
                 <CardTitle className="text-sm font-semibold text-foreground">{protocol.title}</CardTitle>
                 <Button variant="ghost" size="icon" className="h-7 w-7"><Edit className="h-4 w-4 text-muted-foreground hover:text-primary"/></Button>
@@ -98,7 +98,7 @@ function SecurityProtocolEditorContent(): ReactNode {
         ))}
       </CardContent>
       <CardFooter className="p-2 md:p-3 border-t border-border/60">
-        <Button variant="outline" className="w-full bg-card/60 hover:bg-muted/60" size="sm">Add New Protocol</Button>
+        <Button variant="outline" className="w-full bg-card hover:bg-muted/60" size="sm">Add New Protocol</Button>
       </CardFooter>
     </Card>
   );
@@ -112,8 +112,8 @@ function RbacZbacSimulationContent(): ReactNode {
         <p className="text-xs text-muted-foreground mb-1">Simulate access attempts based on current rules.</p>
         <Image src="https://placehold.co/400x200.png" alt="RBAC/ZBAC Simulation UI" width={400} height={200} className="rounded-md border border-border/60 opacity-70" data-ai-hint="permission test scenario form" />
         <div className="grid grid-cols-2 gap-2 mt-2">
-            <div><Label htmlFor="sim-role" className="text-xs text-muted-foreground">Role/Agent</Label><Input id="sim-role" placeholder="e.g., Analyst" className="h-8 text-sm mt-0.5 bg-background/70"/></div>
-            <div><Label htmlFor="sim-resource" className="text-xs text-muted-foreground">Resource/Action</Label><Input id="sim-resource" placeholder="e.g., BillingModule:write" className="h-8 text-sm mt-0.5 bg-background/70"/></div>
+            <div><Label htmlFor="sim-role" className="text-xs text-muted-foreground">Role/Agent</Label><Input id="sim-role" placeholder="e.g., Analyst" className="h-8 text-sm mt-0.5 bg-input"/></div>
+            <div><Label htmlFor="sim-resource" className="text-xs text-muted-foreground">Resource/Action</Label><Input id="sim-resource" placeholder="e.g., BillingModule:write" className="h-8 text-sm mt-0.5 bg-input"/></div>
         </div>
       </CardContent>
       <CardFooter className="p-2 md:p-3 border-t border-border/60">
@@ -210,3 +210,4 @@ export default function SecurityCenterPage() {
     />
   );
 }
+

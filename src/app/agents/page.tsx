@@ -31,7 +31,7 @@ function AgentListContent(): ReactNode {
          <div className="flex flex-col md:flex-row justify-between items-center gap-2">
             <div className="relative w-full md:max-w-sm">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search agents (name, role, scope...)" className="pl-9 bg-background/70 border-input focus:ring-primary h-9 text-sm" />
+            <Input placeholder="Search agents (name, role, scope...)" className="pl-9 bg-input border-input focus:ring-primary h-9 text-sm" />
             </div>
             <Link href="/onboarding" passHref legacyBehavior>
                 <Button asChild className="w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground text-sm h-9">
@@ -184,3 +184,4 @@ export default function AgentConsolePage() {
     />
   );
 }
+

@@ -36,7 +36,7 @@ function NotificationsContent() {
       <CardHeader className="p-2 md:p-3 border-b border-border/60">
         <div className="flex justify-between items-center">
           <h2 className="text-lg font-headline text-foreground">Recent Notifications</h2>
-          <Button variant="outline" size="sm" className="h-8 text-xs bg-card/60 hover:bg-muted/60">Mark all as read</Button>
+          <Button variant="outline" size="sm" className="h-8 text-xs bg-card hover:bg-muted/60">Mark all as read</Button>
         </div>
       </CardHeader>
       <CardContent className="p-1 md:p-2 flex-grow overflow-hidden">
@@ -91,12 +91,10 @@ function AutoActionConfigContent(): ReactNode {
             <CardContent className="p-1 md:p-2 space-y-2 flex-grow overflow-y-auto">
                 <p className="text-xs text-muted-foreground mb-1">Configure rules for NexOS to automatically respond to notifications.</p>
                 
-                <Card className="bg-card/50 border-border/50 shadow-sm">
+                <Card className="bg-card border-border/50 shadow-sm">
                     <CardHeader className="p-2 flex flex-row items-center justify-between">
-                        <div>
-                            <CardTitle className="text-sm font-semibold">Rule: Agent Offline Critical</CardTitle>
-                            <CardDescription className="text-xs text-muted-foreground">When an agent reports critical offline status.</CardDescription>
-                        </div>
+                        <CardTitle className="text-sm font-semibold">Rule: Agent Offline Critical</CardTitle>
+                        <CardDescription className="text-xs text-muted-foreground sr-only">When an agent reports critical offline status.</CardDescription>
                         <div className="flex items-center gap-1.5">
                             <Switch defaultChecked id={`rule-offline-active`}/>
                             <Button variant="ghost" size="icon" className="h-7 w-7"><Edit className="h-4 w-4 text-muted-foreground hover:text-primary"/></Button>
@@ -104,10 +102,11 @@ function AutoActionConfigContent(): ReactNode {
                         </div>
                     </CardHeader>
                     <CardContent className="p-2 space-y-1.5 text-xs">
+                        <p className="text-xs text-muted-foreground mb-1">Trigger: When an agent reports critical offline status.</p>
                         <div>
                             <Label htmlFor="action-type-offline" className="text-xs mb-0.5 block text-muted-foreground">Action Type</Label>
                             <Select defaultValue="restart_agent">
-                                <SelectTrigger id="action-type-offline" className="h-8 text-xs bg-background/70 border-input focus:ring-primary">
+                                <SelectTrigger id="action-type-offline" className="h-8 text-xs bg-input border-input focus:ring-primary">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -119,16 +118,14 @@ function AutoActionConfigContent(): ReactNode {
                         </div>
                         <div>
                             <Label htmlFor="notify-channel-offline" className="text-xs mb-0.5 block text-muted-foreground">Notify Channel (if applicable)</Label>
-                            <Input id="notify-channel-offline" placeholder="e.g., #ops-alerts (Slack)" className="h-8 text-xs bg-background/70 border-input focus:ring-primary"/>
+                            <Input id="notify-channel-offline" placeholder="e.g., #ops-alerts (Slack)" className="h-8 text-xs bg-input border-input focus:ring-primary"/>
                         </div>
                     </CardContent>
                 </Card>
-                 <Card className="bg-card/50 border-border/50 shadow-sm">
+                 <Card className="bg-card border-border/50 shadow-sm">
                     <CardHeader className="p-2 flex flex-row items-center justify-between">
-                        <div>
-                             <CardTitle className="text-sm font-semibold">Rule: Low Disk Space</CardTitle>
-                            <CardDescription className="text-xs text-muted-foreground">When module storage exceeds 90% capacity.</CardDescription>
-                        </div>
+                        <CardTitle className="text-sm font-semibold">Rule: Low Disk Space</CardTitle>
+                        <CardDescription className="text-xs text-muted-foreground sr-only">When module storage exceeds 90% capacity.</CardDescription>
                         <div className="flex items-center gap-1.5">
                             <Switch id={`rule-disk-active`}/>
                             <Button variant="ghost" size="icon" className="h-7 w-7"><Edit className="h-4 w-4 text-muted-foreground hover:text-primary"/></Button>
@@ -136,10 +133,11 @@ function AutoActionConfigContent(): ReactNode {
                         </div>
                     </CardHeader>
                      <CardContent className="p-2 space-y-1.5 text-xs">
+                        <p className="text-xs text-muted-foreground mb-1">Trigger: When module storage exceeds 90% capacity.</p>
                         <div>
                             <Label htmlFor="action-type-disk" className="text-xs mb-0.5 block text-muted-foreground">Action Type</Label>
                             <Select defaultValue="notify_user">
-                                <SelectTrigger id="action-type-disk" className="h-8 text-xs bg-background/70 border-input focus:ring-primary">
+                                <SelectTrigger id="action-type-disk" className="h-8 text-xs bg-input border-input focus:ring-primary">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -153,7 +151,7 @@ function AutoActionConfigContent(): ReactNode {
                 <Image src="https://placehold.co/300x150.png" alt="Auto-action rule setup" width={300} height={150} className="rounded-md my-2 opacity-50 border border-border/60" data-ai-hint="rules engine interface logic" />
             </CardContent>
              <CardFooter className="p-2 md:p-3 border-t border-border/60">
-                <Button variant="outline" className="w-full bg-card/60 hover:bg-muted/60" size="sm"><PlusCircle className="mr-2 h-4 w-4"/> Add New Auto-Action Rule</Button>
+                <Button variant="outline" className="w-full bg-card hover:bg-muted/60" size="sm"><PlusCircle className="mr-2 h-4 w-4"/> Add New Auto-Action Rule</Button>
             </CardFooter>
         </Card>
     );
@@ -194,3 +192,4 @@ export default function NotificationsPage() {
     />
   );
 }
+

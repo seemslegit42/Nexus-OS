@@ -38,15 +38,15 @@ function UserProfileSettingsContent(): ReactNode {
     <SettingsCard title="User Profile" description="Manage your personal information." icon={<UserCircle />}>
       <div>
         <Label htmlFor="fullName" className="text-xs">Full Name</Label>
-        <Input id="fullName" defaultValue="Alex Ryder" className="mt-1 bg-background/70 border-input focus:ring-primary h-9 text-sm" />
+        <Input id="fullName" defaultValue="Alex Ryder" className="mt-1 bg-input border-input focus:ring-primary h-9 text-sm" />
       </div>
       <div>
         <Label htmlFor="email" className="text-xs">Email Address</Label>
-        <Input id="email" type="email" defaultValue="alex.ryder@nexos.ai" className="mt-1 bg-background/70 border-input focus:ring-primary h-9 text-sm" />
+        <Input id="email" type="email" defaultValue="alex.ryder@nexos.ai" className="mt-1 bg-input border-input focus:ring-primary h-9 text-sm" />
       </div>
       <div>
         <Label htmlFor="avatar" className="text-xs">Avatar URL</Label>
-        <Input id="avatar" placeholder="https://..." className="mt-1 bg-background/70 border-input focus:ring-primary h-9 text-sm" />
+        <Input id="avatar" placeholder="https://..." className="mt-1 bg-input border-input focus:ring-primary h-9 text-sm" />
       </div>
     </SettingsCard>
   );
@@ -57,11 +57,11 @@ function OrganizationSettingsContent(): ReactNode {
     <SettingsCard title="Organization" description="Manage your organization's details." icon={<Building />}>
       <div>
         <Label htmlFor="orgName" className="text-xs">Organization Name</Label>
-        <Input id="orgName" defaultValue="NexOS Innovations Inc." className="mt-1 bg-background/70 border-input focus:ring-primary h-9 text-sm" />
+        <Input id="orgName" defaultValue="NexOS Innovations Inc." className="mt-1 bg-input border-input focus:ring-primary h-9 text-sm" />
       </div>
       <div>
         <Label htmlFor="orgAddress" className="text-xs">Address</Label>
-        <Textarea id="orgAddress" placeholder="123 Future Drive, Cyberspace" className="mt-1 bg-background/70 border-input focus:ring-primary min-h-[60px] text-sm" />
+        <Textarea id="orgAddress" placeholder="123 Future Drive, Cyberspace" className="mt-1 bg-input border-input focus:ring-primary min-h-[60px] text-sm" />
       </div>
     </SettingsCard>
   );
@@ -73,7 +73,7 @@ function ThemeCustomizationContent(): ReactNode {
       <div className="flex items-center justify-between">
         <Label htmlFor="theme-mode" className="text-sm text-foreground">Appearance Mode</Label>
         <Select defaultValue="dark">
-          <SelectTrigger className="w-[120px] bg-background/70 border-input focus:ring-primary h-9 text-xs">
+          <SelectTrigger className="w-[120px] bg-input border-input focus:ring-primary h-9 text-xs">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -85,7 +85,7 @@ function ThemeCustomizationContent(): ReactNode {
       </div>
       <div>
           <Label htmlFor="accent-color" className="text-sm text-foreground">Accent Color</Label>
-          <Input id="accent-color" type="color" defaultValue="#FFA500" className="w-full h-9 mt-1 p-1 bg-background/70 border-input focus:ring-primary"/>
+          <Input id="accent-color" type="color" defaultValue="#FFA500" className="w-full h-9 mt-1 p-1 bg-input border-input focus:ring-primary"/>
       </div>
     </SettingsCard>
   );
@@ -101,7 +101,7 @@ function AppSettingsContent(): ReactNode {
       <div className="flex items-center justify-between">
         <Label htmlFor="session-timeout" className="text-sm text-foreground">Session Timeout</Label>
         <Select defaultValue="30">
-          <SelectTrigger className="w-[100px] bg-background/70 border-input focus:ring-primary h-9 text-xs">
+          <SelectTrigger className="w-[100px] bg-input border-input focus:ring-primary h-9 text-xs">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -115,7 +115,7 @@ function AppSettingsContent(): ReactNode {
        <div className="flex items-center justify-between">
         <Label htmlFor="language-settings" className="text-sm text-foreground">Language</Label>
         <Select defaultValue="en-US">
-          <SelectTrigger className="w-[120px] bg-background/70 border-input focus:ring-primary h-9 text-xs">
+          <SelectTrigger className="w-[120px] bg-input border-input focus:ring-primary h-9 text-xs">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -153,7 +153,7 @@ function AgentBehavioralDefaultsContent(): ReactNode {
       <div className="flex items-center justify-between">
         <Label htmlFor="agent-autonomy" className="text-sm text-foreground">Default Autonomy</Label>
         <Select defaultValue="supervised">
-          <SelectTrigger className="w-[180px] bg-background/70 border-input focus:ring-primary h-9 text-xs">
+          <SelectTrigger className="w-[180px] bg-input border-input focus:ring-primary h-9 text-xs">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -166,7 +166,7 @@ function AgentBehavioralDefaultsContent(): ReactNode {
       <div className="flex items-center justify-between">
         <Label htmlFor="agent-logging" className="text-sm text-foreground">Default Logging Level</Label>
         <Select defaultValue="standard">
-          <SelectTrigger className="w-[150px] bg-background/70 border-input focus:ring-primary h-9 text-xs">
+          <SelectTrigger className="w-[150px] bg-input border-input focus:ring-primary h-9 text-xs">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -178,7 +178,7 @@ function AgentBehavioralDefaultsContent(): ReactNode {
       </div>
       <div className="flex items-center justify-between">
           <Label htmlFor="max-recursion" className="text-sm text-foreground">Max Self-Correction Loops</Label>
-          <Input id="max-recursion" type="number" defaultValue="5" className="w-[80px] h-9 text-xs bg-background/70 border-input focus:ring-primary"/>
+          <Input id="max-recursion" type="number" defaultValue="5" className="w-[80px] h-9 text-xs bg-input border-input focus:ring-primary"/>
       </div>
     </SettingsCard>
   );
@@ -201,7 +201,7 @@ function ApiKeyManagementContent(): ReactNode {
               <Button variant="link" size="sm" className="p-0 h-auto text-xs text-destructive hover:text-destructive/80">Revoke Key</Button>
           </div>
       </ScrollArea>
-      <Button variant="outline" className="w-full bg-card/60 hover:bg-muted/60 mt-2"> Generate New API Key</Button>
+      <Button variant="outline" className="w-full bg-card hover:bg-muted/60 mt-2"> Generate New API Key</Button>
     </SettingsCard>
   );
 }
@@ -302,3 +302,4 @@ export default function SettingsPage() {
     </div>
   );
 }
+

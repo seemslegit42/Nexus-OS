@@ -33,7 +33,7 @@ interface CanvasNodeProps {
 
 const CanvasNode: React.FC<CanvasNodeProps> = ({ title, details, className, icon, status }) => {
   return (
-    <div className={cn("relative p-3 rounded-lg shadow-lg bg-card/80 backdrop-blur-sm border border-border/60 w-48 min-h-[70px] flex flex-col justify-center transition-all hover:shadow-primary/30 hover:border-primary/50 cursor-grab", className)}>
+    <div className={cn("relative p-3 rounded-lg shadow-lg bg-card backdrop-blur-sm border border-border/60 w-48 min-h-[70px] flex flex-col justify-center transition-all hover:shadow-primary/30 hover:border-primary/50 cursor-grab", className)}>
       <div className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-ring border-2 border-background shadow-sm"></div>
       <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-ring border-2 border-background shadow-sm"></div>
       
@@ -85,8 +85,8 @@ function CanvasContent(): ReactNode {
       </div>
 
       <div className="absolute bottom-3 right-3 z-20 flex gap-2">
-        <Button variant="outline" size="icon" className="h-8 w-8 bg-card/70 backdrop-blur-sm hover:bg-muted/70"><Edit3 className="h-4 w-4"/></Button>
-        <Button variant="outline" size="icon" className="h-8 w-8 bg-card/70 backdrop-blur-sm hover:bg-muted/70"><Sigma className="h-4 w-4"/></Button>
+        <Button variant="outline" size="icon" className="h-8 w-8 bg-card backdrop-blur-sm hover:bg-muted/70"><Edit3 className="h-4 w-4"/></Button>
+        <Button variant="outline" size="icon" className="h-8 w-8 bg-card backdrop-blur-sm hover:bg-muted/70"><Sigma className="h-4 w-4"/></Button>
       </div>
     </Card>
   );
@@ -136,7 +136,7 @@ function AgentBlocksPaletteContent(): ReactNode {
                 <AccordionContent className="pb-2 pt-1">
                   <div className="grid grid-cols-2 gap-1.5">
                     {section.blocks.map(block => (
-                      <Button key={block.name} variant="outline" className="w-full justify-start text-xs h-9 bg-card/60 hover:bg-muted/70 border-border/70 draggable-palette-item p-2">
+                      <Button key={block.name} variant="outline" className="w-full justify-start text-xs h-9 bg-card hover:bg-muted/70 border-border/70 draggable-palette-item p-2">
                         {React.cloneElement(block.icon, { className: "mr-1.5 h-3.5 w-3.5 text-primary/90" })}
                         {block.name}
                       </Button>
@@ -166,7 +166,7 @@ function InspectorContent(): ReactNode {
             // Example of selected node properties:
             <div>
                 <Label htmlFor="node-name" className="text-xs text-muted-foreground">Node Name</Label>
-                <Input id="node-name" defaultValue="Send Welcome Email" placeholder="Enter node name" className="mt-0.5 h-8 text-sm bg-background/70 border-input focus:ring-primary"/>
+                <Input id="node-name" defaultValue="Send Welcome Email" placeholder="Enter node name" className="mt-0.5 h-8 text-sm bg-input border-input focus:ring-primary"/>
             </div>
             <div>
                 <Label htmlFor="node-type" className="text-xs text-muted-foreground">Type</Label>
@@ -179,11 +179,11 @@ function InspectorContent(): ReactNode {
             <Separator className="my-3 border-border/60"/>
              <div>
                 <Label htmlFor="agent-select" className="text-xs text-muted-foreground">Agent</Label>
-                <Input id="agent-select" defaultValue="EmailBot" className="mt-0.5 h-8 text-sm bg-background/70 border-input focus:ring-primary"/>
+                <Input id="agent-select" defaultValue="EmailBot" className="mt-0.5 h-8 text-sm bg-input border-input focus:ring-primary"/>
             </div>
             <div>
                 <Label htmlFor="email-template" className="text-xs text-muted-foreground">Email Template</Label>
-                <Textarea id="email-template" placeholder="Select or create email template..." className="mt-0.5 min-h-[60px] text-sm bg-background/70 border-input focus:ring-primary"/>
+                <Textarea id="email-template" placeholder="Select or create email template..." className="mt-0.5 min-h-[60px] text-sm bg-input border-input focus:ring-primary"/>
             </div>
             <Separator className="my-3 border-border/60"/>
             <div>
@@ -225,7 +225,7 @@ function ConsoleContent(): ReactNode {
 [${new Date().toLocaleTimeString()}] Awaiting user interaction...`}
           </pre>
         </ScrollArea>
-        <Input placeholder="Enter command or query..." className="h-8 bg-background/70 border-input/70 focus:ring-primary font-code text-sm" />
+        <Input placeholder="Enter command or query..." className="h-8 bg-input border-input/70 focus:ring-primary font-code text-sm" />
       </CardContent>
     </Card>
   );
@@ -241,19 +241,19 @@ function AgentHubContent(): ReactNode {
     <Card className="h-full flex flex-col bg-transparent border-none shadow-none">
       <CardHeader className="p-1.5 border-b border-border/60 flex flex-row items-center justify-between">
         <CardTitle className="text-sm font-headline text-foreground">Connected Agents</CardTitle>
-        <Button variant="outline" size="xs" className="text-xs h-7 bg-card/60 hover:bg-muted/60">
+        <Button variant="outline" size="xs" className="text-xs h-7 bg-card hover:bg-muted/60">
             <PlusCircle className="mr-1.5 h-3.5 w-3.5" /> Spawn New
         </Button>
       </CardHeader>
       <CardContent className="p-1 flex-grow overflow-hidden">
         <div className="flex gap-1 mb-1.5 px-0.5">
-            <Button variant="secondary" size="xs" className="flex-1 h-7 text-xs bg-card/50 hover:bg-muted/60"><Play className="mr-1.5 h-3.5 w-3.5"/>Resume All</Button>
+            <Button variant="secondary" size="xs" className="flex-1 h-7 text-xs bg-card hover:bg-muted/60"><Play className="mr-1.5 h-3.5 w-3.5"/>Resume All</Button>
             <Button variant="destructive" size="xs" className="flex-1 h-7 text-xs"><PauseCircle className="mr-1.5 h-3.5 w-3.5"/>Pause All</Button>
         </div>
         <ScrollArea className="h-[calc(100%_-_2.5rem)] p-0.5">
           <div className="space-y-1.5">
             {agents.map(agent => (
-              <Card key={agent.name} className="bg-card/70 border-border/60 shadow-sm">
+              <Card key={agent.name} className="bg-card border-border/60 shadow-sm">
                 <CardHeader className="p-1.5 pb-1">
                   <div className="flex justify-between items-center">
                     <CardTitle className="text-xs font-semibold text-primary">{agent.name}</CardTitle>
@@ -300,12 +300,12 @@ export default function LoomStudioPage() {
       isDraggable: false, isResizable: false, canPin: false, canMaximize: false, canMinimize: false, canClose: false, 
     },
     {
-      id: 'agentBlocksPalette', // Changed from 'palette'
-      title: 'Agent Blocks Palette', // Updated title
+      id: 'agentBlocksPalette', 
+      title: 'Agent Blocks Palette', 
       icon: <PaletteIcon className="w-4 h-4" />,
-      content: <AgentBlocksPaletteContent />, // Updated content function
+      content: <AgentBlocksPaletteContent />, 
       defaultLayout: {
-        lg: { x: 0, y: 0, w: 3, h: 12, minW: 2, minH: 7 }, // Adjusted height
+        lg: { x: 0, y: 0, w: 3, h: 12, minW: 2, minH: 7 }, 
         md: { x: 0, y: 0, w: 2, h: 12, minW: 2, minH: 7 },
         sm: { x: 0, y: 9, w: 6, h: 7, minW: 3, minH: 5 },
       },
@@ -316,7 +316,7 @@ export default function LoomStudioPage() {
       icon: <ListChecks className="w-4 h-4" />,
       content: <InspectorContent />,
       defaultLayout: {
-        lg: { x: 9, y: 0, w: 3, h: 12, minW: 2, minH: 7 }, // Adjusted height
+        lg: { x: 9, y: 0, w: 3, h: 12, minW: 2, minH: 7 }, 
         md: { x: 8, y: 0, w: 2, h: 12, minW: 2, minH: 7 },
         sm: { x: 0, y: 16, w: 6, h: 7, minW: 3, minH: 5 }, 
       },
@@ -325,9 +325,9 @@ export default function LoomStudioPage() {
       id: 'console',
       title: 'Console',
       icon: <Terminal className="w-4 h-4" />,
-      content: <ConsoleContent />, // Updated content function
+      content: <ConsoleContent />, 
       defaultLayout: {
-        lg: { x: 0, y: 12, w: 3, h: 8, minW: 2, minH: 4 }, // Positioned below palette
+        lg: { x: 0, y: 12, w: 3, h: 8, minW: 2, minH: 4 }, 
         md: { x: 0, y: 12, w: 2, h: 8, minW: 2, minH: 4 },
         sm: { x: 0, y: 23, w: 6, h: 6, minW: 3, minH: 4 },
       },
@@ -336,9 +336,9 @@ export default function LoomStudioPage() {
       id: 'timeline',
       title: 'Timeline', 
       icon: <GanttChartSquare className="w-4 h-4" />, 
-      content: <TimelineContent />, // Updated content function
+      content: <TimelineContent />, 
       defaultLayout: {
-        lg: { x: 9, y: 12, w: 3, h: 8, minW: 2, minH: 4 }, // Positioned below inspector
+        lg: { x: 9, y: 12, w: 3, h: 8, minW: 2, minH: 4 }, 
         md: { x: 8, y: 12, w: 2, h: 8, minW: 2, minH: 4 },
         sm: { x: 0, y: 29, w: 6, h: 6, minW: 3, minH: 4 }, 
       },
@@ -347,9 +347,9 @@ export default function LoomStudioPage() {
       id: 'agentHub',
       title: 'Agent Hub',
       icon: <Users className="w-4 h-4" />,
-      content: <AgentHubContent />, // New content function
+      content: <AgentHubContent />, 
       defaultLayout: {
-        lg: { x: 3, y: 14, w: 6, h: 10, minW: 4, minH: 6 }, // Positioned below canvas
+        lg: { x: 3, y: 14, w: 6, h: 10, minW: 4, minH: 6 }, 
         md: { x: 2, y: 14, w: 6, h: 10, minW: 4, minH: 6 },
         sm: { x: 0, y: 35, w: 6, h: 8, minW: 4, minH: 5 },
       },
@@ -372,7 +372,8 @@ export default function LoomStudioPage() {
       zoneConfigs={loomStudioPageZoneConfigs}
       className="flex-grow p-1" 
       cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }} 
-      rowHeight={25} // Adjusted for potentially denser layout
+      rowHeight={25} 
     />
   );
 }
+
