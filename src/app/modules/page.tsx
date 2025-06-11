@@ -13,6 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 
 const modules = [
   { name: 'Data Ingestion Pipeline', version: '1.2.0', category: 'Data Tools', agentsAttached: 2, status: 'Active', permissions: 'Admin, DataEngineers' },
@@ -42,8 +43,18 @@ function ModuleMarketplaceContent(): ReactNode { // Marketplace-like system
                 <CardHeader className="p-3">
                   <div className="flex justify-between items-start">
                     <CardTitle className="font-headline text-base text-primary leading-tight">{mod.name}</CardTitle>
-                    <Badge variant={mod.status === 'Active' ? 'default' : mod.status === 'Critical' ? 'destructive' : 'secondary'}
-                      className={`text-xs ${mod.status === 'Active' ? 'bg-green-500/80 text-white' : mod.status === 'Development' ? 'bg-yellow-500/80 text-white' : ''}`}
+                    <Badge 
+                      variant={
+                        mod.status === 'Active' ? 'default' :
+                        mod.status === 'Critical' ? 'destructive' :
+                        mod.status === 'Development' ? 'outline' : 
+                        'secondary' 
+                      }
+                      className={cn(
+                        "text-xs",
+                        mod.status === 'Active' && 'bg-green-500/80 text-white dark:bg-green-600/80',
+                        mod.status === 'Development' && 'text-yellow-600 border-yellow-500/80 dark:text-yellow-400 dark:border-yellow-500/60'
+                      )}
                     >
                       {mod.status}
                     </Badge>
@@ -63,7 +74,8 @@ function ModuleMarketplaceContent(): ReactNode { // Marketplace-like system
                 <CardFooter className="flex justify-between p-3 border-t">
                   <Button variant="outline" size="sm" className="text-xs">Details / Edit</Button>
                   <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80 text-xs">
-                    {mod.agentsAttached > 0 ? <><Cpu className="mr-1.5 h-3.5 w-3.5"/>Manage Agents</> : <><Cpu className="mr-1.5 h-3.5 w-3.5"/>Attach Agent</>}
+                    <Cpu className="mr-1.5 h-3.5 w-3.5"/>
+                    {mod.agentsAttached > 0 ? 'Manage Agents' : 'Attach Agent'}
                   </Button>
                 </CardFooter>
               </Card>
@@ -168,8 +180,8 @@ export default function ModulesPage() {
   const modulesPageZoneConfigs: ZoneConfig[] = [
     {
       id: 'moduleMarketplace',
-      title: 'Module Store (Internal)', // Updated title
-      icon: <Package className="w-5 h-5" />, // Updated Icon
+      title: 'Module Store (Internal)',
+      icon: <Package className="w-5 h-5" />,
       content: <ModuleMarketplaceContent />,
       defaultLayout: {
         lg: { x: 0, y: 0, w: 7, h: 16, minW: 4, minH: 10 }, 
@@ -180,7 +192,7 @@ export default function ModulesPage() {
     {
       id: 'moduleEditor',
       title: 'Module Editor / Creator',
-      icon: <Construction className="w-5 h-5" />, // Changed icon
+      icon: <Construction className="w-5 h-5" />,
       content: <ModuleEditorContent />,
       defaultLayout: {
         lg: { x: 7, y: 0, w: 5, h: 16, minW: 3, minH: 10 }, 
@@ -191,7 +203,7 @@ export default function ModulesPage() {
     {
       id: 'apiExtensionManager',
       title: 'API Extension Manager',
-      icon: <KeyRound className="w-5 h-5" />, // Changed Icon
+      icon: <KeyRound className="w-5 h-5" />,
       content: <ApiExtensionManagerContent />,
       defaultLayout: {
         lg: { x: 0, y: 16, w: 6, h: 8, minW: 3, minH: 5 }, 
@@ -201,7 +213,7 @@ export default function ModulesPage() {
     },
     {
       id: 'integrationManager',
-      title: 'System Integration Manager', // Updated title
+      title: 'System Integration Manager',
       icon: <Share2 className="w-5 h-5" />,
       content: <IntegrationManagerContent />,
       defaultLayout: {
@@ -216,7 +228,8 @@ export default function ModulesPage() {
     <WorkspaceGrid
       zoneConfigs={modulesPageZoneConfigs}
       className="flex-grow"
-       cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }} // Ensure 12 columns for lg
+       cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
     />
   );
 }
+
