@@ -10,8 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
-import { Switch } from '@/components/ui/switch'; // Added Switch
-import { ScrollArea } from '@/components/ui/scroll-area'; // Added ScrollArea
+import { Switch } from '@/components/ui/switch';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const notifications = [
   { id: 1, type: 'alert', title: 'Critical System Alert: Agent SecureGuard Offline', message: 'Agent SecureGuard has unexpectedly stopped. Immediate attention required.', time: '2m ago', urgency: 'high', agent: 'SecureGuard' },
@@ -91,20 +91,20 @@ function AutoActionConfigContent(): ReactNode { // Auto-Action Configuration
                 <p className="text-xs text-muted-foreground">Configure rules for NexOS to automatically respond to notifications.</p>
                 
                 <Card className="bg-background/50">
-                    <CardHeader className="p-2">
-                        <CardTitle className="text-sm flex items-center justify-between">
-                            Rule: Agent Offline Critical
-                            <div className="flex items-center gap-2">
-                                <Switch defaultChecked id={`rule-offline-active`}/>
-                                <Button variant="ghost" size="icon" className="h-6 w-6"><Edit className="h-3.5 w-3.5"/></Button>
-                                <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive"><Trash2 className="h-3.5 w-3.5"/></Button>
-                            </div>
-                        </CardTitle>
-                        <CardDescription className="text-xs">When an agent reports critical offline status.</CardDescription>
+                    <CardHeader className="p-2 flex flex-row items-center justify-between">
+                        <div>
+                            <CardTitle className="text-sm font-semibold">Rule: Agent Offline Critical</CardTitle>
+                            <CardDescription className="text-xs">When an agent reports critical offline status.</CardDescription>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <Switch defaultChecked id={`rule-offline-active`}/>
+                            <Button variant="ghost" size="icon" className="h-6 w-6"><Edit className="h-3.5 w-3.5"/></Button>
+                            <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive"><Trash2 className="h-3.5 w-3.5"/></Button>
+                        </div>
                     </CardHeader>
                     <CardContent className="p-2 space-y-1.5 text-xs">
                         <div>
-                            <Label htmlFor="action-type-offline" className="text-xs">Action Type</Label>
+                            <Label htmlFor="action-type-offline" className="text-xs mb-0.5 block">Action Type</Label>
                             <Select defaultValue="restart_agent">
                                 <SelectTrigger id="action-type-offline" className="h-7 text-xs bg-background border-input focus:ring-primary">
                                     <SelectValue />
@@ -117,26 +117,26 @@ function AutoActionConfigContent(): ReactNode { // Auto-Action Configuration
                             </Select>
                         </div>
                         <div>
-                            <Label htmlFor="notify-channel-offline" className="text-xs">Notify Channel (if applicable)</Label>
+                            <Label htmlFor="notify-channel-offline" className="text-xs mb-0.5 block">Notify Channel (if applicable)</Label>
                             <Input id="notify-channel-offline" placeholder="e.g., #ops-alerts (Slack)" className="h-7 text-xs bg-background border-input focus:ring-primary"/>
                         </div>
                     </CardContent>
                 </Card>
                  <Card className="bg-background/50">
-                    <CardHeader className="p-2">
-                        <CardTitle className="text-sm flex items-center justify-between">
-                            Rule: Low Disk Space
-                             <div className="flex items-center gap-2">
-                                <Switch id={`rule-disk-active`}/>
-                                <Button variant="ghost" size="icon" className="h-6 w-6"><Edit className="h-3.5 w-3.5"/></Button>
-                                <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive"><Trash2 className="h-3.5 w-3.5"/></Button>
-                            </div>
-                        </CardTitle>
-                        <CardDescription className="text-xs">When module storage exceeds 90% capacity.</CardDescription>
+                    <CardHeader className="p-2 flex flex-row items-center justify-between">
+                        <div>
+                             <CardTitle className="text-sm font-semibold">Rule: Low Disk Space</CardTitle>
+                            <CardDescription className="text-xs">When module storage exceeds 90% capacity.</CardDescription>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <Switch id={`rule-disk-active`}/>
+                            <Button variant="ghost" size="icon" className="h-6 w-6"><Edit className="h-3.5 w-3.5"/></Button>
+                            <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive"><Trash2 className="h-3.5 w-3.5"/></Button>
+                        </div>
                     </CardHeader>
                      <CardContent className="p-2 space-y-1.5 text-xs">
                         <div>
-                            <Label htmlFor="action-type-disk" className="text-xs">Action Type</Label>
+                            <Label htmlFor="action-type-disk" className="text-xs mb-0.5 block">Action Type</Label>
                             <Select defaultValue="notify_user">
                                 <SelectTrigger id="action-type-disk" className="h-7 text-xs bg-background border-input focus:ring-primary">
                                     <SelectValue />
@@ -163,8 +163,8 @@ export default function NotificationsPage() {
   const notificationZoneConfigs: ZoneConfig[] = [
     {
       id: 'notificationsCenter',
-      title: 'Notification Center', // Updated title
-      icon: <Bell className="w-5 h-5" />, // Changed Icon
+      title: 'Notification Center',
+      icon: <Bell className="w-5 h-5" />,
       content: <NotificationsContent />,
       defaultLayout: {
         lg: { x: 0, y: 0, w: 7, h: 16, minW: 4, minH: 8 }, 
@@ -175,7 +175,7 @@ export default function NotificationsPage() {
     {
       id: 'autoActionConfig',
       title: 'Auto-Action Configuration',
-      icon: <Zap className="w-5 h-5" />, // Kept Zap for actions
+      icon: <Zap className="w-5 h-5" />,
       content: <AutoActionConfigContent />,
       defaultLayout: {
         lg: { x: 7, y: 0, w: 5, h: 16, minW: 3, minH: 8 }, 
@@ -189,7 +189,7 @@ export default function NotificationsPage() {
     <WorkspaceGrid
       zoneConfigs={notificationZoneConfigs}
       className="flex-grow"
-       cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }} // Ensure 12 columns for lg
+       cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
     />
   );
 }
