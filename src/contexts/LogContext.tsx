@@ -3,7 +3,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo } from 'react';
 
 export interface LogEntry {
   id: string;
@@ -26,7 +26,7 @@ export function LogProvider({ children }: { children: ReactNode }) {
   const addLog = useCallback((message: string, source?: string) => {
     const newLogEntry: LogEntry = {
       id: Date.now().toString() + Math.random().toString(36).substring(2, 7), // Simple unique ID
-      timestamp: new Date().toLocaleTimeString(),
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', fractionalSecondDigits: 3 } as Intl.DateTimeFormatOptions),
       message,
       source,
     };
@@ -37,8 +37,15 @@ export function LogProvider({ children }: { children: ReactNode }) {
     setLogEntries([]);
   }, []);
 
+  // Stabilize the context value with useMemo
+  const contextValue = useMemo(() => ({
+    logEntries,
+    addLog,
+    clearLogs
+  }), [logEntries, addLog, clearLogs]);
+
   return (
-    <LogContext.Provider value={{ logEntries, addLog, clearLogs }}>
+    <LogContext.Provider value={contextValue}>
       {children}
     </LogContext.Provider>
   );
