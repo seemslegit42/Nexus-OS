@@ -152,16 +152,25 @@
   height: 20px;
 }
 
+/* Updated resize handle for better visibility */
 .react-grid-item > .react-resizable-handle::after {
   content: "";
   position: absolute;
-  right: 3px;
-  bottom: 3px;
-  width: 5px;
-  height: 5px;
-  border-right: 2px solid hsl(var(--foreground) / 0.4);
-  border-bottom: 2px solid hsl(var(--foreground) / 0.4);
+  right: 3px; /* Adjusted position for larger handle */
+  bottom: 3px; /* Adjusted position for larger handle */
+  width: 8px; /* Increased size */
+  height: 8px; /* Increased size */
+  border-right: 2px solid hsl(var(--foreground) / 0.6); /* Slightly more opaque */
+  border-bottom: 2px solid hsl(var(--foreground) / 0.6); /* Slightly more opaque */
+  border-radius: 1px; /* Optional: slight rounding for the visual cue */
+  opacity: 0.7; /* Base opacity */
+  transition: opacity 0.2s ease-in-out;
 }
+
+.react-grid-item:hover > .react-resizable-handle::after {
+  opacity: 1; /* Full opacity on hover of the grid item */
+}
+
 
 .react-resizable-hide > .react-resizable-handle {
   display: none;
