@@ -3,7 +3,7 @@
 
 import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
-import { Activity, Users, AlertTriangle, LayoutGrid, Cpu, Rocket, Info as InfoIcon, Zap, Newspaper, BarChartHorizontalBig, Shield, CalendarDays, GitMerge, Bell } from 'lucide-react';
+import { Activity, Users, AlertTriangle as AlertTriangleIconLucide, LayoutGrid, Cpu, Rocket, Info as InfoIcon, Zap, Newspaper, BarChartHorizontalBig, Shield, CalendarDays, GitMerge, Bell } from 'lucide-react'; // Renamed to avoid conflict
 import Link from 'next/link';
 import Image from 'next/image';
 import { WorkspaceGrid, type ZoneConfig } from '@/components/core/workspace-grid';
@@ -20,7 +20,7 @@ interface QuickActionItemProps {
 
 function QuickActionItem({ href, icon, title, description }: QuickActionItemProps) {
   return (
-    <Button variant="outline" className="w-full justify-start p-3 h-auto text-left bg-card/60 hover:bg-muted/60 border-border/70 transition-all duration-150 ease-in-out hover:shadow-lg hover:border-primary/50" asChild>
+    <Button variant="outline" className="w-full justify-start p-3 h-auto text-left bg-card/70 hover:bg-muted/70 border-border/70 transition-all duration-150 ease-in-out hover:shadow-lg hover:border-primary/50" asChild>
       <Link href={href}>
         <div className="flex items-center gap-3">
           {icon}
@@ -68,7 +68,7 @@ function ActivityFeedContent(): ReactNode {
         <ul className="space-y-2">
           {feedItems.map((item) => (
             <li key={item.id}>
-              <Card className="bg-card/60 hover:bg-muted/60 border-border/70 transition-colors duration-150 ease-in-out hover:shadow-md">
+              <Card className="bg-card/70 hover:bg-muted/70 border-border/70 transition-colors duration-150 ease-in-out hover:shadow-md">
                 <CardContent className="p-2.5 text-xs flex items-start">
                   {item.icon}
                   <div className="flex-grow">
@@ -98,7 +98,7 @@ function AgentStatusContent(): ReactNode {
       <CardContent className="p-1 md:p-2">
         <div className="space-y-1.5">
           {agents.map((agent) => (
-            <Card key={agent.id} className="bg-card/60 hover:bg-muted/60 border-border/70 transition-colors duration-150 ease-in-out hover:shadow-md">
+            <Card key={agent.id} className="bg-card/70 hover:bg-muted/70 border-border/70 transition-colors duration-150 ease-in-out hover:shadow-md">
               <CardContent className="p-2.5 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Cpu className="h-5 w-5 text-primary flex-shrink-0" />
@@ -111,7 +111,7 @@ function AgentStatusContent(): ReactNode {
                   <Progress
                     value={agent.load}
                     className={cn(
-                      "h-1.5 w-full", // Slimmer progress bar
+                      "h-1.5 w-full", 
                       agent.load <= 50 && "[&>div]:bg-green-500",
                       agent.load > 50 && agent.load <= 80 && "[&>div]:bg-yellow-500",
                       agent.load > 80 && "[&>div]:bg-destructive"
@@ -140,9 +140,10 @@ interface DashboardWidgetCardProps {
 
 function DashboardWidgetCard({ title, icon, description, valueOrStatus, valueColorClass, href }: DashboardWidgetCardProps) {
   return (
-    <Link href={href} passHref legacyBehavior>
-      <Card asChild className="bg-card/60 hover:bg-muted/60 border-border/70 transition-colors duration-150 ease-in-out hover:shadow-lg hover:border-primary/50 h-full flex flex-col cursor-pointer">
-        <a>
+    <Link href={href} passHref> {/* Removed legacyBehavior */}
+      <Card asChild className="bg-card/70 hover:bg-muted/70 border-border/70 transition-colors duration-150 ease-in-out hover:shadow-lg hover:border-primary/50 h-full flex flex-col cursor-pointer">
+        {/* The Card itself becomes the link target due to asChild. No inner <a> needed. */}
+        <>
           <CardHeader className="pb-2 pt-3 px-3">
             <CardTitle className="flex items-center text-sm font-headline text-foreground gap-2">
               {icon}
@@ -153,7 +154,7 @@ function DashboardWidgetCard({ title, icon, description, valueOrStatus, valueCol
             <p className="text-xs text-muted-foreground mb-1">{description}</p>
             <p className={cn("text-lg font-bold", valueColorClass)}>{valueOrStatus}</p>
           </CardContent>
-        </a>
+        </>
       </Card>
     </Link>
   );
@@ -163,7 +164,7 @@ function PinnedWidgetsContent(): ReactNode {
   const widgets: DashboardWidgetCardProps[] = [
     {
       title: "Security Pulse",
-      icon: <AlertTriangle className="h-4 w-4 text-destructive" />,
+      icon: <AlertTriangleIconLucide className="h-4 w-4 text-destructive" />, // Used renamed import
       description: "All systems nominal. No active threats.",
       valueOrStatus: "Normal",
       valueColorClass: "text-green-500",
@@ -249,7 +250,7 @@ const dashboardZoneConfigs: ZoneConfig[] = [
     icon: <InfoIcon className="w-5 h-5" />,
     content: <PinnedWidgetsContent />,
     defaultLayout: {
-      lg: { x: 0, y: 12, w: 12, h: 6, minW: 6, minH: 4 }, // Increased height for better widget display
+      lg: { x: 0, y: 12, w: 12, h: 6, minW: 6, minH: 4 }, 
       md: { x: 0, y: 12, w: 10, h: 6, minW: 5, minH: 4 },
       sm: { x: 0, y: 18, w: 6, h: 7, minW: 4, minH: 4 },
     },
@@ -261,7 +262,7 @@ export default function HomePage() {
   return (
     <WorkspaceGrid
       zoneConfigs={dashboardZoneConfigs}
-      className="flex-grow p-1 md:p-2" // Reduced padding for more immersive feel
+      className="flex-grow p-1 md:p-2" 
       cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
     />
   );
