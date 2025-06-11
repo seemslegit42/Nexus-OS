@@ -51,7 +51,10 @@ const prompt = ai.definePrompt({
 
   Module Description: {{{moduleDescription}}}
 
-  Module Code: \n```{{{moduleCode}}}\n```
+  Module Code:
+  \`\`\`
+  {{{moduleCode}}}
+  \`\`\`
   `,
 });
 
