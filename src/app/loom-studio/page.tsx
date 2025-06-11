@@ -243,7 +243,7 @@ function InspectorContent(): ReactNode {
                     <p>Total Runs (24h): <span className="font-medium text-foreground">27</span></p>
                     <p>Success Rate: <span className="font-medium text-green-400">92%</span></p>
                     <p>Avg. Runtime: <span className="font-medium text-foreground">15.3s</span></p>
-                    <p>Failures Today: <span className="font-medium text-destructive">1</span></AlertCircle></p>
+                    <p>Failures Today: <span className="font-medium text-destructive">1</span> <AlertCircle className="inline h-3.5 w-3.5 ml-1 text-destructive" /></p>
                 </CardContent>
             </Card>
 
@@ -454,5 +454,4 @@ export default function LoomStudioPage() {
     />
   );
 }
-
-      
+    
