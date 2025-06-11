@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Cpu, PlusCircle, Search, Eye, Settings2, Trash2, Zap, BarChart2, FileCode, Bot } from 'lucide-react';
 import Image from 'next/image';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Link from 'next/link';
 
@@ -59,15 +59,14 @@ function AgentListContent(): ReactNode { // Agent List & Overview
                 <TableRow key={agent.id}>
                     <TableCell className="font-medium text-foreground text-sm py-2">{agent.name}</TableCell>
                     <TableCell className="py-2">
-                    <Badge 
+                    <Badge
                         variant={
-                        agent.status === 'Active' ? 'default' : 
-                        agent.status === 'Error' ? 'destructive' : 
+                        agent.status === 'Active' ? 'default' :
+                        agent.status === 'Error' ? 'destructive' :
                         agent.status === 'Maintenance' ? 'outline' : 'secondary'
                         }
                         className={`text-xs ${
-                        agent.status === 'Active' ? 'bg-green-500/80 text-white dark:bg-green-600/80 dark:text-white' : 
-                        agent.status === 'Maintenance' ? 'border-yellow-500 text-yellow-600 dark:text-yellow-400' : ''
+                        agent.status === 'Maintenance' ? 'text-yellow-600 border-yellow-500/80 dark:text-yellow-400 dark:border-yellow-500/60' : ''
                         }`}
                     >
                         {agent.status}
@@ -157,7 +156,7 @@ export default function AgentConsolePage() {
       icon: <FileCode className="w-5 h-5" />, // Changed Icon
       content: <AgentConfigurationContent />,
       defaultLayout: {
-        lg: { x: 0, y: 10, w: 5, h: 10, minW: 3, minH: 6 }, 
+        lg: { x: 0, y: 10, w: 5, h: 10, minW: 3, minH: 6 },
         md: { x: 0, y: 10, w: 5, h: 9, minW: 3, minH: 6 },
         sm: { x: 0, y: 9, w: 6, h: 8, minW: 3, minH: 5 },
       },
@@ -168,7 +167,7 @@ export default function AgentConsolePage() {
       icon: <BarChart2 className="w-5 h-5" />, // Changed icon
       content: <LiveAgentActivityContent />,
       defaultLayout: {
-        lg: { x: 5, y: 10, w: 7, h: 10, minW: 4, minH: 6 }, 
+        lg: { x: 5, y: 10, w: 7, h: 10, minW: 4, minH: 6 },
         md: { x: 5, y: 10, w: 5, h: 9, minW: 3, minH: 6 },
         sm: { x: 0, y: 17, w: 6, h: 8, minW: 3, minH: 5 },
       },
