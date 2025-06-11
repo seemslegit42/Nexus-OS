@@ -3,13 +3,15 @@
 
 import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
-import { Activity, Users, AlertTriangle as AlertTriangleIconLucide, LayoutGrid, Cpu, Rocket, Info as InfoIcon, Zap, Newspaper, BarChartHorizontalBig, Shield, CalendarDays, GitMerge, Bell } from 'lucide-react';
+import { Activity, Users, AlertTriangle as AlertTriangleIconLucide, LayoutGrid, Cpu, Rocket, Info as InfoIcon, Zap, Newspaper, BarChartHorizontalBig, Shield, CalendarDays, GitMerge, Bell, Package as PackageIcon } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { WorkspaceGrid, type ZoneConfig } from '@/components/core/workspace-grid';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
+import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
+import type { MicroApp } from '@/types/micro-app';
 
 interface QuickActionItemProps {
   href: string;
@@ -142,7 +144,6 @@ function DashboardWidgetCard({ title, icon, description, valueOrStatus, valueCol
   return (
     <Link href={href} passHref className="block h-full">
       <Card className="bg-card hover:bg-muted/70 border-border/70 transition-colors h-full flex flex-col cursor-pointer">
-        {/* The problematic inner <a> tag was here and has been removed */}
         <CardHeader className="pb-2 pt-3 px-3">
           <CardTitle className="flex items-center text-sm font-headline text-foreground gap-2">
             {icon}
@@ -150,58 +151,44 @@ function DashboardWidgetCard({ title, icon, description, valueOrStatus, valueCol
           </CardTitle>
         </CardHeader>
         <CardContent className="flex-grow px-3 pb-3">
-          <p className="text-xs text-muted-foreground mb-1">{description}</p>
-          <p className={cn("text-lg font-bold", valueColorClass)}>{valueOrStatus}</p>
+          <p className="text-xs text-muted-foreground mb-1 line-clamp-2">{description}</p>
+          <p className={cn("text-sm font-semibold", valueColorClass)}>{valueOrStatus}</p>
         </CardContent>
       </Card>
     </Link>
   );
 }
 
-function PinnedWidgetsContent(): ReactNode {
-  const widgets: DashboardWidgetCardProps[] = [
-    {
-      title: "Security Pulse",
-      icon: <AlertTriangleIconLucide className="h-4 w-4 text-destructive" />,
-      description: "All systems nominal. No active threats.",
-      valueOrStatus: "Normal",
-      valueColorClass: "text-green-500",
-      href: "/security"
-    },
-    {
-      title: "OS Updates",
-      icon: <GitMerge className="h-4 w-4 text-primary" />,
-      description: "v1.1.0 \"Orion\" is live. Check changelog.",
-      valueOrStatus: "View Details",
-      valueColorClass: "text-sm font-semibold text-accent-foreground",
-      href: "/updates"
-    },
-    {
-      title: "Notifications",
-      icon: <Bell className="h-4 w-4 text-yellow-500" />,
-      description: "3 Unread Alerts.",
-      valueOrStatus: "View Alerts",
-      valueColorClass: "text-sm font-semibold text-accent-foreground",
-      href: "/notifications"
-    },
-    {
-      title: "System Status",
-      icon: <CalendarDays className="h-4 w-4 text-blue-500" />,
-      description: "All services operational.",
-      valueOrStatus: "Operational",
-      valueColorClass: "text-green-500",
-      href: "/logs"
-    }
-  ];
+function DeployableAppsGridContent(): ReactNode {
+  const deployableApps = useMicroAppRegistryStore(state => state.getDeployableApps());
 
   return (
     <Card className="h-full bg-transparent border-none shadow-none">
       <CardContent className="p-1 md:p-2">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
-          {widgets.map(widget => (
-            <DashboardWidgetCard key={widget.title} {...widget} />
-          ))}
-        </div>
+        {deployableApps.length === 0 ? (
+          <div className="flex items-center justify-center h-full text-center">
+            <div className="p-4">
+              <Rocket className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">No deployable micro-apps available yet.</p>
+              <p className="text-xs text-muted-foreground">Enable some in the Admin Micro-App Registry.</p>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">
+            {deployableApps.map(app => (
+              <DashboardWidgetCard
+                key={app.id}
+                title={app.displayName}
+                // TODO: Implement dynamic icon mapping based on app.icon string
+                icon={<PackageIcon className="h-4 w-4 text-primary" />} 
+                description={app.description}
+                valueOrStatus={app.category || "Launch App"}
+                valueColorClass="text-primary"
+                href={app.entryPoint || `/`} // Fallback to home if no entry point
+              />
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -243,10 +230,10 @@ const dashboardZoneConfigs: ZoneConfig[] = [
     },
   },
   {
-    id: 'pinnedSystemWidgets',
-    title: 'System Overview & Pinned Widgets',
-    icon: <InfoIcon className="w-5 h-5" />,
-    content: <PinnedWidgetsContent />,
+    id: 'deployableAppsGrid', // Renamed id
+    title: 'Available Micro-Apps', // Renamed title
+    icon: <LayoutGrid className="w-5 h-5" />, // Changed icon to represent apps
+    content: <DeployableAppsGridContent />, // Using the new content component
     defaultLayout: {
       lg: { x: 0, y: 12, w: 12, h: 6, minW: 6, minH: 4 }, 
       md: { x: 0, y: 12, w: 10, h: 6, minW: 5, minH: 4 }, 
