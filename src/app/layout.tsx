@@ -1,14 +1,28 @@
 
 import type { Metadata } from 'next';
+import { Comfortaa, Lexend } from 'next/font/google';
 import './globals.css';
 import { TopBar } from '@/components/core/top-bar';
 import { Toaster } from "@/components/ui/toaster";
 import { Zone } from '@/components/core/zone';
+import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'NexOS',
   description: 'The Next-Gen, Agent-Native, Security-Saturated OS.',
 };
+
+const comfortaa = Comfortaa({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-comfortaa',
+});
+
+const lexend = Lexend({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-lexend',
+});
 
 export default function RootLayout({
   children,
@@ -16,12 +30,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" className={cn("dark", comfortaa.variable, lexend.variable)} suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet" />
+        {/* Removed direct font links, next/font handles this */}
       </head>
       <body className="font-body antialiased flex flex-col min-h-screen bg-background">
         <TopBar />

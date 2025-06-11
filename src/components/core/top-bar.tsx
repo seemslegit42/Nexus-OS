@@ -117,14 +117,12 @@ export function TopBar() {
               <ScrollArea className="h-[calc(100vh_-_10rem)] max-h-[400px]">
                 <DropdownMenuGroup>
                   {modules.map((mod) => (
-                    <Link href={mod.href} key={mod.name} passHref>
-                      <DropdownMenuItem asChild>
-                        <a>
-                          {mod.icon}
-                          <span>{mod.name}</span>
-                        </a>
-                      </DropdownMenuItem>
-                    </Link>
+                    <DropdownMenuItem key={mod.name} asChild>
+                      <Link href={mod.href}>
+                        {mod.icon}
+                        <span>{mod.name}</span>
+                      </Link>
+                    </DropdownMenuItem>
                   ))}
                 </DropdownMenuGroup>
               </ScrollArea>
@@ -252,16 +250,18 @@ export function TopBar() {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <Link href="/settings#userProfileSettings" passHref>
-                <DropdownMenuItem asChild>
-                   <a><UserCircle className="mr-2 h-4 w-4" /><span>Profile</span></a>
-                </DropdownMenuItem>
-              </Link>
-              <Link href="/settings" passHref>
-                <DropdownMenuItem asChild>
-                  <a><SettingsIcon className="mr-2 h-4 w-4" /><span>Settings</span></a>
-                </DropdownMenuItem>
-              </Link>
+              <DropdownMenuItem asChild>
+                 <Link href="/settings#userProfileSettings">
+                    <UserCircle className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                 </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/settings">
+                    <SettingsIcon className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <LogOut className="mr-2 h-4 w-4" />

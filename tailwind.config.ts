@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -17,9 +18,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        body: ['Comfortaa', 'sans-serif'],
-        headline: ['Comfortaa', 'sans-serif'],
-        code: ['Lexend', 'monospace'],
+        body: ['var(--font-comfortaa)', 'sans-serif'],
+        headline: ['var(--font-comfortaa)', 'sans-serif'],
+        code: ['var(--font-lexend)', 'monospace'],
       },
       colors: {
         border: 'hsl(var(--border))',
