@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, Fragment } from 'react';
+import React, { useState, useEffect, useCallback, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -12,7 +12,7 @@ import {
   Home, Zap, LayoutGrid, Cpu, Command as CommandIconCmdk, Briefcase,
   ListChecks, ShieldCheck, Users, Settings2, MessageSquare, BarChart3,
   FileArchive, GitMerge, Rocket, LogOut, Search as SearchIconLucide, ExternalLink,
-  FilePlus, Package, Maximize, Minimize, Pin, Lightbulb, Palette, Info
+  FilePlus, Package, Maximize, Minimize, Pin, Lightbulb, Palette, Info, RadioTower // Ensured RadioTower is here
 } from 'lucide-react';
 import type { ReactNode } from 'react';
 
@@ -30,47 +30,55 @@ interface CommandLauncherDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+// Moved allAvailableActions outside the component to make it a stable reference
+const allAvailableActions: CommandAction[] = [
+  // Navigation
+  { id: 'nav-dashboard', group: 'Navigation', name: 'Go to Dashboard', icon: <Home />, keywords: ['home', 'main'], perform: (close, r) => { r.push('/'); close(); } },
+  { id: 'nav-loom-studio', group: 'Navigation', name: 'Go to Loom Studio', icon: <LayoutGrid />, keywords: ['workflow', 'visual', 'editor', 'autopilot'], perform: (close, r) => { r.push('/loom-studio'); close(); } },
+  { id: 'nav-pulse', group: 'Navigation', name: 'Go to Pulse', icon: <RadioTower />, keywords: ['system status', 'live events', 'monitoring'], perform: (close, r) => { r.push('/pulse'); close(); } },
+  { id: 'nav-agent-console', group: 'Navigation', name: 'Go to Agent Console', icon: <Cpu />, keywords: ['agents', 'manage', 'fleet'], perform: (close, r) => { r.push('/agents'); close(); } },
+  { id: 'nav-command-cauldron', group: 'Navigation', name: 'Go to Command & Cauldron', icon: <CommandIconCmdk />, keywords: ['terminal', 'cli', 'prompt'], perform: (close, r) => { r.push('/command'); close(); } },
+  { id: 'nav-modules', group: 'Navigation', name: 'Go to Modules', icon: <Package />, keywords: ['extensions', 'plugins', 'features'], perform: (close, r) => { r.push('/modules'); close(); } },
+  { id: 'nav-logs', group: 'Navigation', name: 'Go to Logs & Audit', icon: <ListChecks />, keywords: ['activity', 'history', 'events'], perform: (close, r) => { r.push('/logs'); close(); } },
+  { id: 'nav-security', group: 'Navigation', name: 'Go to Security Center', icon: <ShieldCheck />, keywords: ['threats', 'firewall', 'rbac'], perform: (close, r) => { r.push('/security'); close(); } },
+  { id: 'nav-permissions', group: 'Navigation', name: 'Go to Permissions', icon: <Users />, keywords: ['access', 'roles', 'authz'], perform: (close, r) => { r.push('/permissions'); close(); } },
+  { id: 'nav-settings', group: 'Navigation', name: 'Go to Settings', icon: <Settings2 />, keywords: ['config', 'preferences', 'profile'], perform: (close, r) => { r.push('/settings'); close(); } },
+  { id: 'nav-notifications', group: 'Navigation', name: 'Go to Notifications', icon: <MessageSquare />, keywords: ['alerts', 'messages', 'updates'], perform: (close, r) => { r.push('/notifications'); close(); } },
+  { id: 'nav-billing', group: 'Navigation', name: 'Go to Billing', icon: <BarChart3 />, keywords: ['subscription', 'payment', 'usage'], perform: (close, r) => { r.push('/billing'); close(); } },
+  { id: 'nav-files', group: 'Navigation', name: 'Go to File Vault', icon: <FileArchive />, keywords: ['storage', 'documents', 'uploads'], perform: (close, r) => { r.push('/files'); close(); } },
+  { id: 'nav-updates', group: 'Navigation', name: 'Go to OS Updates', icon: <GitMerge />, keywords: ['changelog', 'versions', 'release'], perform: (close, r) => { r.push('/updates'); close(); } },
+  { id: 'nav-items', group: 'Navigation', name: 'Go to My Items', icon: <Briefcase />, keywords: ['projects', 'apps', 'services'], perform: (close, r) => { r.push('/home/items'); close(); } },
+  { id: 'nav-explore', group: 'Navigation', name: 'Explore Marketplace', icon: <SearchIconLucide />, keywords: ['discover', 'templates', 'community'], perform: (close, r) => { r.push('/explore'); close(); } },
+  { id: 'nav-submit-creation', group: 'Navigation', name: 'Submit Creation to Marketplace', icon: <FilePlus />, keywords: ['contribute', 'share'], perform: (close, r) => { r.push('/explore/submit'); close(); } },
+  { id: 'nav-onboarding', group: 'Navigation', name: 'Run Onboarding Wizard', icon: <Rocket />, keywords: ['setup', 'guide', 'tutorial'], perform: (close, r) => { r.push('/onboarding'); close(); } },
+
+  // Agent Actions
+  { id: 'agent-spawn', group: 'Agent Actions', name: 'Spawn New Agent', icon: <Zap />, keywords: ['create agent', 'new bot'], perform: (close, r) => { r.push('/onboarding'); close(); } }, // Or a dedicated agent creation page
+  { id: 'agent-manage', group: 'Agent Actions', name: 'Manage Agents', icon: <Cpu />, perform: (close, r) => { r.push('/agents'); close(); } },
+
+  // Module Actions
+  { id: 'module-manage', group: 'Module Actions', name: 'Manage Modules', icon: <Package />, perform: (close, r) => { r.push('/modules'); close(); } },
+  { id: 'module-create', group: 'Module Actions', name: 'Create New Module', icon: <FilePlus />, perform: (close, r) => { r.push('/modules'); /* TODO: Scroll to editor or open create modal */ close(); } },
+  
+  // Item Actions
+  { id: 'item-create', group: 'Item Actions', name: 'Create New Item', icon: <FilePlus />, keywords: ['new project', 'new app'], perform: (close, r) => { r.push('/home/items/new'); close(); } },
+
+  // UI / System Actions
+  { id: 'ui-theme-settings', group: 'System', name: 'Open Theme Settings', icon: <Palette />, perform: (close, r) => { r.push('/settings'); /* TODO: scroll to theme section */ close(); } },
+  { id: 'sys-logout', group: 'System', name: 'Log Out', icon: <LogOut />, keywords: ['sign out', 'exit'], perform: (close) => { console.log('Logging out...'); /* Actual logout logic */ close(); } },
+  { id: 'sys-docs', group: 'System', name: 'View Documentation', icon: <Info />, keywords: ['help', 'support', 'guide'], perform: (close, r) => { r.push('/docs'); close(); } },
+
+  // Example of actions that don't navigate
+  { id: 'action-console-log', group: 'Developer', name: 'Log "Hello NexOS" to console', icon: <Lightbulb />, perform: (close) => { console.log("Hello NexOS from Command Launcher!"); close(); } },
+];
+
+
 export function CommandLauncherDialog({ open, onOpenChange }: CommandLauncherDialogProps) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredActions, setFilteredActions] = useState<CommandAction[]>([]);
   const [groupedActions, setGroupedActions] = useState<Record<string, CommandAction[]>>({});
 
-  const allAvailableActions: CommandAction[] = [
-    // Navigation
-    { id: 'nav-dashboard', group: 'Navigation', name: 'Go to Dashboard', icon: <Home />, keywords: ['home', 'main'], perform: (close, r) => { r.push('/'); close(); } },
-    { id: 'nav-loom-studio', group: 'Navigation', name: 'Go to Loom Studio', icon: <LayoutGrid />, keywords: ['workflow', 'visual', 'editor'], perform: (close, r) => { r.push('/loom-studio'); close(); } },
-    { id: 'nav-agent-console', group: 'Navigation', name: 'Go to Agent Console', icon: <Cpu />, keywords: ['agents', 'manage', 'fleet'], perform: (close, r) => { r.push('/agents'); close(); } },
-    { id: 'nav-command-cauldron', group: 'Navigation', name: 'Go to Command & Cauldron', icon: <CommandIconCmdk />, keywords: ['terminal', 'cli', 'prompt'], perform: (close, r) => { r.push('/command'); close(); } },
-    { id: 'nav-modules', group: 'Navigation', name: 'Go to Modules', icon: <Package />, keywords: ['extensions', 'plugins', 'features'], perform: (close, r) => { r.push('/modules'); close(); } },
-    { id: 'nav-logs', group: 'Navigation', name: 'Go to Logs & Audit', icon: <ListChecks />, keywords: ['activity', 'history', 'events'], perform: (close, r) => { r.push('/logs'); close(); } },
-    { id: 'nav-security', group: 'Navigation', name: 'Go to Security Center', icon: <ShieldCheck />, keywords: ['threats', 'firewall', 'rbac'], perform: (close, r) => { r.push('/security'); close(); } },
-    { id: 'nav-permissions', group: 'Navigation', name: 'Go to Permissions', icon: <Users />, keywords: ['access', 'roles', 'authz'], perform: (close, r) => { r.push('/permissions'); close(); } },
-    { id: 'nav-settings', group: 'Navigation', name: 'Go to Settings', icon: <Settings2 />, keywords: ['config', 'preferences', 'profile'], perform: (close, r) => { r.push('/settings'); close(); } },
-    { id: 'nav-notifications', group: 'Navigation', name: 'Go to Notifications', icon: <MessageSquare />, keywords: ['alerts', 'messages', 'updates'], perform: (close, r) => { r.push('/notifications'); close(); } },
-    { id: 'nav-billing', group: 'Navigation', name: 'Go to Billing', icon: <BarChart3 />, keywords: ['subscription', 'payment', 'usage'], perform: (close, r) => { r.push('/billing'); close(); } },
-    { id: 'nav-files', group: 'Navigation', name: 'Go to File Vault', icon: <FileArchive />, keywords: ['storage', 'documents', 'uploads'], perform: (close, r) => { r.push('/files'); close(); } },
-    { id: 'nav-updates', group: 'Navigation', name: 'Go to OS Updates', icon: <GitMerge />, keywords: ['changelog', 'versions', 'release'], perform: (close, r) => { r.push('/updates'); close(); } },
-    { id: 'nav-explore', group: 'Navigation', name: 'Explore Marketplace', icon: <SearchIconLucide />, keywords: ['discover', 'templates', 'community'], perform: (close, r) => { r.push('/explore'); close(); } },
-    { id: 'nav-submit-creation', group: 'Navigation', name: 'Submit Creation to Marketplace', icon: <FilePlus />, keywords: ['contribute', 'share'], perform: (close, r) => { r.push('/explore/submit'); close(); } },
-    { id: 'nav-onboarding', group: 'Navigation', name: 'Run Onboarding Wizard', icon: <Rocket />, keywords: ['setup', 'guide', 'tutorial'], perform: (close, r) => { r.push('/onboarding'); close(); } },
-
-    // Agent Actions
-    { id: 'agent-spawn', group: 'Agent Actions', name: 'Spawn New Agent', icon: <Zap />, keywords: ['create agent', 'new bot'], perform: (close, r) => { r.push('/onboarding'); close(); } },
-    { id: 'agent-manage', group: 'Agent Actions', name: 'Manage Agents', icon: <Cpu />, perform: (close, r) => { r.push('/agents'); close(); } },
-
-    // Module Actions
-    { id: 'module-manage', group: 'Module Actions', name: 'Manage Modules', icon: <Package />, perform: (close, r) => { r.push('/modules'); close(); } },
-    { id: 'module-create', group: 'Module Actions', name: 'Create New Module', icon: <FilePlus />, perform: (close, r) => { router.push('/modules'); /* TODO: Scroll to editor or open create modal */ close(); } },
-    
-    // UI / System Actions
-    { id: 'ui-theme-settings', group: 'System', name: 'Open Theme Settings', icon: <Palette />, perform: (close, r) => { r.push('/settings'); /* TODO: scroll to theme section */ close(); } },
-    { id: 'sys-logout', group: 'System', name: 'Log Out', icon: <LogOut />, keywords: ['sign out', 'exit'], perform: (close) => { console.log('Logging out...'); /* Actual logout logic */ close(); } },
-    { id: 'sys-docs', group: 'System', name: 'View Documentation', icon: <Info />, keywords: ['help', 'support', 'guide'], perform: (close, r) => { r.push('/docs'); close(); } },
-
-    // Example of actions that don't navigate
-    { id: 'action-console-log', group: 'Developer', name: 'Log "Hello NexOS" to console', icon: <Lightbulb />, perform: (close) => { console.log("Hello NexOS from Command Launcher!"); close(); } },
-  ];
 
   useEffect(() => {
     if (!open) {
@@ -100,7 +108,7 @@ export function CommandLauncherDialog({ open, onOpenChange }: CommandLauncherDia
     );
     setFilteredActions(filtered);
     setGroupedActions({}); // Clear groups when searching
-  }, [searchTerm, allAvailableActions]);
+  }, [searchTerm]);
 
   const handleActionClick = (action: CommandAction) => {
     action.perform(() => onOpenChange(false), router);
@@ -180,4 +188,3 @@ export function CommandLauncherDialog({ open, onOpenChange }: CommandLauncherDia
     </Dialog>
   );
 }
-
