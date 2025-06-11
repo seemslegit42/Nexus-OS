@@ -1,3 +1,4 @@
+
 @import 'react-grid-layout/css/styles.css';
 @import 'react-resizable/css/styles.css';
 
@@ -28,7 +29,7 @@
     --accent: 45 70% 60%; /* #E0BB55 Lighter/brighter gold */
     --accent-foreground: 45 60% 15%; /* #3B2F0E Dark Brown/Black for text on accent gold */
 
-    --destructive: 0 100% 60%; /* #FF3333 Security Red */
+    --destructive: 0 84% 60%; /* Standard ShadCN Red - was 0 100% 60% */
     --destructive-foreground: 0 0% 98%; /* White text on red */
 
     --border: 0 0% 86%; /* #DCDCDC */
@@ -37,12 +38,12 @@
 
     --radius: 0.5rem;
 
-    /* Updated Chart Colors (Non-Blue) */
-    --chart-1: 30 80% 55%; /* Orange */
-    --chart-2: 90 60% 45%; /* Green */
-    --chart-3: 0 60% 60%; /* Reddish */
-    --chart-4: 40 70% 65%; /* Lighter Gold */
-    --chart-5: 20 75% 50%; /* Brownish Orange */
+    /* Updated Chart Colors for better harmony and distinction */
+    --chart-1: 25 80% 58%;   /* Warmer Orange - was 30 80% 55% */
+    --chart-2: 140 55% 50%;  /* More distinct Green - was 90 60% 45% */
+    --chart-3: 0 75% 65%;    /* Brighter Red - was 0 60% 60% */
+    --chart-4: 50 75% 60%;   /* Golden Yellow - was 40 70% 65% */
+    --chart-5: 35 60% 55%;   /* Softer Brown/Orange - was 20 75% 50% */
 
     /* Scrollbar Variables - Light Theme */
     --scrollbar-track-bg: hsl(40 67% 98% / 0.4);  /* Semi-transparent page background */
@@ -73,19 +74,19 @@
     --accent: 45 75% 65%; /* #E8C56E Even brighter gold for dark accents */
     --accent-foreground: 45 60% 15%; /* #3B2F0E */
 
-    --destructive: 0 80% 60%; /* #FF4D4D Slightly brighter red for dark mode */
+    --destructive: 0 72% 51%; /* Slightly less neon red for dark - was 0 80% 60% */
     --destructive-foreground: 0 0% 98%; /* White text */
 
     --border: 0 0% 25%; /* #404040 */
     --input: 0 0% 20%; /* #333333 */
     --ring: 45 70% 60%; /* #E0BB55 Brighter Gold */
     
-    /* Chart Colors for Dark Mode (can be same or adjusted) */
-    --chart-1: 30 80% 60%;
-    --chart-2: 90 60% 50%;
-    --chart-3: 0 60% 65%;
-    --chart-4: 40 70% 70%;
-    --chart-5: 20 75% 55%;
+    /* Chart Colors for Dark Mode (using same updated values) */
+    --chart-1: 25 80% 58%;
+    --chart-2: 140 55% 50%;
+    --chart-3: 0 75% 65%;
+    --chart-4: 50 75% 60%;
+    --chart-5: 35 60% 55%;
 
     /* Scrollbar Variables - Dark Theme */
     --scrollbar-track-bg: hsl(0 0% 10% / 0.4);       /* Semi-transparent page background */
