@@ -1,8 +1,9 @@
 
 'use client';
 
+import React, { useState, useEffect, useMemo, cloneElement } from 'react';
+import type { ReactNode } from 'react';
 import Link from 'next/link';
-import { useState, useEffect, useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import { NexosLogo } from '@/components/icons/nexos-logo';
 import { Input } from '@/components/ui/input';
@@ -28,8 +29,7 @@ import {
   LogOut,
   UserCircle,
   Cpu,
-  ShieldAlert,
-  // Grid3x3, // Replaced by specific module icons in switcher trigger
+  // ShieldAlert, // Not used currently
   Home,
   LayoutGrid,
   Command as CommandIcon,
@@ -52,7 +52,6 @@ import { ActiveAgentsPopoverContent } from './ActiveAgentsPopoverContent';
 import { RecentNotificationsPopoverContent } from './RecentNotificationsPopoverContent';
 import { ModuleSwitcherDropdownContent } from './ModuleSwitcherDropdownContent';
 import { cn } from '@/lib/utils';
-import type { ReactNode } from 'react';
 
 const navModules = [
   { name: 'Dashboard', href: '/', icon: <Home className="mr-2 h-4 w-4" /> },
@@ -70,6 +69,8 @@ const navModules = [
   { name: 'File Vault', href: '/files', icon: <FileArchive className="mr-2 h-4 w-4" /> },
   { name: 'OS Updates', href: '/updates', icon: <GitMerge className="mr-2 h-4 w-4" /> },
   { name: 'Onboarding', href: '/onboarding', icon: <Rocket className="mr-2 h-4 w-4" /> },
+  // Example for item details to test context
+  { name: 'Item Details', href: '/home/items', icon: <Package className="mr-2 h-4 w-4" />}, // Base for items
 ];
 
 export function TopBar() {
@@ -77,41 +78,39 @@ export function TopBar() {
   const pathname = usePathname();
 
   const currentModule = useMemo(() => {
+    // Sort by href length DESC to match more specific paths first.
+    // Paths that are identical except for a trailing slash should be handled correctly by ensuring consistent trailing slashes in navModules or pathname.
     const sortedModules = [...navModules].sort((a, b) => {
-      // Prioritize exact matches or longer paths for more specific matching
-      if (a.href === pathname) return -1;
-      if (b.href === pathname) return 1;
-      if (pathname.startsWith(a.href) && pathname.startsWith(b.href)) {
-        return b.href.length - a.href.length;
-      }
-      if (pathname.startsWith(a.href)) return -1;
-      if (pathname.startsWith(b.href)) return 1;
+      // Prioritize exact matches
+      if (pathname === a.href) return -1;
+      if (pathname === b.href) return 1;
+      // Then prioritize longer paths for more specific parent matching
       return b.href.length - a.href.length;
     });
 
     let foundModule = sortedModules.find(mod => pathname.startsWith(mod.href));
     
-    // Handle root path explicitly
+    // If on the exact root path, ensure it picks the root module.
     if (pathname === '/') {
       foundModule = navModules.find(mod => mod.href === '/');
     }
     
-    return foundModule || { name: 'NexOS', href: pathname, icon: <NexosLogo className="h-4 w-4 text-primary" /> };
+    return foundModule || { name: 'NexOS Context', href: pathname, icon: <NexosLogo className="h-4 w-4 text-primary" /> };
   }, [pathname]);
 
 
   useEffect(() => {
-    console.log(`TopBar Context Update: Active Module - ${currentModule.name}, Path: ${pathname}`);
-    // Add more TopBar state logging if needed (e.g., popover states, command launcher open/closed)
-    // console.log(`TopBar State: CommandLauncherOpen=${isCommandLauncherOpen}`);
+    // Dev Console Logging
+    console.log(`TopBar Context Update: Active Module - ${currentModule.name}, Path: ${pathname}, CommandLauncher: ${isCommandLauncherOpen}`);
   }, [currentModule, pathname, isCommandLauncherOpen]);
 
 
   const handleMarkAllNotificationsRead = () => {
     console.log("Marking all notifications as read...");
+    // Actual logic to mark notifications as read would go here
   };
 
-  const iconButtonClass = "h-9 w-9 md:h-10 md:w-10 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-150 ease-in-out focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background hover:shadow-[0_0_10px_1px_hsl(var(--primary)/0.2)] active:shadow-[0_0_15px_2px_hsl(var(--primary)/0.3)]";
+  const iconButtonClass = "relative h-9 w-9 md:h-10 md:w-10 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-150 ease-in-out focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background hover:shadow-[0_0_10px_1px_hsl(var(--primary)/0.3)] active:shadow-[0_0_15px_2px_hsl(var(--primary)/0.4)]";
 
   return (
     <>
@@ -120,7 +119,7 @@ export function TopBar() {
           {/* Left Section: Logo and Context/Module Switcher */}
           <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             <Link href="/" className="flex items-center gap-1.5 sm:gap-2" aria-label="NexOS Home">
-              <NexosLogo className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
+              <NexosLogo className="h-7 w-7 sm:h-8 sm:w-8 text-primary flex-shrink-0" />
               <span className="hidden sm:inline text-xl sm:text-2xl font-headline font-bold text-foreground">NexOS</span>
             </Link>
 
@@ -128,13 +127,17 @@ export function TopBar() {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 px-1.5 sm:px-2 py-1 h-9 sm:h-10 max-w-[120px] sm:max-w-[200px] truncate hover:shadow-[0_0_10px_1px_hsl(var(--primary)/0.2)] active:shadow-[0_0_15px_2px_hsl(var(--primary)/0.3)]"
+                  className={cn(
+                    "flex items-center gap-1 text-xs sm:text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 px-1.5 sm:px-2 py-1 h-9 sm:h-10 truncate",
+                    "hover:shadow-[0_0_10px_1px_hsl(var(--primary)/0.2)] active:shadow-[0_0_15px_2px_hsl(var(--primary)/0.3)]",
+                    "max-w-[40px] sm:max-w-[200px]" // Collapse to icon on mobile, expand on sm+
+                  )}
                   title={`Current: ${currentModule.name}`}
                 >
-                  <span className="inline-block sm:hidden flex-shrink-0">
-                    {currentModule.icon && React.cloneElement(currentModule.icon as React.ReactElement, { className: "h-4 w-4 sm:h-5 sm:w-5" })}
+                  <span className="flex-shrink-0">
+                     {currentModule.icon && cloneElement(currentModule.icon as React.ReactElement, { className: "h-4 w-4 sm:h-5 sm:w-5" })}
                   </span>
-                  <span className="hidden sm:inline truncate">{currentModule.name}</span>
+                  <span className="hidden sm:inline truncate ml-1">{currentModule.name}</span>
                   <ChevronsUpDown className="h-3.5 w-3.5 opacity-70 flex-shrink-0 ml-0.5" />
                 </Button>
               </DropdownMenuTrigger>
@@ -152,8 +155,8 @@ export function TopBar() {
                 type="search"
                 placeholder="Command or Search (Ctrl+K)..."
                 className="w-full pl-10 pr-4 py-2 rounded-md bg-input border-input/70 focus:ring-1 focus:ring-primary text-sm h-9 focus:border-primary/70 focus:shadow-[0_0_12px_-2px_hsl(var(--primary)/0.4)] transition-shadow"
-                onClick={() => setIsCommandLauncherOpen(true)} // Use onClick for better mobile tap detection to open
-                readOnly // Make it readOnly to ensure CommandLauncher opens
+                onClick={() => setIsCommandLauncherOpen(true)}
+                readOnly 
               />
             </div>
           </div>
@@ -163,7 +166,7 @@ export function TopBar() {
             <Button
               variant="ghost"
               size="icon"
-              className={cn(iconButtonClass, "md:hidden")} // Search icon for mobile to open Command Launcher
+              className={cn(iconButtonClass, "md:hidden")} 
               onClick={() => setIsCommandLauncherOpen(true)}
               title="Search / Command (Ctrl+K)"
             >
@@ -173,7 +176,7 @@ export function TopBar() {
              <Button
                 variant="ghost"
                 size="icon"
-                className={cn(iconButtonClass, "hidden md:flex")} // Lightning icon for desktop Command Launcher
+                className={cn(iconButtonClass, "hidden md:flex")} 
                 onClick={() => setIsCommandLauncherOpen(true)}
                 title="Command Launcher (Ctrl+K)"
               >
@@ -183,7 +186,7 @@ export function TopBar() {
 
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className={iconButtonClass}>
+                <Button variant="ghost" size="icon" className={iconButtonClass} title="Agent Status">
                   <Cpu className="h-5 w-5" />
                   <span className="sr-only">Agent Status</span>
                 </Button>
@@ -195,9 +198,9 @@ export function TopBar() {
 
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className={cn(iconButtonClass, "relative")}>
+                <Button variant="ghost" size="icon" className={cn(iconButtonClass, "relative")} title="Notifications">
                   <Bell className="h-5 w-5" />
-                  {true && ( // Simulate unread notifications badge
+                  {true && ( 
                     <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 flex h-2.5 w-2.5">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
@@ -214,16 +217,17 @@ export function TopBar() {
             </Popover>
 
             <div className="hidden lg:flex items-center gap-1.5 p-1.5 pr-2.5 rounded-md bg-input/50 border border-transparent hover:border-border/50 transition-colors h-10">
-              <ShieldAlert className="h-4 w-4 text-primary" />
+              {/* Placeholder for Admin/Context Info */}
+              <ShieldCheck className="h-4 w-4 text-primary" /> 
               <div className="text-xs">
                 <span className="text-foreground font-medium">Admin</span>
-                <span className="text-muted-foreground"> | ax7...f3</span>
+                <span className="text-muted-foreground"> | ctx: Main</span>
               </div>
             </div>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className={cn(iconButtonClass, "relative rounded-full p-0")}>
+                <Button variant="ghost" className={cn(iconButtonClass, "rounded-full p-0")} title="User Menu">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src="https://placehold.co/100x100.png" alt="User Avatar" data-ai-hint="user avatar" />
                     <AvatarFallback>NX</AvatarFallback>
@@ -253,7 +257,7 @@ export function TopBar() {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => console.log('Log out action')}>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>
@@ -266,6 +270,3 @@ export function TopBar() {
     </>
   );
 }
-
-
-    
