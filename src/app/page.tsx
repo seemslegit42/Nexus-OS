@@ -3,7 +3,7 @@
 
 import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
-import { Activity, Users, AlertTriangle as AlertTriangleIconLucide, LayoutGrid, Cpu, Rocket, Info as InfoIcon, Zap, Newspaper, BarChartHorizontalBig, Shield, CalendarDays, GitMerge, Bell } from 'lucide-react'; 
+import { Activity, Users, AlertTriangle as AlertTriangleIconLucide, LayoutGrid, Cpu, Rocket, Info as InfoIcon, Zap, Newspaper, BarChartHorizontalBig, Shield, CalendarDays, GitMerge, Bell } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { WorkspaceGrid, type ZoneConfig } from '@/components/core/workspace-grid';
@@ -111,7 +111,7 @@ function AgentStatusContent(): ReactNode {
                   <Progress
                     value={agent.load}
                     className={cn(
-                      "h-1.5 w-full", 
+                      "h-1.5 w-full",
                       agent.load <= 50 && "[&>div]:bg-green-500",
                       agent.load > 50 && agent.load <= 80 && "[&>div]:bg-yellow-500",
                       agent.load > 80 && "[&>div]:bg-destructive"
@@ -142,7 +142,7 @@ function DashboardWidgetCard({ title, icon, description, valueOrStatus, valueCol
   return (
     <Link href={href} passHref>
       <Card asChild className="bg-card hover:bg-muted/70 border-border/70 transition-colors h-full flex flex-col cursor-pointer">
-        <>
+        <a>
           <CardHeader className="pb-2 pt-3 px-3">
             <CardTitle className="flex items-center text-sm font-headline text-foreground gap-2">
               {icon}
@@ -153,7 +153,7 @@ function DashboardWidgetCard({ title, icon, description, valueOrStatus, valueCol
             <p className="text-xs text-muted-foreground mb-1">{description}</p>
             <p className={cn("text-lg font-bold", valueColorClass)}>{valueOrStatus}</p>
           </CardContent>
-        </>
+        </a>
       </Card>
     </Link>
   );
@@ -191,7 +191,7 @@ function PinnedWidgetsContent(): ReactNode {
       description: "All services operational.",
       valueOrStatus: "Operational",
       valueColorClass: "text-green-500",
-      href: "/logs" 
+      href: "/logs"
     }
   ];
 
@@ -249,7 +249,7 @@ const dashboardZoneConfigs: ZoneConfig[] = [
     icon: <InfoIcon className="w-5 h-5" />,
     content: <PinnedWidgetsContent />,
     defaultLayout: {
-      lg: { x: 0, y: 12, w: 12, h: 6, minW: 6, minH: 4 }, 
+      lg: { x: 0, y: 12, w: 12, h: 6, minW: 6, minH: 4 },
       md: { x: 0, y: 12, w: 10, h: 6, minW: 5, minH: 4 },
       sm: { x: 0, y: 18, w: 6, h: 7, minW: 4, minH: 4 },
     },
@@ -261,7 +261,7 @@ export default function HomePage() {
   return (
     <WorkspaceGrid
       zoneConfigs={dashboardZoneConfigs}
-      className="flex-grow p-1 md:p-2" 
+      className="flex-grow p-1 md:p-2"
       cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
     />
   );
