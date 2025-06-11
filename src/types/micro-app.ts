@@ -20,6 +20,9 @@ export interface MicroApp {
     price?: number; // e.g., 49.99
     billingCycle?: 'monthly' | 'one-time' | 'usage-based';
     billingAgent?: string; // Agent ID/name for handling billing (e.g., "BillingProxy")
+    pricingTierId?: string; // Identifier for a predefined pricing tier
+    stripeProductId?: string; // Stripe Product ID for subscription/payment
+    accessControlFlags?: string[]; // e.g., ["pro_feature", "enterprise_only"]
   } | null;
   flags: {
     isFeatured?: boolean;
@@ -38,3 +41,4 @@ export interface MicroApp {
   updatedAt: string; // ISO Date string
 }
 
+    

@@ -15,7 +15,15 @@ export const mockMicroApps: MicroApp[] = [
     agentDependencies: ['Orion', 'Proxy'],
     authRequired: true,
     isVisible: true,
-    monetization: { enabled: true, price: 29, billingCycle: 'monthly', billingAgent: 'BillingProxy' },
+    monetization: { 
+        enabled: true, 
+        price: 29, 
+        billingCycle: 'monthly', 
+        billingAgent: 'BillingProxy',
+        pricingTierId: 'tier_pro_monthly',
+        stripeProductId: 'prod_XyZ123Abc',
+        accessControlFlags: ['pro_tier_access']
+    },
     flags: { isFeatured: true, requiresBetaFeature: false },
     version: '1.1.0',
     entryPoint: '/loom-studio?app=autopilot',
@@ -86,3 +94,4 @@ export const mockMicroApps: MicroApp[] = [
   },
 ];
 
+    

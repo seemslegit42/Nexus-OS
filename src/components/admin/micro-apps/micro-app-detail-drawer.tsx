@@ -20,7 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Save, PackageOpen, Settings2, AlertTriangle, DollarSign, ListChecks, Info, SlidersHorizontal, Users2, Eye } from 'lucide-react';
+import { Save, PackageOpen, Settings2, AlertTriangle, DollarSign, ListChecks, Info, SlidersHorizontal, Users2, Eye, CreditCard } from 'lucide-react';
 import type { MicroApp } from '@/types/micro-app';
 import { Badge } from '@/components/ui/badge';
 
@@ -41,7 +41,16 @@ export function MicroAppDetailDrawer({ app, isOpen, onOpenChange, onSave, availa
   const [formData, setFormData] = useState<Partial<MicroApp>>(app || {});
 
   useEffect(() => {
-    setFormData(app || { isVisible: true }); // Default isVisible to true if app is null or doesn't have it
+    const initialMonetization = app?.monetization || { 
+        enabled: false, 
+        price: undefined, 
+        billingCycle: undefined, 
+        billingAgent: undefined,
+        pricingTierId: undefined,
+        stripeProductId: undefined,
+        accessControlFlags: []
+    };
+    setFormData(app ? { ...app, monetization: initialMonetization } : { isVisible: true, monetization: initialMonetization });
   }, [app, isOpen]);
 
   if (!app) return null;
@@ -68,6 +77,20 @@ export function MicroAppDetailDrawer({ app, isOpen, onOpenChange, onSave, availa
         alert("Display Name and Internal Name are required.");
         return;
     }
+    // Ensure monetization object is structured correctly even if disabled
+    if (!mergedApp.monetization?.enabled) {
+        mergedApp.monetization = {
+            enabled: false,
+            // Keep other fields as they are or reset them
+            price: mergedApp.monetization?.price,
+            billingCycle: mergedApp.monetization?.billingCycle,
+            billingAgent: mergedApp.monetization?.billingAgent,
+            pricingTierId: mergedApp.monetization?.pricingTierId,
+            stripeProductId: mergedApp.monetization?.stripeProductId,
+            accessControlFlags: mergedApp.monetization?.accessControlFlags,
+        };
+    }
+
     onSave(mergedApp as MicroApp);
     onOpenChange(false);
   };
@@ -166,7 +189,7 @@ export function MicroAppDetailDrawer({ app, isOpen, onOpenChange, onSave, availa
                 </AccordionItem>
 
                 <AccordionItem value="monetization">
-                    <AccordionTrigger className="text-sm font-medium py-2 px-1 hover:no-underline"><DollarSign className="mr-2 h-4 w-4 text-primary/80"/>Monetization</AccordionTrigger>
+                    <AccordionTrigger className="text-sm font-medium py-2 px-1 hover:no-underline"><CreditCard className="mr-2 h-4 w-4 text-primary/80"/>Monetization & Pricing</AccordionTrigger>
                     <AccordionContent className="pt-2 pb-0 px-1 space-y-3">
                         <div className="flex items-center justify-between">
                             <Label htmlFor="monetizationEnabled">Enable Monetization</Label>
@@ -177,7 +200,7 @@ export function MicroAppDetailDrawer({ app, isOpen, onOpenChange, onSave, availa
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="grid gap-1.5">
                                         <Label htmlFor="price">Price</Label>
-                                        <Input id="price" type="number" value={formData.monetization?.price || ''} onChange={(e) => handleNestedChange('monetization', 'price', parseFloat(e.target.value))} placeholder="e.g., 19.99" className="bg-input border-input focus:ring-primary"/>
+                                        <Input id="price" type="number" value={formData.monetization?.price || ''} onChange={(e) => handleNestedChange('monetization', 'price', parseFloat(e.target.value) || undefined)} placeholder="e.g., 19.99" className="bg-input border-input focus:ring-primary"/>
                                     </div>
                                     <div className="grid gap-1.5">
                                         <Label htmlFor="billingCycle">Billing Cycle</Label>
@@ -197,6 +220,24 @@ export function MicroAppDetailDrawer({ app, isOpen, onOpenChange, onSave, availa
                                         <SelectTrigger id="billingAgent" className="bg-input border-input focus:ring-primary"><SelectValue placeholder="Select billing agent" /></SelectTrigger>
                                         <SelectContent>{availableAgents.filter(a=>a !== 'None').map(agent => <SelectItem key={agent} value={agent}>{agent}</SelectItem>)}</SelectContent>
                                     </Select>
+                                </div>
+                                <div className="grid gap-1.5">
+                                    <Label htmlFor="pricingTierId">Pricing Tier ID</Label>
+                                    <Input id="pricingTierId" value={formData.monetization?.pricingTierId || ''} onChange={(e) => handleNestedChange('monetization', 'pricingTierId', e.target.value)} placeholder="e.g., pro_tier_monthly" className="bg-input border-input focus:ring-primary"/>
+                                </div>
+                                <div className="grid gap-1.5">
+                                    <Label htmlFor="stripeProductId">Stripe Product ID</Label>
+                                    <Input id="stripeProductId" value={formData.monetization?.stripeProductId || ''} onChange={(e) => handleNestedChange('monetization', 'stripeProductId', e.target.value)} placeholder="e.g., prod_XyzAbc123" className="bg-input border-input focus:ring-primary"/>
+                                </div>
+                                <div className="grid gap-1.5">
+                                    <Label htmlFor="accessControlFlags">Access Control Flags (comma-separated)</Label>
+                                    <Input 
+                                        id="accessControlFlags" 
+                                        value={formData.monetization?.accessControlFlags?.join(', ') || ''} 
+                                        onChange={(e) => handleNestedChange('monetization', 'accessControlFlags', e.target.value.split(',').map(f => f.trim()).filter(f => f))}
+                                        placeholder="e.g., pro_access, beta_feature" 
+                                        className="bg-input border-input focus:ring-primary"
+                                    />
                                 </div>
                             </>
                         )}
@@ -249,3 +290,4 @@ export function MicroAppDetailDrawer({ app, isOpen, onOpenChange, onSave, availa
   );
 }
 
+    

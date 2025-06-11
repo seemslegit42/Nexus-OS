@@ -44,7 +44,15 @@ export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get)
       agentDependencies: newAppData.agentDependencies || [],
       authRequired: newAppData.authRequired !== undefined ? newAppData.authRequired : true,
       isVisible: newAppData.isVisible !== undefined ? newAppData.isVisible : true,
-      monetization: newAppData.monetization !== undefined ? newAppData.monetization : null,
+      monetization: newAppData.monetization !== undefined ? newAppData.monetization : {
+        enabled: false,
+        price: undefined,
+        billingCycle: undefined,
+        billingAgent: undefined,
+        pricingTierId: undefined,
+        stripeProductId: undefined,
+        accessControlFlags: [],
+      },
       flags: newAppData.flags || {},
       version: newAppData.version || '0.1.0',
       deployableTo: newAppData.deployableTo || ['none'],
@@ -103,3 +111,5 @@ export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get)
     return get().apps.filter(app => app.status === 'enabled' && app.isVisible === true);
   },
 }));
+
+    
