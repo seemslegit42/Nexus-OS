@@ -6,6 +6,7 @@ import { mockMicroApps as initialApps } from '@/app/admin/micro-apps/initial-dat
 
 // Define the cycle of statuses for toggling
 const STATUS_CYCLE: MicroApp['status'][] = ['dev-only', 'beta', 'enabled', 'disabled'];
+export type MicroAppStatus = MicroApp['status']; // Exporting status type
 
 export interface MicroAppRegistryState {
   apps: MicroApp[];
@@ -13,8 +14,9 @@ export interface MicroAppRegistryState {
   updateMicroApp: (id: string, updatedData: Partial<MicroApp>) => void;
   registerMicroApp: (newAppData: Partial<Omit<MicroApp, 'id' | 'createdAt' | 'updatedAt'>> & { internalName: string, displayName: string }) => void;
   toggleAppStatus: (id: string) => void;
+  bulkUpdateStatus: (ids: string[], newStatus: MicroAppStatus) => void; // New action
   // Selectors
-  getAppsByStatus: (statusFilter: MicroApp['status']) => MicroApp[];
+  getAppsByStatus: (statusFilter: MicroAppStatus) => MicroApp[];
   searchApps: (term: string) => MicroApp[];
   getAppsByFlag: (flagName: keyof MicroApp['flags'] | 'monetized') => MicroApp[];
   getDeployableApps: () => MicroApp[];
@@ -41,7 +43,7 @@ export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get)
       tags: newAppData.tags || [],
       agentDependencies: newAppData.agentDependencies || [],
       authRequired: newAppData.authRequired !== undefined ? newAppData.authRequired : true,
-      isVisible: newAppData.isVisible !== undefined ? newAppData.isVisible : true, // Default to true
+      isVisible: newAppData.isVisible !== undefined ? newAppData.isVisible : true,
       monetization: newAppData.monetization !== undefined ? newAppData.monetization : null,
       flags: newAppData.flags || {},
       version: newAppData.version || '0.1.0',
@@ -49,7 +51,7 @@ export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get)
       permissionsRequired: newAppData.permissionsRequired || [],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      ...newAppData, // Spread the rest of the partial data
+      ...newAppData, 
     };
     set((state) => ({
       apps: [newApp, ...state.apps],
@@ -65,6 +67,13 @@ export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get)
         }
         return app;
       }),
+    }));
+  },
+  bulkUpdateStatus: (ids, newStatus) => {
+    set((state) => ({
+      apps: state.apps.map((app) =>
+        ids.includes(app.id) ? { ...app, status: newStatus, updatedAt: new Date().toISOString() } : app
+      ),
     }));
   },
   // Selectors
@@ -88,11 +97,9 @@ export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get)
     if (flagName === 'monetized') {
       return allApps.filter(app => app.monetization?.enabled === true);
     }
-    // Ensure flags object exists and the specific flag is true
     return allApps.filter(app => app.flags && app.flags[flagName as keyof MicroApp['flags']] === true);
   },
   getDeployableApps: () => {
     return get().apps.filter(app => app.status === 'enabled' && app.isVisible === true);
   },
 }));
-

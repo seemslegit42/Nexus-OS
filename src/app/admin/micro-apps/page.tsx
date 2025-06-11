@@ -7,17 +7,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuGroup } from '@/components/ui/dropdown-menu';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { PlusCircle, Search, Filter as FilterIcon, Edit, Copy, Rocket, EyeOff, Eye, MoreVertical, SlidersHorizontal, AlertTriangle } from 'lucide-react';
+import { PlusCircle, Search, Filter as FilterIcon, Edit, Copy, Rocket, EyeOff, Eye, MoreVertical, SlidersHorizontal, AlertTriangle, Settings, ChevronsUpDown } from 'lucide-react';
 import type { MicroApp } from '@/types/micro-app';
 import { MicroAppDetailDrawer } from '@/components/admin/micro-apps/micro-app-detail-drawer';
 import { cn } from '@/lib/utils';
-import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
+import { useMicroAppRegistryStore, type MicroAppStatus } from '@/stores/micro-app-registry.store';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch'; // Added Switch import
+import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
+
 
 // Helper to get appropriate badge variant for status
 const getStatusBadgeVariant = (status: MicroApp['status']): 'default' | 'secondary' | 'destructive' | 'outline' => {
@@ -41,6 +43,8 @@ const getStatusBadgeColorClass = (status: MicroApp['status']): string => {
   }
 };
 
+const ALL_STATUSES: MicroAppStatus[] = ['enabled', 'disabled', 'dev-only', 'archived', 'beta'];
+
 
 export default function MicroAppRegistryPage() {
   const allApps = useMicroAppRegistryStore(state => state.apps);
@@ -49,18 +53,19 @@ export default function MicroAppRegistryPage() {
   const registerMicroApp = useMicroAppRegistryStore(state => state.registerMicroApp);
   const toggleAppStatus = useMicroAppRegistryStore(state => state.toggleAppStatus);
   const searchApps = useMicroAppRegistryStore(state => state.searchApps);
-  // const getAppsByStatus = useMicroAppRegistryStore(state => state.getAppsByStatus); // Available if UI for status filter is added
+  const bulkUpdateStatus = useMicroAppRegistryStore(state => state.bulkUpdateStatus);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isRegisterDialogOpen, setIsRegisterDialogOpen] = useState(false);
+  const [selectedAppIds, setSelectedAppIds] = useState<string[]>([]);
 
-  // State for the new app registration form
+
   const [newAppName, setNewAppName] = useState('');
   const [newAppInternalName, setNewAppInternalName] = useState('');
   const [newAppDescription, setNewAppDescription] = useState('');
-  const [newAppIsVisible, setNewAppIsVisible] = useState(true); // Added state for isVisible
+  const [newAppIsVisible, setNewAppIsVisible] = useState(true); 
 
   const selectedApp = useMemo(() => {
     if (!selectedAppId) return null;
@@ -84,24 +89,46 @@ export default function MicroAppRegistryPage() {
   const handleRegisterNewAppSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!newAppName.trim() || !newAppInternalName.trim()) {
-        alert("Display Name and Internal Name are required."); // Simple validation
+        alert("Display Name and Internal Name are required."); 
         return;
     }
     registerMicroApp({ 
       displayName: newAppName, 
       internalName: newAppInternalName,
       description: newAppDescription,
-      isVisible: newAppIsVisible, // Pass isVisible state
-      // Other fields will use defaults defined in the store
+      isVisible: newAppIsVisible, 
     });
     setIsRegisterDialogOpen(false);
     setNewAppName('');
     setNewAppInternalName('');
     setNewAppDescription('');
-    setNewAppIsVisible(true); // Reset isVisible for next registration
+    setNewAppIsVisible(true); 
   };
 
-  // Dummy available agents for the drawer, in a real app this would come from an agent store/service
+  const handleSelectApp = (appId: string, checked: boolean | 'indeterminate') => {
+    if (checked === true) {
+      setSelectedAppIds((prev) => [...prev, appId]);
+    } else {
+      setSelectedAppIds((prev) => prev.filter((id) => id !== appId));
+    }
+  };
+
+  const handleSelectAllApps = (checked: boolean | 'indeterminate') => {
+    if (checked === true) {
+      setSelectedAppIds(displayedApps.map((app) => app.id));
+    } else {
+      setSelectedAppIds([]);
+    }
+  };
+  
+  const handleBulkStatusChange = (newStatus: MicroAppStatus) => {
+    if (selectedAppIds.length > 0) {
+      bulkUpdateStatus(selectedAppIds, newStatus);
+      setSelectedAppIds([]); // Clear selection after action
+    }
+  };
+
+
   const availableAgentsList = useMemo(() => {
     const allDeps = new Set<string>();
     allApps.forEach(app => app.agentDependencies?.forEach(dep => allDeps.add(dep)));
@@ -111,9 +138,9 @@ export default function MicroAppRegistryPage() {
 
   return (
     <div className="flex flex-col h-full p-2 md:p-4 gap-4">
-      <header className="flex flex-col sm:flex-row justify-between items-center gap-2 md:gap-4">
+      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 md:gap-4">
         <h1 className="text-2xl md:text-3xl font-headline text-foreground">Micro-App Registry</h1>
-        <div className="flex w-full sm:w-auto gap-2">
+        <div className="flex w-full sm:w-auto flex-col sm:flex-row gap-2">
           <div className="relative flex-grow sm:flex-grow-0">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -123,48 +150,70 @@ export default function MicroAppRegistryPage() {
               className="pl-9 w-full sm:min-w-[250px] bg-input border-input focus:ring-primary h-9"
             />
           </div>
-          <Button variant="outline" size="sm" className="h-9 hidden md:inline-flex"><FilterIcon className="mr-2 h-4 w-4" />Filters</Button>
-          <Dialog open={isRegisterDialogOpen} onOpenChange={setIsRegisterDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground h-9" size="sm">
-                <PlusCircle className="mr-2 h-4 w-4" /> Register New App
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-lg">
-              <DialogHeader>
-                <DialogTitle className="font-headline">Register New Micro-App</DialogTitle>
-                 <CardDescription>Fill in the details for your new micro-application.</CardDescription>
-              </DialogHeader>
-              <form onSubmit={handleRegisterNewAppSubmit} className="py-4 space-y-3">
-                <div>
-                  <Label htmlFor="new-app-name">Display Name <span className="text-destructive">*</span></Label>
-                  <Input id="new-app-name" value={newAppName} onChange={(e) => setNewAppName(e.target.value)} placeholder="e.g., Awesome Analytics" required className="mt-1 bg-input border-input focus:ring-primary"/>
-                </div>
-                <div>
-                  <Label htmlFor="new-app-internal-name">Internal Name / Slug <span className="text-destructive">*</span></Label>
-                  <Input id="new-app-internal-name" value={newAppInternalName} onChange={(e) => setNewAppInternalName(e.target.value)} placeholder="e.g., awesome-analytics" required className="mt-1 bg-input border-input focus:ring-primary"/>
-                </div>
-                <div>
-                  <Label htmlFor="new-app-description">Description</Label>
-                  <Input id="new-app-description" value={newAppDescription} onChange={(e) => setNewAppDescription(e.target.value)} placeholder="A brief description" className="mt-1 bg-input border-input focus:ring-primary"/>
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="new-app-is-visible" className="text-sm">Visible on Dashboard/Launchpad</Label>
-                  <Switch
-                    id="new-app-is-visible"
-                    checked={newAppIsVisible}
-                    onCheckedChange={setNewAppIsVisible}
-                  />
-                </div>
-                 <DialogFooter className="pt-3">
-                    <DialogClose asChild>
-                        <Button type="button" variant="outline">Cancel</Button>
-                    </DialogClose>
-                    <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground">Register App</Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
+          <div className="flex gap-2">
+            {selectedAppIds.length > 0 && (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="h-9">
+                        Bulk Actions ({selectedAppIds.length}) <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50"/>
+                    </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>Change Status To</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                        {ALL_STATUSES.map(status => (
+                        <DropdownMenuItem key={status} onClick={() => handleBulkStatusChange(status)}>
+                           Set to {status.charAt(0).toUpperCase() + status.slice(1)}
+                        </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            )}
+            <Button variant="outline" size="sm" className="h-9 hidden md:inline-flex"><FilterIcon className="mr-2 h-4 w-4" />Filters</Button>
+            <Dialog open={isRegisterDialogOpen} onOpenChange={setIsRegisterDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground h-9" size="sm">
+                  <PlusCircle className="mr-2 h-4 w-4" /> Register New App
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-lg">
+                <DialogHeader>
+                  <DialogTitle className="font-headline">Register New Micro-App</DialogTitle>
+                  <CardDescription>Fill in the details for your new micro-application.</CardDescription>
+                </DialogHeader>
+                <form onSubmit={handleRegisterNewAppSubmit} className="py-4 space-y-3">
+                  <div>
+                    <Label htmlFor="new-app-name">Display Name <span className="text-destructive">*</span></Label>
+                    <Input id="new-app-name" value={newAppName} onChange={(e) => setNewAppName(e.target.value)} placeholder="e.g., Awesome Analytics" required className="mt-1 bg-input border-input focus:ring-primary"/>
+                  </div>
+                  <div>
+                    <Label htmlFor="new-app-internal-name">Internal Name / Slug <span className="text-destructive">*</span></Label>
+                    <Input id="new-app-internal-name" value={newAppInternalName} onChange={(e) => setNewAppInternalName(e.target.value)} placeholder="e.g., awesome-analytics" required className="mt-1 bg-input border-input focus:ring-primary"/>
+                  </div>
+                  <div>
+                    <Label htmlFor="new-app-description">Description</Label>
+                    <Input id="new-app-description" value={newAppDescription} onChange={(e) => setNewAppDescription(e.target.value)} placeholder="A brief description" className="mt-1 bg-input border-input focus:ring-primary"/>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="new-app-is-visible" className="text-sm">Visible on Dashboard/Launchpad</Label>
+                    <Switch
+                      id="new-app-is-visible"
+                      checked={newAppIsVisible}
+                      onCheckedChange={setNewAppIsVisible}
+                    />
+                  </div>
+                  <DialogFooter className="pt-3">
+                      <DialogClose asChild>
+                          <Button type="button" variant="outline">Cancel</Button>
+                      </DialogClose>
+                      <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground">Register App</Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
       </header>
 
@@ -178,6 +227,13 @@ export default function MicroAppRegistryPage() {
             <Table>
               <TableHeader>
                 <TableRow className="border-border/60">
+                  <TableHead className="w-[60px] text-center">
+                    <Checkbox
+                        checked={selectedAppIds.length === displayedApps.length && displayedApps.length > 0}
+                        onCheckedChange={handleSelectAllApps}
+                        aria-label="Select all rows"
+                    />
+                  </TableHead>
                   <TableHead className="w-[50px] text-center">Icon</TableHead>
                   <TableHead>Display Name</TableHead>
                   <TableHead className="hidden md:table-cell">Internal Name</TableHead>
@@ -193,7 +249,14 @@ export default function MicroAppRegistryPage() {
                 {displayedApps.map((app) => (
                   <TableRow key={app.id} className="border-border/60 hover:bg-muted/30">
                     <TableCell className="text-center">
-                      <SlidersHorizontal className="h-5 w-5 text-primary/70 mx-auto" />
+                        <Checkbox
+                            checked={selectedAppIds.includes(app.id)}
+                            onCheckedChange={(checked) => handleSelectApp(app.id, checked)}
+                            aria-label={`Select row ${app.displayName}`}
+                        />
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Settings className="h-5 w-5 text-primary/70 mx-auto" /> {/* Lucide Settings as placeholder */}
                     </TableCell>
                     <TableCell className="font-medium text-foreground py-2.5">
                         {app.displayName}
@@ -241,7 +304,7 @@ export default function MicroAppRegistryPage() {
                           <DropdownMenuSeparator />
                            <DropdownMenuItem onClick={() => toggleAppStatus(app.id)}>
                             {app.status === 'enabled' || app.status === 'beta' || app.status === 'dev-only' ? <EyeOff className="mr-2 h-4 w-4" /> : <Eye className="mr-2 h-4 w-4" />}
-                            Toggle Status
+                            Toggle Status Cycle
                           </DropdownMenuItem>
                           {app.status === 'dev-only' && (
                             <DropdownMenuItem className="text-yellow-600 focus:text-yellow-700" onClick={() => alert(`Promote to Beta action for ${app.displayName}`)}>
@@ -277,4 +340,3 @@ export default function MicroAppRegistryPage() {
     </div>
   );
 }
-
