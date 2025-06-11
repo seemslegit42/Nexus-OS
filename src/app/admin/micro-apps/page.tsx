@@ -2,7 +2,7 @@
 // src/app/admin/micro-apps/page.tsx
 'use client';
 
-import { useState, type ReactNode, useMemo } from 'react';
+import { useState, type ReactNode, useMemo, FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -10,100 +10,22 @@ import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { PlusCircle, Search, Filter as FilterIcon, Edit, Copy, Rocket, EyeOff, Eye, MoreVertical, SlidersHorizontal, AlertTriangle } from 'lucide-react';
 import type { MicroApp } from '@/types/micro-app';
 import { MicroAppDetailDrawer } from '@/components/admin/micro-apps/micro-app-detail-drawer';
 import { cn } from '@/lib/utils';
-
-const mockMicroApps: MicroApp[] = [
-  {
-    id: 'autopilot_v1',
-    internalName: 'autopilot',
-    displayName: 'Autopilot Workflow Builder',
-    icon: 'Workflow', // Placeholder for Lucide icon name
-    description: 'Visually create and manage multi-step AI-powered automations and task chains.',
-    category: 'Automation',
-    status: 'enabled',
-    tags: ['workflow', 'ai', 'visual-editor', 'automation', 'low-code'],
-    agentDependencies: ['Orion', 'Proxy'],
-    authRequired: true,
-    monetization: { enabled: true, price: 29, billingCycle: 'monthly', billingAgent: 'BillingProxy' },
-    flags: { isFeatured: true, requiresBetaFeature: false },
-    version: '1.1.0',
-    entryPoint: '/loom-studio?app=autopilot',
-    deployableTo: ['loom-studio', 'dashboard'],
-    permissionsRequired: ['agent:execute', 'workflow:create'],
-    createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: 'guardian_sec_v2.3',
-    internalName: 'guardian-security-center',
-    displayName: 'Guardian Security Center',
-    icon: 'ShieldCheck',
-    description: 'Monitor system threats, analyze security logs, and manage access controls.',
-    category: 'Security',
-    status: 'enabled',
-    tags: ['security', 'monitoring', 'rbac', 'threat-detection'],
-    agentDependencies: ['Aegis', 'LogSentinel'],
-    authRequired: true,
-    monetization: null,
-    flags: { systemInternal: true },
-    version: '2.3.1',
-    entryPoint: '/security',
-    deployableTo: ['dedicated-tab'],
-    permissionsRequired: ['security:admin', 'logs:view_sensitive'],
-    createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 'pulse_monitor_v0.9b',
-    internalName: 'system-pulse',
-    displayName: 'System Pulse Monitor',
-    icon: 'RadioTower',
-    description: 'Live overview of system health, agent activity, and key performance metrics.',
-    category: 'Monitoring',
-    status: 'beta',
-    tags: ['monitoring', 'health', 'real-time', 'kpi'],
-    agentDependencies: [],
-    authRequired: true,
-    monetization: null,
-    flags: { requiresBetaFeature: true },
-    version: '0.9.0-beta',
-    entryPoint: '/pulse',
-    deployableTo: ['dedicated-tab', 'dashboard'],
-    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 'dev_tools_alpha',
-    internalName: 'developer-sandbox',
-    displayName: 'Developer Sandbox',
-    icon: 'TerminalSquare',
-    description: 'Experimental tools and features for NexOS developers. Use with caution.',
-    category: 'Development',
-    status: 'dev-only',
-    tags: ['experimental', 'debug', 'tools'],
-    agentDependencies: [],
-    authRequired: true,
-    monetization: null,
-    flags: { isDevOnly: true },
-    version: '0.1.0-alpha',
-    deployableTo: ['none'],
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-];
+import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
+import { Label } from '@/components/ui/label';
 
 // Helper to get appropriate badge variant for status
 const getStatusBadgeVariant = (status: MicroApp['status']): 'default' | 'secondary' | 'destructive' | 'outline' => {
   switch (status) {
-    case 'enabled': return 'default'; // Will be green due to custom styling if any, or primary
+    case 'enabled': return 'default';
     case 'disabled': return 'secondary';
-    case 'dev-only': return 'outline'; // often yellow/orange
+    case 'dev-only': return 'outline';
     case 'archived': return 'destructive';
-    case 'beta': return 'default'; // often blue or purple, use primary for now
+    case 'beta': return 'default';
     default: return 'outline';
   }
 };
@@ -120,11 +42,26 @@ const getStatusBadgeColorClass = (status: MicroApp['status']): string => {
 
 
 export default function MicroAppRegistryPage() {
-  const [apps, setApps] = useState<MicroApp[]>(mockMicroApps);
+  const apps = useMicroAppRegistryStore(state => state.apps);
+  const getMicroApp = useMicroAppRegistryStore(state => state.getMicroApp);
+  const updateMicroApp = useMicroAppRegistryStore(state => state.updateMicroApp);
+  const registerMicroApp = useMicroAppRegistryStore(state => state.registerMicroApp);
+  const toggleAppStatus = useMicroAppRegistryStore(state => state.toggleAppStatus);
+
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedApp, setSelectedApp] = useState<MicroApp | null>(null);
+  const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isRegisterDialogOpen, setIsRegisterDialogOpen] = useState(false);
+
+  // State for the new app registration form
+  const [newAppName, setNewAppName] = useState('');
+  const [newAppInternalName, setNewAppInternalName] = useState('');
+  const [newAppDescription, setNewAppDescription] = useState('');
+
+  const selectedApp = useMemo(() => {
+    if (!selectedAppId) return null;
+    return getMicroApp(selectedAppId) || null;
+  }, [selectedAppId, getMicroApp]);
 
   const filteredApps = useMemo(() => {
     if (!searchTerm) return apps;
@@ -132,57 +69,45 @@ export default function MicroAppRegistryPage() {
       app.displayName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.internalName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      app.agentDependencies.some(agent => agent.toLowerCase().includes(searchTerm.toLowerCase()))
+      (app.tags && app.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))) ||
+      (app.agentDependencies && app.agentDependencies.some(agent => agent.toLowerCase().includes(searchTerm.toLowerCase())))
     );
   }, [apps, searchTerm]);
 
-  const handleEditApp = (app: MicroApp) => {
-    setSelectedApp(app);
+  const handleEditApp = (appId: string) => {
+    setSelectedAppId(appId);
     setIsDrawerOpen(true);
   };
 
   const handleSaveAppDetails = (updatedApp: MicroApp) => {
-    setApps(prevApps => prevApps.map(app => app.id === updatedApp.id ? updatedApp : app));
-    // In a real app, you'd also make an API call here
+    updateMicroApp(updatedApp.id, updatedApp);
   };
   
-  const handleRegisterNewApp = (newApp: Partial<MicroApp>) => {
-    // Basic registration logic
-    const fullNewApp: MicroApp = {
-      id: `${newApp.internalName?.replace(/\s+/g, '-').toLowerCase() || 'new-app'}_${new Date().getTime()}`,
-      internalName: newApp.internalName || 'new-micro-app',
-      displayName: newApp.displayName || 'New Micro-App',
-      icon: newApp.icon || 'Package',
-      description: newApp.description || 'A new micro-application for NexOS.',
-      category: newApp.category || 'General',
-      status: newApp.status || 'dev-only',
-      tags: newApp.tags || [],
-      agentDependencies: newApp.agentDependencies || [],
-      authRequired: newApp.authRequired !== undefined ? newApp.authRequired : true,
-      monetization: newApp.monetization || null,
-      flags: newApp.flags || {},
-      version: newApp.version || '0.1.0',
-      deployableTo: newApp.deployableTo || ['none'],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      ...newApp, // Override with any specifics passed
-    };
-    setApps(prevApps => [fullNewApp, ...prevApps]);
+  const handleRegisterNewAppSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!newAppName.trim() || !newAppInternalName.trim()) {
+        alert("Display Name and Internal Name are required."); // Simple validation
+        return;
+    }
+    registerMicroApp({ 
+      displayName: newAppName, 
+      internalName: newAppInternalName,
+      description: newAppDescription 
+      // Other fields will use defaults defined in the store
+    });
     setIsRegisterDialogOpen(false);
+    setNewAppName('');
+    setNewAppInternalName('');
+    setNewAppDescription('');
   };
-  
-  const toggleAppStatus = (appId: string) => {
-    setApps(prevApps => prevApps.map(app => {
-      if (app.id === appId) {
-        if (app.status === 'enabled') return { ...app, status: 'disabled' as MicroApp['status'] };
-        if (app.status === 'disabled') return { ...app, status: 'enabled' as MicroApp['status'] };
-        if (app.status === 'dev-only') return { ...app, status: 'enabled' as MicroApp['status'] }; // Example: promote from dev-only
-         // Add more transitions as needed
-      }
-      return app;
-    }));
-  };
+
+  // Dummy available agents for the drawer, in a real app this would come from an agent store/service
+  const availableAgentsList = useMemo(() => {
+    const allDeps = new Set<string>();
+    apps.forEach(app => app.agentDependencies?.forEach(dep => allDeps.add(dep)));
+    return Array.from(allDeps).length > 0 ? Array.from(allDeps) : ['OptimizerPrime', 'Aegis', 'Orion', 'Proxy', 'LogSentinel', 'BillingProxy', 'None'];
+  }, [apps]);
+
 
   return (
     <div className="flex flex-col h-full p-2 md:p-4 gap-4">
@@ -208,15 +133,28 @@ export default function MicroAppRegistryPage() {
             <DialogContent className="sm:max-w-lg">
               <DialogHeader>
                 <DialogTitle className="font-headline">Register New Micro-App</DialogTitle>
+                 <CardDescription>Fill in the details for your new micro-application.</CardDescription>
               </DialogHeader>
-              {/* Simplified Placeholder Registration Form */}
-              <div className="py-4 space-y-3">
-                <p className="text-sm text-muted-foreground">
-                  This is a placeholder for the micro-app registration form. 
-                  It would include fields for Name, Slug, Description, Agents Used, etc.
-                </p>
-                <Button onClick={() => handleRegisterNewApp({ displayName: 'Test App', internalName: 'test-app' })}>Quick Register Test App</Button>
-              </div>
+              <form onSubmit={handleRegisterNewAppSubmit} className="py-4 space-y-3">
+                <div>
+                  <Label htmlFor="new-app-name">Display Name <span className="text-destructive">*</span></Label>
+                  <Input id="new-app-name" value={newAppName} onChange={(e) => setNewAppName(e.target.value)} placeholder="e.g., Awesome Analytics" required className="mt-1 bg-input border-input focus:ring-primary"/>
+                </div>
+                <div>
+                  <Label htmlFor="new-app-internal-name">Internal Name / Slug <span className="text-destructive">*</span></Label>
+                  <Input id="new-app-internal-name" value={newAppInternalName} onChange={(e) => setNewAppInternalName(e.target.value)} placeholder="e.g., awesome-analytics" required className="mt-1 bg-input border-input focus:ring-primary"/>
+                </div>
+                <div>
+                  <Label htmlFor="new-app-description">Description</Label>
+                  <Input id="new-app-description" value={newAppDescription} onChange={(e) => setNewAppDescription(e.target.value)} placeholder="A brief description" className="mt-1 bg-input border-input focus:ring-primary"/>
+                </div>
+                 <DialogFooter className="pt-3">
+                    <DialogClose asChild>
+                        <Button type="button" variant="outline">Cancel</Button>
+                    </DialogClose>
+                    <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground">Register App</Button>
+                </DialogFooter>
+              </form>
             </DialogContent>
           </Dialog>
         </div>
@@ -246,7 +184,6 @@ export default function MicroAppRegistryPage() {
                 {filteredApps.map((app) => (
                   <TableRow key={app.id} className="border-border/60 hover:bg-muted/30">
                     <TableCell className="text-center">
-                      {/* Basic icon placeholder */}
                       <SlidersHorizontal className="h-5 w-5 text-primary/70 mx-auto" />
                     </TableCell>
                     <TableCell className="font-medium text-foreground py-2.5">
@@ -262,12 +199,12 @@ export default function MicroAppRegistryPage() {
                     <TableCell className="text-muted-foreground text-xs hidden lg:table-cell">{app.category}</TableCell>
                     <TableCell className="text-xs hidden lg:table-cell">
                         <div className="flex flex-wrap gap-1 max-w-[200px]">
-                            {app.tags.slice(0, 2).map(tag => <Badge key={tag} variant="secondary" className="text-[10px] px-1.5 py-0">{tag}</Badge>)}
-                            {app.tags.length > 2 && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">+{app.tags.length - 2}</Badge>}
+                            {app.tags?.slice(0, 2).map(tag => <Badge key={tag} variant="secondary" className="text-[10px] px-1.5 py-0">{tag}</Badge>)}
+                            {(app.tags?.length || 0) > 2 && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">+{ (app.tags?.length || 0) - 2}</Badge>}
                         </div>
                     </TableCell>
                     <TableCell className="text-muted-foreground text-xs hidden xl:table-cell">
-                      {app.agentDependencies.length > 0 ? app.agentDependencies.join(', ') : 'None'}
+                      {(app.agentDependencies && app.agentDependencies.length > 0) ? app.agentDependencies.join(', ') : 'None'}
                     </TableCell>
                     <TableCell className="text-right py-1.5">
                       <DropdownMenu>
@@ -280,22 +217,22 @@ export default function MicroAppRegistryPage() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions for {app.displayName}</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => handleEditApp(app)}>
+                          <DropdownMenuItem onClick={() => handleEditApp(app.id)}>
                             <Edit className="mr-2 h-4 w-4" /> Edit Details
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => alert(`Duplicate action for ${app.displayName}`)}>
                             <Copy className="mr-2 h-4 w-4" /> Duplicate
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => alert(`Deploy to Dashboard action for ${app.displayName}`)}>
                             <Rocket className="mr-2 h-4 w-4" /> Deploy to Dashboard
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                            <DropdownMenuItem onClick={() => toggleAppStatus(app.id)}>
                             {app.status === 'enabled' || app.status === 'beta' || app.status === 'dev-only' ? <EyeOff className="mr-2 h-4 w-4" /> : <Eye className="mr-2 h-4 w-4" />}
-                            {app.status === 'enabled' || app.status === 'beta' || app.status === 'dev-only' ? 'Disable' : 'Enable'}
+                            Toggle Status
                           </DropdownMenuItem>
                           {app.status === 'dev-only' && (
-                            <DropdownMenuItem className="text-yellow-600 focus:text-yellow-700">
+                            <DropdownMenuItem className="text-yellow-600 focus:text-yellow-700" onClick={() => alert(`Promote to Beta action for ${app.displayName}`)}>
                                 <AlertTriangle className="mr-2 h-4 w-4"/> Promote to Beta
                             </DropdownMenuItem>
                           )}
@@ -322,7 +259,7 @@ export default function MicroAppRegistryPage() {
           isOpen={isDrawerOpen}
           onOpenChange={setIsDrawerOpen}
           onSave={handleSaveAppDetails}
-          availableAgents={['OptimizerPrime', 'Aegis', 'Orion', 'Proxy', 'LogSentinel', 'BillingProxy']}
+          availableAgents={availableAgentsList}
         />
       )}
     </div>
