@@ -29,15 +29,15 @@ function ModuleMarketplaceContent(): ReactNode { // Marketplace-like system
     <Card className="h-full flex flex-col">
       <CardHeader className="p-3 border-b">
         <div className="flex flex-col md:flex-row justify-between items-center gap-2">
-          <Input placeholder="Search modules (functions, flows, API bridges)..." className="md:max-w-xs bg-background border-input focus:ring-primary h-9" />
+          <Input placeholder="Search modules (functions, flows, API bridges)..." className="md:max-w-xs bg-background border-input focus:ring-primary h-9 text-sm" />
           <div className="flex gap-2">
-            <Button variant="outline" size="sm"><Filter className="mr-2 h-4 w-4" /> Filter</Button>
+            <Button variant="outline" size="sm" className="h-9 text-sm"><Filter className="mr-2 h-4 w-4" /> Filter</Button>
           </div>
         </div>
       </CardHeader>
       <CardContent className="p-2 flex-grow overflow-hidden">
         <ScrollArea className="h-full">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-3 p-1"> {/* Adjusted grid for typical zone sizes */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-3 p-1">
             {modules.map((mod, i) => (
               <Card key={i} className="bg-background/70 backdrop-blur-sm shadow-md hover:shadow-lg transition-shadow flex flex-col">
                 <CardHeader className="p-3">
@@ -53,6 +53,8 @@ function ModuleMarketplaceContent(): ReactNode { // Marketplace-like system
                       className={cn(
                         "text-xs",
                         mod.status === 'Active' && 'bg-green-500/80 text-white dark:bg-green-600/80',
+                        mod.status === 'Critical' && '', // destructive variant handles this
+                        mod.status === 'Idle' && '', // secondary variant handles this
                         mod.status === 'Development' && 'text-yellow-600 border-yellow-500/80 dark:text-yellow-400 dark:border-yellow-500/60'
                       )}
                     >
@@ -232,4 +234,3 @@ export default function ModulesPage() {
     />
   );
 }
-

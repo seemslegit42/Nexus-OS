@@ -14,6 +14,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 const agents = [
   { id: 'agt_001', name: 'OptimizerPrime', status: 'Active', role: 'Code Optimizer', training: 'Python, JS', scope: 'Project Alpha', lastActivity: '5m ago' },
@@ -65,9 +66,10 @@ function AgentListContent(): ReactNode { // Agent List & Overview
                         agent.status === 'Error' ? 'destructive' :
                         agent.status === 'Maintenance' ? 'outline' : 'secondary'
                         }
-                        className={`text-xs ${
-                        agent.status === 'Maintenance' ? 'text-yellow-600 border-yellow-500/80 dark:text-yellow-400 dark:border-yellow-500/60' : ''
-                        }`}
+                        className={cn('text-xs',
+                        agent.status === 'Active' && 'bg-primary text-primary-foreground', // Simplified for default variant
+                        agent.status === 'Maintenance' && 'text-yellow-600 border-yellow-500/80 dark:text-yellow-400 dark:border-yellow-500/60'
+                        )}
                     >
                         {agent.status}
                     </Badge>
@@ -141,8 +143,8 @@ export default function AgentConsolePage() {
   const agentPageZoneConfigs: ZoneConfig[] = [
     {
       id: 'agentList',
-      title: 'Agent Fleet Overview', // Updated title
-      icon: <Bot className="w-5 h-5" />, // Changed Icon
+      title: 'Agent Fleet Overview', 
+      icon: <Bot className="w-5 h-5" />, 
       content: <AgentListContent />,
       defaultLayout: {
         lg: { x: 0, y: 0, w: 12, h: 10, minW: 6, minH: 6 },
@@ -151,9 +153,9 @@ export default function AgentConsolePage() {
       },
     },
     {
-      id: 'agentConfiguration', // Renamed for clarity from agentScopeEditing
-      title: 'Agent Configuration & Scope', // Updated title
-      icon: <FileCode className="w-5 h-5" />, // Changed Icon
+      id: 'agentConfiguration', 
+      title: 'Agent Configuration & Scope', 
+      icon: <FileCode className="w-5 h-5" />, 
       content: <AgentConfigurationContent />,
       defaultLayout: {
         lg: { x: 0, y: 10, w: 5, h: 10, minW: 3, minH: 6 },
@@ -162,9 +164,9 @@ export default function AgentConsolePage() {
       },
     },
     {
-      id: 'liveAgentDebugger', // Renamed for clarity from realTimeActivityDebugger
-      title: "Live Agent Activity / Debugger", // Updated title
-      icon: <BarChart2 className="w-5 h-5" />, // Changed icon
+      id: 'liveAgentDebugger', 
+      title: "Live Agent Activity / Debugger", 
+      icon: <BarChart2 className="w-5 h-5" />, 
       content: <LiveAgentActivityContent />,
       defaultLayout: {
         lg: { x: 5, y: 10, w: 7, h: 10, minW: 4, minH: 6 },
@@ -178,7 +180,7 @@ export default function AgentConsolePage() {
     <WorkspaceGrid
       zoneConfigs={agentPageZoneConfigs}
       className="flex-grow"
-      cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }} // Ensure 12 columns for lg
+      cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }} 
     />
   );
 }

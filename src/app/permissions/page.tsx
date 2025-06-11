@@ -25,18 +25,18 @@ const permissionsData = roles.map(role => ({
     if (role === 'Developer' && (resource.includes('LoomStudio') || resource.includes('AgentConsole') || resource.includes('Modules:deploy'))) return true;
     if (role === 'Analyst' && (resource.includes('BillingModule') || resource.includes('SecurityLogs:view'))) return true;
     if (role === 'AgentManager' && resource.includes('AgentConsole:edit')) return true;
-    if (role === 'User_Guest' && (resource.includes(':view') || resource.includes(':read'))) return Math.random() > 0.8; // Guests very restricted
+    if (role === 'User_Guest' && (resource.includes(':view') || resource.includes(':read'))) return Math.random() > 0.8; 
     return Math.random() > 0.6; 
   }),
 }));
 
-function VisualMatrixContent(): ReactNode { // Visual matrix of RBAC/ZBAC
+function VisualMatrixContent(): ReactNode { 
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="p-3 border-b">
-        <div className="flex justify-between items-center">
-            <Input placeholder="Filter roles or resources..." className="h-8 text-sm max-w-xs bg-background"/>
-            <Button size="sm"><Save className="mr-2 h-4 w-4"/> Save Permissions</Button>
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
+            <Input placeholder="Filter roles or resources..." className="h-8 text-sm sm:max-w-xs bg-background"/>
+            <Button size="sm" className="h-8 text-sm w-full sm:w-auto"><Save className="mr-2 h-4 w-4"/> Save Permissions</Button>
         </div>
       </CardHeader>
       <CardContent className="p-0 flex-grow overflow-hidden">
@@ -67,7 +67,7 @@ function VisualMatrixContent(): ReactNode { // Visual matrix of RBAC/ZBAC
   );
 }
 
-function TraceAccessContent(): ReactNode { // Trace who has access to what, compare agents/users
+function TraceAccessContent(): ReactNode { 
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="p-3">
@@ -85,7 +85,7 @@ function TraceAccessContent(): ReactNode { // Trace who has access to what, comp
                 <Input id="trace-entity2" placeholder="e.g., Analyst" className="bg-background border-input focus:ring-primary h-8 text-sm"/>
             </div>
         </div>
-        <Button variant="outline" size="sm" className="w-full"><Search className="mr-2 h-4 w-4"/>Trace / Compare</Button>
+        <Button variant="outline" size="sm" className="w-full h-8 text-sm"><Search className="mr-2 h-4 w-4"/>Trace / Compare</Button>
         <div className="flex-grow bg-muted/30 rounded-md p-2 mt-2 min-h-[150px]">
              <Image src="https://placehold.co/600x300.png" alt="Access Trace Visual Graph / Comparison View" width={600} height={300} className="rounded-md opacity-70" data-ai-hint="graph relationship diagram comparison list" />
         </div>
@@ -94,7 +94,7 @@ function TraceAccessContent(): ReactNode { // Trace who has access to what, comp
   );
 }
 
-function SimulateBreachEscalationContent(): ReactNode { // Click to simulate breach or escalation
+function SimulateBreachEscalationContent(): ReactNode { 
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="p-3">
@@ -117,8 +117,8 @@ export default function PermissionsPage() {
   const permissionsPageZoneConfigs: ZoneConfig[] = [
     {
       id: 'visualMatrixControls',
-      title: 'RBAC & ZBAC Visual Matrix Editor', // Updated Title
-      icon: <Filter className="w-5 h-5" />, // Changed Icon for matrix
+      title: 'RBAC & ZBAC Visual Matrix Editor', 
+      icon: <Filter className="w-5 h-5" />, 
       content: <VisualMatrixContent />,
       defaultLayout: {
         lg: { x: 0, y: 0, w: 12, h: 12, minW: 6, minH: 7 },
@@ -127,9 +127,9 @@ export default function PermissionsPage() {
       },
     },
     {
-      id: 'traceAccessAndCompare', // Updated ID
-      title: 'Trace Access & Compare Entities', // Updated Title
-      icon: <GitCompareArrows className="w-5 h-5" />, // Changed Icon
+      id: 'traceAccessAndCompare', 
+      title: 'Trace Access & Compare Entities', 
+      icon: <GitCompareArrows className="w-5 h-5" />, 
       content: <TraceAccessContent />,
       defaultLayout: {
         lg: { x: 0, y: 12, w: 6, h: 9, minW: 4, minH: 5 },
@@ -138,8 +138,8 @@ export default function PermissionsPage() {
       },
     },
     {
-      id: 'simulateBreachEscalation', // Renamed from rbacZbacSimulation
-      title: 'Simulate Breach / Escalation Paths', // Updated Title
+      id: 'simulateBreachEscalation', 
+      title: 'Simulate Breach / Escalation Paths', 
       icon: <ShieldQuestion className="w-5 h-5" />,
       content: <SimulateBreachEscalationContent />,
       defaultLayout: {
@@ -154,7 +154,7 @@ export default function PermissionsPage() {
     <WorkspaceGrid
       zoneConfigs={permissionsPageZoneConfigs}
       className="flex-grow"
-       cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }} // Ensure 12 columns for lg
+       cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
     />
   );
 }

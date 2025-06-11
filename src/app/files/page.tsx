@@ -1,3 +1,4 @@
+
 // src/app/files/page.tsx
 'use client';
 
@@ -22,9 +23,9 @@ function FileBrowserContent(): ReactNode {
       <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-2">
         <div className="relative w-full md:max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search files..." className="pl-10 bg-background border-input focus:ring-primary" />
+          <Input placeholder="Search files..." className="pl-10 bg-background border-input focus:ring-primary h-9 text-sm" />
         </div>
-        <Button className="w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
+        <Button className="w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground h-9 text-sm">
           <UploadCloud className="mr-2 h-4 w-4" /> Upload File
         </Button>
       </div>

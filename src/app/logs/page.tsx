@@ -26,7 +26,7 @@ const initialLogEntries = [
   { timestamp: '2023-10-26 10:06:00', user: 'Agent SecureGuard', module: 'Firewall', action: 'Blocked suspicious IP: 203.0.113.45', details: 'Attempted RDP access.', level: 'CRITICAL', type: 'Security', stateBefore: '{}', stateAfter: '{ "blocked_ips": ["203.0.113.45"] }' },
 ];
 
-function LogStreamFilterContent(): ReactNode { // Security logs, audit trails, system events, advanced filtering
+function LogStreamFilterContent(): ReactNode { 
   const [logEntries, setLogEntries] = useState(initialLogEntries);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
   const [isSummarizing, setIsSummarizing] = useState<boolean>(false);
@@ -61,10 +61,8 @@ function LogStreamFilterContent(): ReactNode { // Security logs, audit trails, s
   };
 
   useEffect(() => {
-    // Basic effect to show summary might be outdated
     if (logEntries.length !== lastSummarizedLogCount && aiSummary) {
-        // Optionally, you could auto-refresh or just indicate outdated
-        // For now, let's keep it simple.
+        // Summary might be outdated
     }
   }, [logEntries, lastSummarizedLogCount, aiSummary]);
 
@@ -109,7 +107,6 @@ function LogStreamFilterContent(): ReactNode { // Security logs, audit trails, s
       </CardHeader>
 
       <CardContent className="p-2 flex-grow overflow-hidden flex flex-col">
-        {/* AI Summary Card - Always visible unless zone is minimized */}
         <Card className="mb-2 bg-background/70 backdrop-blur-sm shadow-md">
             <CardHeader className="p-2">
                 <CardTitle className="font-headline text-sm text-primary flex items-center">
@@ -150,7 +147,7 @@ function LogStreamFilterContent(): ReactNode { // Security logs, audit trails, s
                         log.level === 'ERROR' && !log.action.toLowerCase().includes('failed') && 'bg-destructive/10 hover:bg-destructive/20',
                         log.level === 'ERROR' && log.action.toLowerCase().includes('failed') && 'bg-destructive/15 hover:bg-destructive/25 border-l-2 border-destructive/70',
                         log.level === 'WARN' && 'bg-yellow-500/10 hover:bg-yellow-500/20',
-                        log.type === 'Security' && log.level === 'CRITICAL' && 'border-l-4 border-destructive font-semibold', // Emphasize critical security
+                        log.type === 'Security' && log.level === 'CRITICAL' && 'border-l-4 border-destructive font-semibold',
                     )}
                 >
                     <TableCell className="text-xs text-muted-foreground whitespace-nowrap py-1.5">{log.timestamp}</TableCell>
@@ -180,7 +177,7 @@ function LogStreamFilterContent(): ReactNode { // Security logs, audit trails, s
   );
 }
 
-function EventTimelineContent(): ReactNode { // Replayable event timelines, visual diff of state
+function EventTimelineContent(): ReactNode { 
   return (
     <Card className="h-full">
       <CardHeader className="p-3">
@@ -200,7 +197,7 @@ function EventTimelineContent(): ReactNode { // Replayable event timelines, visu
   );
 }
 
-function UserSessionDetailsContent(): ReactNode { // User sessions
+function UserSessionDetailsContent(): ReactNode { 
   return (
     <Card className="h-full">
         <CardHeader className="p-3">
@@ -264,6 +261,3 @@ export default function LogsAuditPage() {
     />
   );
 }
-
-
-    
