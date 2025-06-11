@@ -51,7 +51,7 @@ export function Zone({
 
   return (
     <Card className={cn(
-        "bg-card/80 backdrop-blur-md shadow-xl rounded-xl border-border/70 flex flex-col overflow-hidden h-full", // Enhanced glassmorphism
+        "bg-card backdrop-blur-md shadow-xl rounded-xl border-border/70 flex flex-col overflow-hidden h-full", 
         className
       )}
     >
@@ -59,7 +59,7 @@ export function Zone({
         <CardHeader 
           className={cn(
             "draggable-zone-header", 
-            "flex flex-row items-center justify-between space-y-0 p-2.5 border-b border-border/60 min-h-[44px] cursor-grab" // Slightly reduced padding
+            "flex flex-row items-center justify-between space-y-0 p-2.5 border-b border-border/60 min-h-[44px] cursor-grab" 
           )}
         >
           <div className="flex items-center gap-2 overflow-hidden">
@@ -84,7 +84,7 @@ export function Zone({
       <CardContent 
         className={cn(
           "flex-grow overflow-auto transition-all duration-300 ease-in-out",
-          showHeader ? "p-3" : "p-0", // Adjusted padding if header is not shown
+          showHeader ? "p-3" : "p-0", 
           isMinimized ? "max-h-0 !p-0 opacity-0 invisible" : "opacity-100 visible"
         )}
       >
