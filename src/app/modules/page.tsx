@@ -3,17 +3,19 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { useState } from 'react';
 import { WorkspaceGrid, type ZoneConfig } from '@/components/core/workspace-grid';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Blocks, Cpu, GitMerge, Lock, Filter, Briefcase, PlusCircle, Edit, PlugZap, Share2, Package, Settings, Workflow, KeyRound, Construction } from 'lucide-react';
+import { Blocks, Cpu, GitMerge, Lock, Filter, Briefcase, PlusCircle, Edit, PlugZap, Share2, Package, Settings, Workflow, KeyRound, Construction, Sparkles, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import { suggestModuleImprovements, type SuggestModuleImprovementsInput, type SuggestModuleImprovementsOutput } from '@/ai/flows/suggest-module-improvements';
 
 const modules = [
   { name: 'Data Ingestion Pipeline', version: '1.2.0', category: 'Data Tools', agentsAttached: 2, status: 'Active', permissions: 'Admin, DataEngineers' },
@@ -26,12 +28,12 @@ const modules = [
 
 function ModuleMarketplaceContent(): ReactNode {
   return (
-    <Card className="h-full flex flex-col bg-transparent border-none shadow-none">
+    <Card className="h-full flex flex-col bg-card border-none shadow-none">
       <CardHeader className="p-2 md:p-3 border-b border-border/60">
         <div className="flex flex-col md:flex-row justify-between items-center gap-2">
           <Input placeholder="Search modules (functions, flows, API bridges)..." className="md:max-w-xs bg-input border-input focus:ring-primary h-9 text-sm" />
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="h-9 text-sm bg-card hover:bg-muted/60"><Filter className="mr-2 h-4 w-4" /> Filter</Button>
+            <Button variant="outline" size="sm" className="h-9 text-sm bg-card hover:bg-muted/70"><Filter className="mr-2 h-4 w-4" /> Filter</Button>
           </div>
         </div>
       </CardHeader>
@@ -72,7 +74,7 @@ function ModuleMarketplaceContent(): ReactNode {
                   <Image src={`https://placehold.co/200x100.png`} alt={`${mod.name} Diagram`} width={200} height={100} className="mt-1 rounded border border-border/50 opacity-60" data-ai-hint="workflow diagram permissions tree" />
                 </CardContent>
                 <CardFooter className="flex justify-between p-2.5 border-t border-border/60">
-                  <Button variant="outline" size="sm" className="text-xs bg-card hover:bg-muted/60">Details / Edit</Button>
+                  <Button variant="outline" size="sm" className="text-xs bg-card hover:bg-muted/70">Details / Edit</Button>
                   <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80 text-xs">
                     <Cpu className="mr-1.5 h-3.5 w-3.5"/>
                     {mod.agentsAttached > 0 ? 'Manage Agents' : 'Attach Agent'}
@@ -88,25 +90,91 @@ function ModuleMarketplaceContent(): ReactNode {
 }
 
 function ModuleEditorContent(): ReactNode { 
+  const [moduleName, setModuleName] = useState<string>('Data Ingestion Pipeline');
+  const [moduleDescription, setModuleDescription] = useState<string>('Handles ETL processes for various data sources.');
+  const [moduleCode, setModuleCode] = useState<string>('// Paste or write your module code here...\n\nfunction processData(data) {\n  // Example: simple data transformation\n  const result = data.map(item => ({ ...item, processed: true }));\n  return result;\n}');
+  const [suggestions, setSuggestions] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSuggestImprovements = async () => {
+    setIsLoading(true);
+    setError(null);
+    setSuggestions(null);
+    try {
+      const input: SuggestModuleImprovementsInput = { 
+        moduleCode, 
+        moduleDescription: moduleDescription || undefined 
+      };
+      const result = await suggestModuleImprovements(input);
+      setSuggestions(result.suggestions);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unknown error occurred while fetching suggestions.');
+      console.error("Error suggesting module improvements:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <Card className="h-full flex flex-col bg-transparent border-none shadow-none">
+    <Card className="h-full flex flex-col bg-card border-none shadow-none">
       <CardHeader className="p-2 md:p-3">
         <CardTitle className="text-md font-semibold font-headline text-foreground flex items-center">
-            <Edit className="w-4 h-4 mr-2 text-primary"/>Module Editor: <span className="text-primary ml-1">Data Ingestion</span>
+            <Edit className="w-4 h-4 mr-2 text-primary"/>Module Editor: <span className="text-primary ml-1">{moduleName || "Untitled Module"}</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-2 md:p-3 space-y-3 flex-grow">
+      <CardContent className="p-2 md:p-3 space-y-3 flex-grow flex flex-col overflow-hidden">
         <div>
           <Label htmlFor="module-name" className="text-xs">Module Name</Label>
-          <Input id="module-name" defaultValue="Data Ingestion Pipeline" className="bg-input border-input focus:ring-primary h-8 text-sm mt-0.5" />
+          <Input 
+            id="module-name" 
+            value={moduleName}
+            onChange={(e) => setModuleName(e.target.value)}
+            placeholder="Enter module name"
+            className="bg-input border-input focus:ring-primary h-8 text-sm mt-0.5" 
+          />
         </div>
         <div>
           <Label htmlFor="module-description" className="text-xs">Description</Label>
-          <Textarea id="module-description" defaultValue="Handles ETL processes for various data sources." className="bg-input border-input focus:ring-primary min-h-[50px] text-sm mt-0.5" />
+          <Textarea 
+            id="module-description" 
+            value={moduleDescription}
+            onChange={(e) => setModuleDescription(e.target.value)}
+            placeholder="Describe what this module does..."
+            className="bg-input border-input focus:ring-primary min-h-[50px] text-sm mt-0.5" 
+          />
         </div>
-        <div className="flex-grow bg-muted/20 rounded-md p-2 flex items-center justify-center border border-border/50">
-          <Image src="https://placehold.co/400x250.png" alt="Workflow Visual Editor" width={400} height={250} className="w-full h-full object-contain rounded opacity-70" data-ai-hint="visual editor graph permissions" />
+        <div className="flex-grow flex flex-col min-h-[200px]">
+          <Label htmlFor="module-code" className="text-xs mb-0.5">Module Code</Label>
+          <Textarea 
+            id="module-code"
+            value={moduleCode}
+            onChange={(e) => setModuleCode(e.target.value)}
+            placeholder="Enter or paste module code here..."
+            className="bg-input border-input focus:ring-primary text-sm flex-grow font-code"
+          />
         </div>
+        <Button onClick={handleSuggestImprovements} disabled={isLoading || !moduleCode.trim()} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" size="sm">
+          {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+          Suggest Improvements
+        </Button>
+        
+        {error && <Card className="bg-destructive/20 border-destructive/50 p-2"><p className="text-xs text-destructive">{error}</p></Card>}
+        
+        {suggestions && (
+          <Card className="bg-muted/30 border-border/50 flex-shrink-0 max-h-[200px] flex flex-col">
+            <CardHeader className="p-2">
+              <CardTitle className="text-sm font-semibold text-foreground flex items-center">
+                <Sparkles className="w-4 h-4 mr-1.5 text-primary"/>AI Suggestions
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-2 pt-0 flex-grow overflow-hidden">
+              <ScrollArea className="h-full">
+                <pre className="text-xs text-foreground whitespace-pre-wrap font-code">{suggestions}</pre>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        )}
       </CardContent>
       <CardFooter className="p-2 md:p-3 border-t border-border/60">
          <Button className="w-full" size="sm">Save Module</Button>
@@ -117,7 +185,7 @@ function ModuleEditorContent(): ReactNode {
 
 function ApiExtensionManagerContent(): ReactNode {
   return (
-    <Card className="h-full flex flex-col bg-transparent border-none shadow-none">
+    <Card className="h-full flex flex-col bg-card border-none shadow-none">
         <CardHeader className="p-2 md:p-3">
             <CardTitle className="text-md font-semibold font-headline text-foreground flex items-center"><PlugZap className="w-4 h-4 mr-2 text-primary"/>API Extension Manager</CardTitle>
         </CardHeader>
@@ -134,7 +202,7 @@ function ApiExtensionManagerContent(): ReactNode {
             <Image src="https://placehold.co/300x150.png" alt="API Key Management" width={300} height={150} className="rounded-md my-2 opacity-50 border border-border/50" data-ai-hint="api keys list form" />
         </CardContent>
         <CardFooter className="p-2 md:p-3 border-t border-border/60">
-            <Button variant="outline" className="w-full bg-card hover:bg-muted/60" size="sm"><PlusCircle className="mr-2 h-4 w-4" /> Add New API Extension</Button>
+            <Button variant="outline" className="w-full bg-card hover:bg-muted/70" size="sm"><PlusCircle className="mr-2 h-4 w-4" /> Add New API Extension</Button>
         </CardFooter>
     </Card>
   );
@@ -142,7 +210,7 @@ function ApiExtensionManagerContent(): ReactNode {
 
 function IntegrationManagerContent(): ReactNode {
   return (
-    <Card className="h-full flex flex-col bg-transparent border-none shadow-none">
+    <Card className="h-full flex flex-col bg-card border-none shadow-none">
       <CardHeader className="p-2 md:p-3">
         <CardTitle className="text-md font-semibold font-headline text-foreground flex items-center"><Share2 className="w-4 h-4 mr-2 text-primary"/>System Integrations</CardTitle>
       </CardHeader>
@@ -150,7 +218,7 @@ function IntegrationManagerContent(): ReactNode {
         <p className="text-xs text-muted-foreground mb-2">Connect NexOS with other platforms and services.</p>
         <div className="grid grid-cols-2 gap-2">
             {[ { name: "Slack", hint: "slack logo"}, { name: "Zapier", hint: "zapier logo"}, { name: "GitHub", hint: "github logo"}, { name: "Jira", hint: "jira logo"}].map(item => (
-                 <Button key={item.name} variant="outline" className="h-auto p-2 flex-col items-center justify-center bg-card hover:bg-muted/60">
+                 <Button key={item.name} variant="outline" className="h-auto p-2 flex-col items-center justify-center bg-card hover:bg-muted/70">
                     <Image src="https://placehold.co/48x48.png" alt={item.name} width={24} height={24} data-ai-hint={item.hint} className="opacity-80"/>
                     <span className="text-xs mt-1 text-muted-foreground">{item.name}</span>
                 </Button>
@@ -159,7 +227,7 @@ function IntegrationManagerContent(): ReactNode {
         <Image src="https://placehold.co/300x100.png" alt="Integration Setup" width={300} height={100} className="rounded-md my-2 opacity-50 border border-border/50" data-ai-hint="integration connection form" />
       </CardContent>
        <CardFooter className="p-2 md:p-3 border-t border-border/60">
-        <Button variant="outline" className="w-full bg-card hover:bg-muted/60" size="sm"><PlusCircle className="mr-2 h-4 w-4" /> Add New Integration</Button>
+        <Button variant="outline" className="w-full bg-card hover:bg-muted/70" size="sm"><PlusCircle className="mr-2 h-4 w-4" /> Add New Integration</Button>
        </CardFooter>
     </Card>
   );
@@ -187,7 +255,7 @@ export default function ModulesPage() {
       defaultLayout: {
         lg: { x: 7, y: 0, w: 5, h: 16, minW: 3, minH: 10 }, 
         md: { x: 6, y: 0, w: 4, h: 16, minW: 3, minH: 10 },
-        sm: { x: 0, y: 10, w: 6, h: 8, minW: 3, minH: 6 },
+        sm: { x: 0, y: 10, w: 6, h: 10, minW: 3, minH: 8 }, // Increased minH for sm
       },
     },
     {
@@ -198,7 +266,7 @@ export default function ModulesPage() {
       defaultLayout: {
         lg: { x: 0, y: 16, w: 6, h: 8, minW: 3, minH: 5 }, 
         md: { x: 0, y: 16, w: 5, h: 8, minW: 3, minH: 5 },
-        sm: { x: 0, y: 18, w: 6, h: 6, minW: 3, minH: 4 },
+        sm: { x: 0, y: 20, w: 6, h: 6, minW: 3, minH: 4 }, // Adjusted y for sm
       },
     },
     {
@@ -209,7 +277,7 @@ export default function ModulesPage() {
       defaultLayout: {
         lg: { x: 6, y: 16, w: 6, h: 8, minW: 3, minH: 5 }, 
         md: { x: 5, y: 16, w: 5, h: 8, minW: 3, minH: 5 },
-        sm: { x: 0, y: 24, w: 6, h: 6, minW: 3, minH: 4 },
+        sm: { x: 0, y: 26, w: 6, h: 6, minW: 3, minH: 4 }, // Adjusted y for sm
       },
     }
   ];
@@ -222,4 +290,3 @@ export default function ModulesPage() {
     />
   );
 }
-
