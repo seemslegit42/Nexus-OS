@@ -8,91 +8,91 @@
 
 @layer base {
   :root {
-    --background: 40 67% 98%; /* #FAF9F6 - Light theme background (remains for now) */
-    --foreground: 0 0% 10%; /* #1A1A1A - Light theme foreground */
+    --background: 160 50% 97%; /* Very Light Jade/Off-white */
+    --foreground: 210 15% 25%; /* Dark Charcoal/Indigo text */
 
-    --card: 0 0% 92%; /* #EAEAEA - Light theme card */
-    --card-foreground: 0 0% 10%;
+    --card: 160 40% 92% / 0.75; /* Light Jade glass */
+    --card-foreground: 210 15% 20%;
 
-    --popover: 0 0% 92%;
-    --popover-foreground: 0 0% 10%;
+    --popover: 160 40% 90% / 0.85;
+    --popover-foreground: 210 15% 20%;
 
-    --primary: 130 65% 55%; /* Green for light theme accent */
-    --primary-foreground: 130 100% 10%; 
+    --primary: 155 55% 50%; /* Luminous Jade - slightly darker for light mode contrast */
+    --primary-foreground: 155 30% 5%; /* Very Dark contrast for Jade on light */
 
-    --secondary: 45 33% 94%; 
-    --secondary-foreground: 45 18% 29%;
+    --secondary: 170 40% 75%; /* Lighter Verdigris */
+    --secondary-foreground: 170 30% 25%;
 
-    --muted: 0 0% 94%;
-    --muted-foreground: 0 0% 44%;
+    --muted: 160 30% 90%;
+    --muted-foreground: 170 20% 45%;
 
-    --accent: 125 70% 65%; /* Lighter green for light theme */
-    --accent-foreground: 125 60% 15%;
+    --accent: 35 55% 50%; /* Aged Bronze/Soft Gold - darker for light mode */
+    --accent-foreground: 35 80% 10%;
 
-    --destructive: 0 84% 60%; 
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 15 65% 55%; /* Terracotta Red */
+    --destructive-foreground: 15 20% 98%;
 
-    --border: 0 0% 86%; 
-    --input: 0 0% 90%; 
-    --ring: 130 65% 55%; /* Green for focus rings in light theme */
+    --border: 170 30% 70% / 0.6; /* Subtle Verdigris border */
+    --input: 170 30% 88% / 0.7; /* Input background */
+    --ring: 155 55% 50%; /* Jade for focus - matches light primary */
 
     --radius: 0.75rem; /* Slightly more rounded */
 
-    /* Chart Colors for Light Theme (using greens and blues) */
-    --chart-1: 130 60% 50%; 
-    --chart-2: 150 55% 45%;  
-    --chart-3: 110 50% 55%;   
-    --chart-4: 180 40% 60%;   
-    --chart-5: 210 50% 55%;   
+    /* Chart Colors for Light Theme */
+    --chart-1: 170 45% 48%;   /* Verdigris */
+    --chart-2: 170 35% 60%;  /* Lighter Verdigris */
+    --chart-3: 165 50% 35%;   /* Darker Verdigris */
+    --chart-4: 150 40% 50%;   /* Jade-ish Green for variety */
+    --chart-5: 210 15% 40%;   /* Darker Neutral Blue-Grey for contrast on light bg */
 
     /* Scrollbar Variables - Light Theme */
-    --scrollbar-track-bg: hsl(40 67% 98% / 0.2); 
-    --scrollbar-thumb-bg: hsl(0 0% 70% / 0.5);  
+    --scrollbar-track-bg: hsl(160 50% 97% / 0.2);
+    --scrollbar-thumb-bg: hsl(170 30% 70% / 0.5);
     --scrollbar-thumb-hover-bg: hsl(var(--primary) / 0.5);
-    --scrollbar-thumb-border-color: hsl(40 67% 98% / 0.2);
+    --scrollbar-thumb-border-color: hsl(160 50% 97% / 0.2);
   }
 
   .dark {
-    --background: 140 30% 6%; /* Very dark, slightly desaturated green-cyan - the "smoke" */
-    --foreground: 140 25% 92%; /* Very light, slightly desaturated green-cyan - for text */
+    --background: 220 20% 10%; /* Deep Indigo-Charcoal */
+    --foreground: 160 25% 90%; /* Light Desaturated Jade/Verdigris text */
 
-    --card: 140 28% 12% / 0.20; /* Dark green-cyan glass, MORE translucent, for Zone/TopBar backgrounds */
-    --card-foreground: 140 25% 88%; /* Slightly dimmer text for cards */
+    --card: 220 18% 14% / 0.4; /* Dark Indigo Glass */
+    --card-foreground: 160 25% 88%; 
 
-    --popover: 140 28% 15% / 0.35; /* Similar to card, but more opaque for popover readability, increased translucency */
-    --popover-foreground: 140 25% 92%;
+    --popover: 220 18% 17% / 0.5; /* Popover slightly more opaque */
+    --popover-foreground: 160 25% 90%;
 
-    --primary: 130 70% 50%; /* Vibrant electric green - main accent */
-    --primary-foreground: 130 100% 10%; /* Very dark green for text on primary buttons */
+    --primary: 155 60% 55%; /* Luminous Jade - Main interactive */
+    --primary-foreground: 155 30% 10%; /* Dark contrast for Jade */
     
-    --secondary: 140 20% 20%; /* Darker, desaturated green-cyan for secondary elements */
-    --secondary-foreground: 140 15% 75%; /* Lighter text for secondary UI */
+    --secondary: 170 30% 28%; /* Dark Muted Verdigris */
+    --secondary-foreground: 170 20% 75%; 
 
-    --muted: 140 18% 15%; /* Even darker/more desaturated for subtle backgrounds within zones */
-    --muted-foreground: 140 12% 60%; /* Dim text */
+    --muted: 220 15% 18%; /* Darker Indigo-Charcoal for subtle backgrounds */
+    --muted-foreground: 170 15% 60%; /* Subdued Verdigris-tinted text */
 
-    --accent: 125 75% 60%; /* A slightly brighter, yellower green for highlights */
-    --accent-foreground: 125 100% 10%;
+    --accent: 35 50% 58%; /* Aged Bronze/Soft Gold - Highlights */
+    --accent-foreground: 35 80% 15%; /* Dark contrast for Bronze/Gold */
 
-    --destructive: 0 70% 55%; /* A balanced red */
-    --destructive-foreground: 0 0% 98%; /* Light text on red */
+    --destructive: 15 60% 50%; /* Slightly aged/terracotta Red */
+    --destructive-foreground: 15 20% 95%;
 
-    --border: 140 35% 35% / 0.30; /* MORE Subtle translucent green-cyan border for zones/cards */
-    --input: 140 25% 10% / 0.25; /* MORE Translucent input background */
-    --ring: 130 70% 55%; /* Primary green for focus rings */
+    --border: 170 25% 35% / 0.4; /* Translucent Verdigris-tinted Border */
+    --input: 220 18% 13% / 0.45; /* Dark Indigo Input Glass */
+    --ring: 155 60% 55%; /* Luminous Jade for focus rings - matches primary */
     
-    /* Chart Colors for Dark "Green Smoke" Theme */
-    --chart-1: 130 65% 55%;   /* Primary green shade */
-    --chart-2: 150 55% 50%;  /* A cooler, slightly bluer green */
-    --chart-3: 110 60% 65%;   /* A lime/yellowish green */
-    --chart-4: 140 40% 75%;   /* A light, desaturated cyan-green */
-    --chart-5: 0 0% 70%;      /* A neutral light grey to contrast greens */
+    /* Chart Colors for Dark Theme */
+    --chart-1: 170 45% 48%;   /* Verdigris */
+    --chart-2: 170 35% 60%;  /* Lighter Verdigris */
+    --chart-3: 165 50% 35%;   /* Darker Verdigris */
+    --chart-4: 150 40% 50%;   /* Jade-ish Green for variety */
+    --chart-5: 210 15% 70%;   /* Neutral Light Blue-Grey */
 
-    /* Scrollbar Variables - Dark "Green Smoke" Theme */
-    --scrollbar-track-bg: hsl(140 30% 6% / 0.05);       /* Almost invisible track */
-    --scrollbar-thumb-bg: hsl(130 40% 30% / 0.5);       /* Semi-transparent green thumb */
-    --scrollbar-thumb-hover-bg: hsl(var(--primary) / 0.6);
-    --scrollbar-thumb-border-color: hsl(140 30% 6% / 0.05); /* Same as track */
+    /* Scrollbar Variables - Dark Theme */
+    --scrollbar-track-bg: hsl(220 20% 10% / 0.1);
+    --scrollbar-thumb-bg: hsl(170 30% 30% / 0.5); /* Semi-transparent Verdigris thumb */
+    --scrollbar-thumb-hover-bg: hsl(var(--primary) / 0.6); /* Primary Jade on hover */
+    --scrollbar-thumb-border-color: hsl(220 20% 10% / 0.1);
   }
 }
 
