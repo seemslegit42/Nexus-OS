@@ -14,34 +14,45 @@ import { cn } from '@/lib/utils';
 import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
 import type { MicroApp } from '@/types/micro-app';
 
-interface QuickActionItemProps {
-  href: string;
-  icon: ReactNode;
+interface DashboardWidgetCardProps {
   title: string;
+  icon: ReactNode;
   description: string;
+  valueOrStatus: string;
+  valueColorClass?: string;
+  href: string;
+  isGated?: boolean;
 }
 
-function QuickActionItem({ href, icon, title, description }: QuickActionItemProps) {
+function DashboardWidgetCard({ title, icon, description, valueOrStatus, valueColorClass, href, isGated }: DashboardWidgetCardProps) {
+  const effectiveHref = isGated ? "/plans" : href;
+  const effectiveTitle = isGated ? `${title} (Upgrade Required)` : title;
+  const effectiveValueOrStatus = isGated ? "Upgrade Plan" : valueOrStatus;
+  const effectiveIcon = isGated ? <Lock className="h-4 w-4 text-yellow-500" /> : icon;
+
   return (
-    <Button variant="outline" className="w-full justify-start p-3 h-auto text-left bg-card hover:bg-muted/70 border-border/70 transition-all duration-150 ease-in-out hover:shadow-lg hover:border-primary/50" asChild>
-      <Link href={href}>
-        <div className="flex items-center gap-3">
-          {icon}
-          <div>
-            <p className="font-semibold font-headline text-sm text-foreground">{title}</p>
-            <p className="text-xs text-muted-foreground">{description}</p>
-          </div>
-        </div>
-      </Link>
-    </Button>
+    <Link href={effectiveHref} passHref className="block h-full">
+      <Card className={cn("bg-card hover:bg-muted/70 border-border/70 transition-all duration-150 ease-in-out hover:shadow-lg hover:border-primary/50 h-full flex flex-col cursor-pointer", isGated && "opacity-70 hover:opacity-80 border-yellow-500/50")}>
+        <CardHeader className="pb-2 pt-3 px-3">
+          <CardTitle className="flex items-center text-sm font-headline text-foreground gap-2">
+            {effectiveIcon}
+            {effectiveTitle}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex-grow px-3 pb-3">
+          <p className="text-xs text-muted-foreground mb-1 line-clamp-2">{description}</p>
+          <p className={cn("text-sm font-semibold", isGated ? "text-yellow-600 dark:text-yellow-400" : valueColorClass)}>{effectiveValueOrStatus}</p>
+        </CardContent>
+      </Card>
+    </Link>
   );
 }
 
 function QuickActionsContent(): ReactNode {
-  const actions: QuickActionItemProps[] = [
-    { href: "/onboarding", icon: <Cpu className="h-5 w-5 text-primary" />, title: "Spawn New Agent", description: "Configure and deploy an AI agent." },
-    { href: "/command", icon: <Zap className="h-5 w-5 text-primary" />, title: "Initiate Prompt Chain", description: "Open Command & Cauldron." },
-    { href: "/loom-studio", icon: <LayoutGrid className="h-5 w-5 text-primary" />, title: "Open Loom Studio", description: "Visual workflow editor." },
+  const actions: DashboardWidgetCardProps[] = [
+    { href: "/onboarding", icon: <Cpu className="h-5 w-5 text-primary" />, title: "Spawn New Agent", description: "Configure and deploy an AI agent.", valueOrStatus: "Launch", isGated: false },
+    { href: "/command", icon: <Zap className="h-5 w-5 text-primary" />, title: "Initiate Prompt Chain", description: "Open Command & Cauldron.", valueOrStatus: "Open", isGated: false },
+    { href: "/loom-studio", icon: <LayoutGrid className="h-5 w-5 text-primary" />, title: "Open Loom Studio", description: "Visual workflow editor.", valueOrStatus: "Open", isGated: false },
   ];
 
   return (
@@ -49,7 +60,7 @@ function QuickActionsContent(): ReactNode {
       <CardContent className="p-1 md:p-2">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
           {actions.map((action) => (
-            <QuickActionItem key={action.title} {...action} />
+            <DashboardWidgetCard key={action.title} {...action} />
           ))}
         </div>
       </CardContent>
@@ -132,40 +143,6 @@ function AgentStatusContent(): ReactNode {
   );
 }
 
-interface DashboardWidgetCardProps {
-  title: string;
-  icon: ReactNode;
-  description: string;
-  valueOrStatus: string;
-  valueColorClass?: string;
-  href: string;
-  isGated?: boolean; // New prop
-}
-
-function DashboardWidgetCard({ title, icon, description, valueOrStatus, valueColorClass, href, isGated }: DashboardWidgetCardProps) {
-  const effectiveHref = isGated ? "/plans" : href; // Redirect to plans if gated
-  const effectiveTitle = isGated ? `${title} (Upgrade Required)` : title;
-  const effectiveValueOrStatus = isGated ? "Upgrade Plan" : valueOrStatus;
-  const effectiveIcon = isGated ? <Lock className="h-4 w-4 text-yellow-500" /> : icon;
-
-  return (
-    <Link href={effectiveHref} passHref className="block h-full">
-      <Card className={cn("bg-card hover:bg-muted/70 border-border/70 transition-colors h-full flex flex-col cursor-pointer", isGated && "opacity-70 hover:opacity-80 border-yellow-500/50")}>
-        <CardHeader className="pb-2 pt-3 px-3">
-          <CardTitle className="flex items-center text-sm font-headline text-foreground gap-2">
-            {effectiveIcon}
-            {effectiveTitle}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex-grow px-3 pb-3">
-          <p className="text-xs text-muted-foreground mb-1 line-clamp-2">{description}</p>
-          <p className={cn("text-sm font-semibold", isGated ? "text-yellow-600 dark:text-yellow-400" : valueColorClass)}>{effectiveValueOrStatus}</p>
-        </CardContent>
-      </Card>
-    </Link>
-  );
-}
-
 function DeployableAppsGridContent(): ReactNode {
   const deployableApps = useMicroAppRegistryStore(state => state.getDeployableApps());
   // Simulate user subscription status. In a real app, this would come from auth/user state.
@@ -194,7 +171,7 @@ function DeployableAppsGridContent(): ReactNode {
                   description={app.description}
                   valueOrStatus={app.category || "Launch App"}
                   valueColorClass={isGated ? undefined : "text-primary"}
-                  href={app.entryPoint || `/`}
+                  href={app.entryPoint || `/`} // Fallback to root if no entryPoint
                   isGated={isGated}
                 />
               );
@@ -265,4 +242,4 @@ export default function HomePage() {
   );
 }
 
-
+    
