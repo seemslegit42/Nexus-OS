@@ -142,18 +142,17 @@ function DashboardWidgetCard({ title, icon, description, valueOrStatus, valueCol
   return (
     <Link href={href} passHref className="block h-full">
       <Card className="bg-card hover:bg-muted/70 border-border/70 transition-colors h-full flex flex-col cursor-pointer">
-        <a>
-          <CardHeader className="pb-2 pt-3 px-3">
-            <CardTitle className="flex items-center text-sm font-headline text-foreground gap-2">
-              {icon}
-              {title}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex-grow px-3 pb-3">
-            <p className="text-xs text-muted-foreground mb-1">{description}</p>
-            <p className={cn("text-lg font-bold", valueColorClass)}>{valueOrStatus}</p>
-          </CardContent>
-        </a>
+        {/* The problematic inner <a> tag was here and has been removed */}
+        <CardHeader className="pb-2 pt-3 px-3">
+          <CardTitle className="flex items-center text-sm font-headline text-foreground gap-2">
+            {icon}
+            {title}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex-grow px-3 pb-3">
+          <p className="text-xs text-muted-foreground mb-1">{description}</p>
+          <p className={cn("text-lg font-bold", valueColorClass)}>{valueOrStatus}</p>
+        </CardContent>
       </Card>
     </Link>
   );
