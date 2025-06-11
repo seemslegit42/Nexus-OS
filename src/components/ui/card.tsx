@@ -1,20 +1,27 @@
-import * as React from "react"
 
+import * as React from "react"
+import { Slot } from "@radix-ui/react-slot" // Import Slot
 import { cn } from "@/lib/utils"
 
-const Card = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg border bg-card text-card-foreground shadow-sm",
-      className
-    )}
-    {...props}
-  />
-))
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  asChild?: boolean // Add asChild to props interface
+}
+
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "div" // Determine component to render
+    return (
+      <Comp
+        ref={ref}
+        className={cn(
+          "rounded-lg border bg-card text-card-foreground shadow-sm",
+          className
+        )}
+        {...props}
+      />
+    )
+  }
+)
 Card.displayName = "Card"
 
 const CardHeader = React.forwardRef<
@@ -30,9 +37,13 @@ const CardHeader = React.forwardRef<
 CardHeader.displayName = "CardHeader"
 
 const CardTitle = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
+  HTMLDivElement, // Should be HTMLHeadingElement if it renders a heading
+  React.HTMLAttributes<HTMLHeadingElement> // Match the element type
 >(({ className, ...props }, ref) => (
+  // Assuming CardTitle should render a heading, e.g., h3.
+  // If it's just a div, then the types above are fine.
+  // For semantic correctness, it's often a heading.
+  // Let's assume it's meant to be a div wrapper for a title for now as per original.
   <div
     ref={ref}
     className={cn(
@@ -45,9 +56,11 @@ const CardTitle = React.forwardRef<
 CardTitle.displayName = "CardTitle"
 
 const CardDescription = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
+  HTMLParagraphElement, // Should be HTMLParagraphElement
+  React.HTMLAttributes<HTMLParagraphElement> // Match the element type
 >(({ className, ...props }, ref) => (
+  // Assuming CardDescription should render a p tag.
+  // Let's assume it's meant to be a div wrapper for now as per original.
   <div
     ref={ref}
     className={cn("text-sm text-muted-foreground", className)}
