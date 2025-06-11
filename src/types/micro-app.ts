@@ -27,6 +27,7 @@ export interface MicroApp {
     requiresBetaFeature?: boolean; // If the micro-app depends on an OS beta feature
     systemInternal?: boolean; // If it's a core OS micro-app not meant for general toggling
   };
+  isVisible: boolean; // Is the app generally visible/deployable on dashboards/launchpads
   version: string; // e.g., "1.0.2"
   entryPoint?: string; // Path to the micro-app, e.g., "/autopilot" or a specific launch command
   deployableTo: ('dashboard' | 'loom-studio' | 'dedicated-tab' | 'none')[]; // Where it can be deployed/launched from
@@ -36,3 +37,4 @@ export interface MicroApp {
   createdAt: string; // ISO Date string
   updatedAt: string; // ISO Date string
 }
+

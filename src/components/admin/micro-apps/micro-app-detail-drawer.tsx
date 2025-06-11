@@ -20,7 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Save, PackageOpen, Settings2, AlertTriangle, DollarSign, ListChecks, Info, SlidersHorizontal, Users2 } from 'lucide-react';
+import { Save, PackageOpen, Settings2, AlertTriangle, DollarSign, ListChecks, Info, SlidersHorizontal, Users2, Eye } from 'lucide-react';
 import type { MicroApp } from '@/types/micro-app';
 import { Badge } from '@/components/ui/badge';
 
@@ -41,8 +41,8 @@ export function MicroAppDetailDrawer({ app, isOpen, onOpenChange, onSave, availa
   const [formData, setFormData] = useState<Partial<MicroApp>>(app || {});
 
   useEffect(() => {
-    setFormData(app || {});
-  }, [app, isOpen]); // Reset form data when app changes or drawer reopens
+    setFormData(app || { isVisible: true }); // Default isVisible to true if app is null or doesn't have it
+  }, [app, isOpen]);
 
   if (!app) return null;
 
@@ -63,8 +63,6 @@ export function MicroAppDetailDrawer({ app, isOpen, onOpenChange, onSave, availa
 
 
   const handleSaveClick = () => {
-    // Basic validation: Ensure required fields are present if they were part of the original app
-    // This doesn't add new required fields, just ensures existing ones aren't wiped if they were mandatory.
     const mergedApp = { ...app, ...formData };
     if (!mergedApp.displayName || !mergedApp.internalName) {
         alert("Display Name and Internal Name are required.");
@@ -131,7 +129,7 @@ export function MicroAppDetailDrawer({ app, isOpen, onOpenChange, onSave, availa
               <Input id="tags" value={formData.tags?.join(', ') || ''} onChange={(e) => handleChange('tags', e.target.value.split(',').map(t => t.trim()).filter(t => t))} placeholder="e.g., ai, workflow, utility" className="bg-input border-input focus:ring-primary"/>
             </div>
             
-            <Accordion type="multiple" className="w-full" defaultValue={["agents", "monetization"]}>
+            <Accordion type="multiple" className="w-full" defaultValue={["agents", "monetization", "flagsAndPermissions"]}>
                 <AccordionItem value="agents">
                     <AccordionTrigger className="text-sm font-medium py-2 px-1 hover:no-underline"><Users2 className="mr-2 h-4 w-4 text-primary/80"/>Agent Dependencies</AccordionTrigger>
                     <AccordionContent className="pt-2 pb-0 px-1">
@@ -209,6 +207,10 @@ export function MicroAppDetailDrawer({ app, isOpen, onOpenChange, onSave, availa
                     <AccordionTrigger className="text-sm font-medium py-2 px-1 hover:no-underline"><ListChecks className="mr-2 h-4 w-4 text-primary/80"/>Flags & Permissions</AccordionTrigger>
                     <AccordionContent className="pt-2 pb-0 px-1 space-y-3">
                         <div className="flex items-center justify-between">
+                            <Label htmlFor="isVisible" className="text-sm">Visible on Dashboard/Launchpad</Label>
+                            <Switch id="isVisible" checked={formData.isVisible === undefined ? true : formData.isVisible} onCheckedChange={(val) => handleChange('isVisible', val)} />
+                        </div>
+                        <div className="flex items-center justify-between">
                             <Label htmlFor="authRequired" className="text-sm">Authentication Required</Label>
                             <Switch id="authRequired" checked={formData.authRequired || false} onCheckedChange={(val) => handleChange('authRequired', val)} />
                         </div>
@@ -246,3 +248,4 @@ export function MicroAppDetailDrawer({ app, isOpen, onOpenChange, onSave, availa
     </Sheet>
   );
 }
+

@@ -17,6 +17,7 @@ export interface MicroAppRegistryState {
   getAppsByStatus: (statusFilter: MicroApp['status']) => MicroApp[];
   searchApps: (term: string) => MicroApp[];
   getAppsByFlag: (flagName: keyof MicroApp['flags'] | 'monetized') => MicroApp[];
+  getDeployableApps: () => MicroApp[];
 }
 
 export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get) => ({
@@ -40,6 +41,7 @@ export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get)
       tags: newAppData.tags || [],
       agentDependencies: newAppData.agentDependencies || [],
       authRequired: newAppData.authRequired !== undefined ? newAppData.authRequired : true,
+      isVisible: newAppData.isVisible !== undefined ? newAppData.isVisible : true, // Default to true
       monetization: newAppData.monetization !== undefined ? newAppData.monetization : null,
       flags: newAppData.flags || {},
       version: newAppData.version || '0.1.0',
@@ -88,6 +90,9 @@ export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get)
     }
     // Ensure flags object exists and the specific flag is true
     return allApps.filter(app => app.flags && app.flags[flagName as keyof MicroApp['flags']] === true);
+  },
+  getDeployableApps: () => {
+    return get().apps.filter(app => app.status === 'enabled' && app.isVisible === true);
   },
 }));
 

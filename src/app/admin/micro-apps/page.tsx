@@ -17,6 +17,7 @@ import { MicroAppDetailDrawer } from '@/components/admin/micro-apps/micro-app-de
 import { cn } from '@/lib/utils';
 import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch'; // Added Switch import
 
 // Helper to get appropriate badge variant for status
 const getStatusBadgeVariant = (status: MicroApp['status']): 'default' | 'secondary' | 'destructive' | 'outline' => {
@@ -59,6 +60,7 @@ export default function MicroAppRegistryPage() {
   const [newAppName, setNewAppName] = useState('');
   const [newAppInternalName, setNewAppInternalName] = useState('');
   const [newAppDescription, setNewAppDescription] = useState('');
+  const [newAppIsVisible, setNewAppIsVisible] = useState(true); // Added state for isVisible
 
   const selectedApp = useMemo(() => {
     if (!selectedAppId) return null;
@@ -88,13 +90,15 @@ export default function MicroAppRegistryPage() {
     registerMicroApp({ 
       displayName: newAppName, 
       internalName: newAppInternalName,
-      description: newAppDescription 
+      description: newAppDescription,
+      isVisible: newAppIsVisible, // Pass isVisible state
       // Other fields will use defaults defined in the store
     });
     setIsRegisterDialogOpen(false);
     setNewAppName('');
     setNewAppInternalName('');
     setNewAppDescription('');
+    setNewAppIsVisible(true); // Reset isVisible for next registration
   };
 
   // Dummy available agents for the drawer, in a real app this would come from an agent store/service
@@ -144,6 +148,14 @@ export default function MicroAppRegistryPage() {
                   <Label htmlFor="new-app-description">Description</Label>
                   <Input id="new-app-description" value={newAppDescription} onChange={(e) => setNewAppDescription(e.target.value)} placeholder="A brief description" className="mt-1 bg-input border-input focus:ring-primary"/>
                 </div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="new-app-is-visible" className="text-sm">Visible on Dashboard/Launchpad</Label>
+                  <Switch
+                    id="new-app-is-visible"
+                    checked={newAppIsVisible}
+                    onCheckedChange={setNewAppIsVisible}
+                  />
+                </div>
                  <DialogFooter className="pt-3">
                     <DialogClose asChild>
                         <Button type="button" variant="outline">Cancel</Button>
@@ -170,6 +182,7 @@ export default function MicroAppRegistryPage() {
                   <TableHead>Display Name</TableHead>
                   <TableHead className="hidden md:table-cell">Internal Name</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead className="hidden lg:table-cell">Visible</TableHead>
                   <TableHead className="hidden lg:table-cell">Category</TableHead>
                   <TableHead className="hidden lg:table-cell">Tags</TableHead>
                   <TableHead className="hidden xl:table-cell">Agent Deps</TableHead>
@@ -191,6 +204,9 @@ export default function MicroAppRegistryPage() {
                       <Badge variant={getStatusBadgeVariant(app.status)} className={cn("text-xs py-0.5 px-2 h-5 leading-tight", getStatusBadgeColorClass(app.status))}>
                         {app.status}
                       </Badge>
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell">
+                        {app.isVisible ? <Eye className="h-4 w-4 text-green-500" /> : <EyeOff className="h-4 w-4 text-muted-foreground" />}
                     </TableCell>
                     <TableCell className="text-muted-foreground text-xs hidden lg:table-cell">{app.category}</TableCell>
                     <TableCell className="text-xs hidden lg:table-cell">

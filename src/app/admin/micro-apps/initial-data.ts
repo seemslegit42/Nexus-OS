@@ -14,6 +14,7 @@ export const mockMicroApps: MicroApp[] = [
     tags: ['workflow', 'ai', 'visual-editor', 'automation', 'low-code'],
     agentDependencies: ['Orion', 'Proxy'],
     authRequired: true,
+    isVisible: true,
     monetization: { enabled: true, price: 29, billingCycle: 'monthly', billingAgent: 'BillingProxy' },
     flags: { isFeatured: true, requiresBetaFeature: false },
     version: '1.1.0',
@@ -34,6 +35,7 @@ export const mockMicroApps: MicroApp[] = [
     tags: ['security', 'monitoring', 'rbac', 'threat-detection'],
     agentDependencies: ['Aegis', 'LogSentinel'],
     authRequired: true,
+    isVisible: true,
     monetization: null,
     flags: { systemInternal: true },
     version: '2.3.1',
@@ -54,6 +56,7 @@ export const mockMicroApps: MicroApp[] = [
     tags: ['monitoring', 'health', 'real-time', 'kpi'],
     agentDependencies: [],
     authRequired: true,
+    isVisible: true,
     monetization: null,
     flags: { requiresBetaFeature: true },
     version: '0.9.0-beta',
@@ -73,6 +76,7 @@ export const mockMicroApps: MicroApp[] = [
     tags: ['experimental', 'debug', 'tools'],
     agentDependencies: [],
     authRequired: true,
+    isVisible: false, // Example of a not globally visible app
     monetization: null,
     flags: { isDevOnly: true },
     version: '0.1.0-alpha',
@@ -81,3 +85,4 @@ export const mockMicroApps: MicroApp[] = [
     updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
   },
 ];
+
