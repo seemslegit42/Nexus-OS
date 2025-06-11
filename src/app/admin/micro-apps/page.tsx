@@ -11,7 +11,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { PlusCircle, Search, Filter as FilterIcon, Edit, Copy, Rocket, EyeOff, Eye, MoreVertical, SlidersHorizontal, AlertTriangle, Settings, ChevronsUpDown, ChevronDown } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter, SheetClose } from '@/components/ui/sheet';
+import { PlusCircle, Search, Filter as FilterIcon, Edit, Copy, Rocket, EyeOff, Eye, MoreVertical, SlidersHorizontal, AlertTriangle, Settings, ChevronsUpDown, ChevronDown, PackageSearch } from 'lucide-react';
 import type { MicroApp } from '@/types/micro-app';
 import { MicroAppDetailDrawer } from '@/components/admin/micro-apps/micro-app-detail-drawer';
 import { cn } from '@/lib/utils';
@@ -20,6 +21,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 
 // Helper to get appropriate badge variant for status
@@ -45,6 +47,13 @@ const getStatusBadgeColorClass = (status: MicroApp['status']): string => {
 };
 
 const ALL_STATUSES: MicroAppStatus[] = ['enabled', 'disabled', 'dev-only', 'archived', 'beta'];
+const ALL_FLAGS = [
+    { id: 'isFeatured', label: 'Featured' },
+    { id: 'requiresBetaFeature', label: 'Requires OS Beta' },
+    { id: 'systemInternal', label: 'System Internal' },
+    { id: 'isDevOnly', label: 'Dev Build Only' },
+    { id: 'monetized', label: 'Monetized' },
+];
 
 
 export default function MicroAppRegistryPage() {
@@ -58,29 +67,61 @@ export default function MicroAppRegistryPage() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isDetailDrawerOpen, setIsDetailDrawerOpen] = useState(false);
   const [isRegisterDialogOpen, setIsRegisterDialogOpen] = useState(false);
   const [selectedAppIds, setSelectedAppIds] = useState<string[]>([]);
-
 
   const [newAppName, setNewAppName] = useState('');
   const [newAppInternalName, setNewAppInternalName] = useState('');
   const [newAppDescription, setNewAppDescription] = useState('');
   const [newAppIsVisible, setNewAppIsVisible] = useState(true); 
 
-  const selectedApp = useMemo(() => {
+  // State for mobile filter drawer
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+  const [tempStatusFilters, setTempStatusFilters] = useState<MicroAppStatus[]>([]);
+  const [tempFlagFilters, setTempFlagFilters] = useState<string[]>([]);
+  const [tempAgentFilter, setTempAgentFilter] = useState<string | null>(null);
+
+  const [appliedStatusFilters, setAppliedStatusFilters] = useState<MicroAppStatus[]>([]);
+  const [appliedFlagFilters, setAppliedFlagFilters] = useState<string[]>([]);
+  const [appliedAgentFilter, setAppliedAgentFilter] = useState<string | null>(null);
+
+
+  const selectedAppForDetailView = useMemo(() => {
     if (!selectedAppId) return null;
     return getMicroApp(selectedAppId) || null;
   }, [selectedAppId, getMicroApp]);
 
+  const uniqueAgentNames = useMemo(() => {
+    const agentSet = new Set<string>();
+    allApps.forEach(app => app.agentDependencies?.forEach(dep => agentSet.add(dep)));
+    return Array.from(agentSet).sort();
+  }, [allApps]);
+
   const displayedApps = useMemo(() => {
-    return searchApps(searchTerm);
-  }, [searchApps, searchTerm]);
+    let apps = searchApps(searchTerm);
+    if (appliedStatusFilters.length > 0) {
+      apps = apps.filter(app => appliedStatusFilters.includes(app.status));
+    }
+    if (appliedFlagFilters.length > 0) {
+      apps = apps.filter(app => 
+        appliedFlagFilters.every(flag => {
+          if (flag === 'monetized') return app.monetization?.enabled === true;
+          // @ts-ignore
+          return app.flags?.[flag as keyof MicroApp['flags']] === true;
+        })
+      );
+    }
+    if (appliedAgentFilter && appliedAgentFilter !== 'all') {
+      apps = apps.filter(app => app.agentDependencies?.includes(appliedAgentFilter));
+    }
+    return apps;
+  }, [searchApps, searchTerm, appliedStatusFilters, appliedFlagFilters, appliedAgentFilter]);
 
 
   const handleEditApp = (appId: string) => {
     setSelectedAppId(appId);
-    setIsDrawerOpen(true);
+    setIsDetailDrawerOpen(true);
   };
 
   const handleSaveAppDetails = (updatedApp: MicroApp) => {
@@ -125,10 +166,38 @@ export default function MicroAppRegistryPage() {
   const handleBulkStatusChange = (newStatus: MicroAppStatus) => {
     if (selectedAppIds.length > 0) {
       bulkUpdateStatus(selectedAppIds, newStatus);
-      setSelectedAppIds([]); // Clear selection after action
+      setSelectedAppIds([]); 
     }
   };
 
+  const handleApplyFilters = () => {
+    setAppliedStatusFilters([...tempStatusFilters]);
+    setAppliedFlagFilters([...tempFlagFilters]);
+    setAppliedAgentFilter(tempAgentFilter);
+    setIsFilterDrawerOpen(false);
+  };
+
+  const handleClearFilters = () => {
+    setTempStatusFilters([]);
+    setTempFlagFilters([]);
+    setTempAgentFilter(null);
+    setAppliedStatusFilters([]);
+    setAppliedFlagFilters([]);
+    setAppliedAgentFilter(null);
+    setIsFilterDrawerOpen(false);
+  };
+
+  const toggleStatusFilter = (status: MicroAppStatus) => {
+    setTempStatusFilters(prev => 
+      prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status]
+    );
+  };
+
+  const toggleFlagFilter = (flagId: string) => {
+    setTempFlagFilters(prev =>
+      prev.includes(flagId) ? prev.filter(f => f !== flagId) : [...prev, flagId]
+    );
+  };
 
   const availableAgentsList = useMemo(() => {
     const allDeps = new Set<string>();
@@ -152,10 +221,15 @@ export default function MicroAppRegistryPage() {
             />
           </div>
           <div className="flex gap-2">
+             {/* Mobile Filter Button */}
+            <Button variant="outline" size="sm" className="h-9 md:hidden flex items-center" onClick={() => setIsFilterDrawerOpen(true)}>
+              <FilterIcon className="mr-2 h-4 w-4" />Filters ({appliedStatusFilters.length + appliedFlagFilters.length + (appliedAgentFilter ? 1 : 0)})
+            </Button>
+            {/* Desktop Bulk Actions & Conceptual Filter Button */}
             {selectedAppIds.length > 0 && (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="h-9 hidden md:inline-flex"> {/* Hidden on mobile */}
+                    <Button variant="outline" className="h-9 hidden md:inline-flex"> 
                         Bulk Actions ({selectedAppIds.length}) <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50"/>
                     </Button>
                     </DropdownMenuTrigger>
@@ -172,7 +246,8 @@ export default function MicroAppRegistryPage() {
                     </DropdownMenuContent>
                 </DropdownMenu>
             )}
-            <Button variant="outline" size="sm" className="h-9 hidden md:inline-flex"><FilterIcon className="mr-2 h-4 w-4" />Filters</Button>
+            <Button variant="outline" size="sm" className="h-9 hidden md:inline-flex"><FilterIcon className="mr-2 h-4 w-4" />Filters (Desktop - Conceptual)</Button>
+            
             <Dialog open={isRegisterDialogOpen} onOpenChange={setIsRegisterDialogOpen}>
               <DialogTrigger asChild>
                 <Button className="bg-primary hover:bg-primary/90 text-primary-foreground h-9" size="sm">
@@ -231,7 +306,7 @@ export default function MicroAppRegistryPage() {
                 <TableRow className="border-border/60">
                   <TableHead className="w-[60px] text-center">
                     <Checkbox
-                        checked={selectedAppIds.length === displayedApps.length && displayedApps.length > 0}
+                        checked={selectedAppIds.length === displayedApps.length && displayedApps.length > 0 && selectedAppIds.length > 0}
                         onCheckedChange={handleSelectAllApps}
                         aria-label="Select all rows"
                     />
@@ -332,16 +407,14 @@ export default function MicroAppRegistryPage() {
 
       {/* Mobile Accordion View */}
       <div className="md:hidden flex-grow">
-        {displayedApps.length === 0 && searchTerm ? (
+        {displayedApps.length === 0 ? (
           <div className="text-center p-8 text-muted-foreground">
-            <SlidersHorizontal className="mx-auto h-12 w-12 opacity-50 mb-2" />
-            <p>No micro-apps found for "{searchTerm}".</p>
+            <PackageSearch className="mx-auto h-12 w-12 opacity-50 mb-2" />
+            <p>No micro-apps found matching your criteria.</p>
+             {(appliedStatusFilters.length > 0 || appliedFlagFilters.length > 0 || appliedAgentFilter) && (
+                <Button variant="link" onClick={handleClearFilters} className="mt-2">Clear Filters</Button>
+            )}
           </div>
-        ) : displayedApps.length === 0 && !searchTerm ? (
-            <div className="text-center p-8 text-muted-foreground">
-                <SlidersHorizontal className="mx-auto h-12 w-12 opacity-50 mb-2" />
-                <p>No micro-apps available.</p>
-            </div>
         ) : (
         <ScrollArea className="h-full">
           <Accordion type="multiple" className="w-full space-y-2">
@@ -396,12 +469,82 @@ export default function MicroAppRegistryPage() {
         )}
       </div>
 
+      {/* Mobile Filter Drawer */}
+      <Sheet open={isFilterDrawerOpen} onOpenChange={setIsFilterDrawerOpen}>
+        <SheetContent side="bottom" className="h-[80vh] flex flex-col p-0">
+          <SheetHeader className="p-4 border-b">
+            <SheetTitle>Filter Micro-Apps</SheetTitle>
+            <SheetDescription>Select criteria to refine the list of micro-apps.</SheetDescription>
+          </SheetHeader>
+          <ScrollArea className="flex-grow p-4">
+            <div className="space-y-6">
+              <div>
+                <h4 className="font-medium mb-2 text-sm">Status</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {ALL_STATUSES.map(status => (
+                    <div key={status} className="flex items-center space-x-2">
+                      <Checkbox 
+                        id={`filter-status-${status}`} 
+                        checked={tempStatusFilters.includes(status)}
+                        onCheckedChange={() => toggleStatusFilter(status)}
+                      />
+                      <Label htmlFor={`filter-status-${status}`} className="text-xs capitalize">{status.replace('-', ' ')}</Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h4 className="font-medium mb-2 text-sm">Flags</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {ALL_FLAGS.map(flag => (
+                    <div key={flag.id} className="flex items-center space-x-2">
+                      <Checkbox 
+                        id={`filter-flag-${flag.id}`} 
+                        checked={tempFlagFilters.includes(flag.id)}
+                        onCheckedChange={() => toggleFlagFilter(flag.id)}
+                      />
+                      <Label htmlFor={`filter-flag-${flag.id}`} className="text-xs">{flag.label}</Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h4 className="font-medium mb-2 text-sm">Agent Dependency</h4>
+                 <Select 
+                    value={tempAgentFilter || 'all'} 
+                    onValueChange={(value) => setTempAgentFilter(value === 'all' ? null : value)}
+                >
+                    <SelectTrigger className="bg-input border-input focus:ring-primary text-xs">
+                        <SelectValue placeholder="Any Agent" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">Any Agent</SelectItem>
+                        {uniqueAgentNames.map(agentName => (
+                            <SelectItem key={agentName} value={agentName} className="text-xs">{agentName}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </ScrollArea>
+          <SheetFooter className="p-4 border-t flex-col sm:flex-row sm:justify-between gap-2">
+            <Button variant="outline" onClick={handleClearFilters} className="w-full sm:w-auto">Clear Filters</Button>
+            <div className="flex gap-2 w-full sm:w-auto">
+                <SheetClose asChild>
+                    <Button type="button" variant="outline" className="flex-1 sm:flex-auto">Cancel</Button>
+                </SheetClose>
+                <Button onClick={handleApplyFilters} className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1 sm:flex-auto">Apply Filters</Button>
+            </div>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
 
-      {selectedApp && (
+
+      {selectedAppForDetailView && (
         <MicroAppDetailDrawer
-          app={selectedApp}
-          isOpen={isDrawerOpen}
-          onOpenChange={setIsDrawerOpen}
+          app={selectedAppForDetailView}
+          isOpen={isDetailDrawerOpen}
+          onOpenChange={setIsDetailDrawerOpen}
           onSave={handleSaveAppDetails}
           availableAgents={availableAgentsList}
         />
@@ -410,3 +553,4 @@ export default function MicroAppRegistryPage() {
   );
 }
 
+    
