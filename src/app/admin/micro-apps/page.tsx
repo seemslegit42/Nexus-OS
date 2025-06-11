@@ -76,7 +76,6 @@ export default function MicroAppRegistryPage() {
   const [newAppDescription, setNewAppDescription] = useState('');
   const [newAppIsVisible, setNewAppIsVisible] = useState(true); 
 
-  // State for mobile filter drawer
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
   const [tempStatusFilters, setTempStatusFilters] = useState<MicroAppStatus[]>([]);
   const [tempFlagFilters, setTempFlagFilters] = useState<string[]>([]);
@@ -85,6 +84,9 @@ export default function MicroAppRegistryPage() {
   const [appliedStatusFilters, setAppliedStatusFilters] = useState<MicroAppStatus[]>([]);
   const [appliedFlagFilters, setAppliedFlagFilters] = useState<string[]>([]);
   const [appliedAgentFilter, setAppliedAgentFilter] = useState<string | null>(null);
+
+  const [isDeployModalOpen, setIsDeployModalOpen] = useState(false);
+  const [appsToDeploySelectedIds, setAppsToDeploySelectedIds] = useState<string[]>([]);
 
 
   const selectedAppForDetailView = useMemo(() => {
@@ -107,7 +109,6 @@ export default function MicroAppRegistryPage() {
       apps = apps.filter(app => 
         appliedFlagFilters.every(flag => {
           if (flag === 'monetized') return app.monetization?.enabled === true;
-          // @ts-ignore
           return app.flags?.[flag as keyof MicroApp['flags']] === true;
         })
       );
@@ -117,6 +118,10 @@ export default function MicroAppRegistryPage() {
     }
     return apps;
   }, [searchApps, searchTerm, appliedStatusFilters, appliedFlagFilters, appliedAgentFilter]);
+
+  const appsEligibleForDeployment = useMemo(() => {
+    return allApps.filter(app => app.status === 'enabled' && !app.isVisible);
+  }, [allApps]);
 
 
   const handleEditApp = (appId: string) => {
@@ -199,6 +204,20 @@ export default function MicroAppRegistryPage() {
     );
   };
 
+  const handleSelectAppForDeployment = (appId: string, checked: boolean) => {
+    setAppsToDeploySelectedIds(prev => 
+      checked ? [...prev, appId] : prev.filter(id => id !== appId)
+    );
+  };
+
+  const handleDeploySelectedApps = () => {
+    appsToDeploySelectedIds.forEach(appId => {
+      updateMicroApp(appId, { isVisible: true });
+    });
+    setAppsToDeploySelectedIds([]);
+    setIsDeployModalOpen(false);
+  };
+
   const availableAgentsList = useMemo(() => {
     const allDeps = new Set<string>();
     allApps.forEach(app => app.agentDependencies?.forEach(dep => allDeps.add(dep)));
@@ -221,11 +240,9 @@ export default function MicroAppRegistryPage() {
             />
           </div>
           <div className="flex gap-2">
-             {/* Mobile Filter Button */}
             <Button variant="outline" size="sm" className="h-9 md:hidden flex items-center" onClick={() => setIsFilterDrawerOpen(true)}>
               <FilterIcon className="mr-2 h-4 w-4" />Filters ({appliedStatusFilters.length + appliedFlagFilters.length + (appliedAgentFilter ? 1 : 0)})
             </Button>
-            {/* Desktop Bulk Actions & Conceptual Filter Button */}
             {selectedAppIds.length > 0 && (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -248,6 +265,56 @@ export default function MicroAppRegistryPage() {
             )}
             <Button variant="outline" size="sm" className="h-9 hidden md:inline-flex"><FilterIcon className="mr-2 h-4 w-4" />Filters (Desktop - Conceptual)</Button>
             
+            <Dialog open={isDeployModalOpen} onOpenChange={setIsDeployModalOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="bg-accent hover:bg-accent/90 text-accent-foreground h-9" size="sm">
+                    <Rocket className="mr-2 h-4 w-4" /> Deploy to Dashboard
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="font-headline">Deploy Apps to Dashboard</DialogTitle>
+                  <CardDescription>Select enabled apps to make them visible on the dashboard.</CardDescription>
+                </DialogHeader>
+                <ScrollArea className="max-h-[60vh] my-4">
+                  <div className="space-y-2 p-1">
+                    {appsEligibleForDeployment.length > 0 ? (
+                      appsEligibleForDeployment.map(app => (
+                        <Card key={app.id} className="p-3 flex items-center justify-between hover:bg-muted/30">
+                          <div className="flex items-center gap-2">
+                            <Checkbox
+                              id={`deploy-${app.id}`}
+                              checked={appsToDeploySelectedIds.includes(app.id)}
+                              onCheckedChange={(checked) => handleSelectAppForDeployment(app.id, !!checked)}
+                            />
+                            <Label htmlFor={`deploy-${app.id}`} className="text-sm font-medium cursor-pointer">
+                              {app.displayName} <span className="text-xs text-muted-foreground">({app.internalName})</span>
+                            </Label>
+                          </div>
+                          <Badge variant="outline" className="text-xs">{app.category}</Badge>
+                        </Card>
+                      ))
+                    ) : (
+                      <p className="text-sm text-muted-foreground text-center py-4">No apps currently eligible for deployment (i.e., status 'enabled' and not yet visible).</p>
+                    )}
+                  </div>
+                </ScrollArea>
+                <DialogFooter className="pt-3">
+                  <DialogClose asChild>
+                    <Button type="button" variant="outline">Cancel</Button>
+                  </DialogClose>
+                  <Button 
+                    type="button" 
+                    onClick={handleDeploySelectedApps} 
+                    disabled={appsToDeploySelectedIds.length === 0}
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                  >
+                    Deploy Selected ({appsToDeploySelectedIds.length})
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
             <Dialog open={isRegisterDialogOpen} onOpenChange={setIsRegisterDialogOpen}>
               <DialogTrigger asChild>
                 <Button className="bg-primary hover:bg-primary/90 text-primary-foreground h-9" size="sm">
@@ -293,7 +360,6 @@ export default function MicroAppRegistryPage() {
         </div>
       </header>
 
-      {/* Desktop Table View */}
       <Card className="flex-grow flex-col overflow-hidden hidden md:flex">
         <CardHeader className="hidden">
           <CardTitle>All Micro-Apps</CardTitle>
@@ -375,7 +441,7 @@ export default function MicroAppRegistryPage() {
                           <DropdownMenuItem onClick={() => alert(`Duplicate action for ${app.displayName}`)}>
                             <Copy className="mr-2 h-4 w-4" /> Duplicate
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => alert(`Deploy to Dashboard action for ${app.displayName}`)}>
+                          <DropdownMenuItem onClick={() => alert(`Deploy to Dashboard action for ${app.displayName}`)} disabled={!app.isVisible || app.status !== 'enabled'}>
                             <Rocket className="mr-2 h-4 w-4" /> Deploy to Dashboard
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
@@ -405,7 +471,6 @@ export default function MicroAppRegistryPage() {
         </CardContent>
       </Card>
 
-      {/* Mobile Accordion View */}
       <div className="md:hidden flex-grow">
         {displayedApps.length === 0 ? (
           <div className="text-center p-8 text-muted-foreground">
@@ -469,7 +534,6 @@ export default function MicroAppRegistryPage() {
         )}
       </div>
 
-      {/* Mobile Filter Drawer */}
       <Sheet open={isFilterDrawerOpen} onOpenChange={setIsFilterDrawerOpen}>
         <SheetContent side="bottom" className="h-[80vh] flex flex-col p-0">
           <SheetHeader className="p-4 border-b">
@@ -552,5 +616,3 @@ export default function MicroAppRegistryPage() {
     </div>
   );
 }
-
-    
