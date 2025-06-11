@@ -15,6 +15,7 @@ export const mockMicroApps: MicroApp[] = [
     agentDependencies: ['Orion', 'Proxy'],
     authRequired: true,
     isVisible: true,
+    requiresSubscription: true, // Added flag
     monetization: { 
         enabled: true, 
         price: 29, 
@@ -44,6 +45,7 @@ export const mockMicroApps: MicroApp[] = [
     agentDependencies: ['Aegis', 'LogSentinel'],
     authRequired: true,
     isVisible: true,
+    requiresSubscription: false, // Example: core security app might be included
     monetization: null,
     flags: { systemInternal: true },
     version: '2.3.1',
@@ -65,6 +67,7 @@ export const mockMicroApps: MicroApp[] = [
     agentDependencies: [],
     authRequired: true,
     isVisible: true,
+    requiresSubscription: false,
     monetization: null,
     flags: { requiresBetaFeature: true },
     version: '0.9.0-beta',
@@ -85,6 +88,7 @@ export const mockMicroApps: MicroApp[] = [
     agentDependencies: [],
     authRequired: true,
     isVisible: false, // Example of a not globally visible app
+    requiresSubscription: false,
     monetization: null,
     flags: { isDevOnly: true },
     version: '0.1.0-alpha',

@@ -14,12 +14,13 @@ export interface MicroAppRegistryState {
   updateMicroApp: (id: string, updatedData: Partial<MicroApp>) => void;
   registerMicroApp: (newAppData: Partial<Omit<MicroApp, 'id' | 'createdAt' | 'updatedAt'>> & { internalName: string, displayName: string }) => void;
   toggleAppStatus: (id: string) => void;
-  bulkUpdateStatus: (ids: string[], newStatus: MicroAppStatus) => void; // New action
+  bulkUpdateStatus: (ids: string[], newStatus: MicroAppStatus) => void;
   // Selectors
   getAppsByStatus: (statusFilter: MicroAppStatus) => MicroApp[];
   searchApps: (term: string) => MicroApp[];
   getAppsByFlag: (flagName: keyof MicroApp['flags'] | 'monetized') => MicroApp[];
   getDeployableApps: () => MicroApp[];
+  getAppsRequiringSubscription: () => MicroApp[]; // New selector
 }
 
 export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get) => ({
@@ -44,6 +45,7 @@ export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get)
       agentDependencies: newAppData.agentDependencies || [],
       authRequired: newAppData.authRequired !== undefined ? newAppData.authRequired : true,
       isVisible: newAppData.isVisible !== undefined ? newAppData.isVisible : true,
+      requiresSubscription: newAppData.requiresSubscription !== undefined ? newAppData.requiresSubscription : (newAppData.monetization?.enabled || false), // Default based on monetization
       monetization: newAppData.monetization !== undefined ? newAppData.monetization : {
         enabled: false,
         price: undefined,
@@ -109,6 +111,9 @@ export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get)
   },
   getDeployableApps: () => {
     return get().apps.filter(app => app.status === 'enabled' && app.isVisible === true);
+  },
+  getAppsRequiringSubscription: () => { // New selector
+    return get().apps.filter(app => app.requiresSubscription === true);
   },
 }));
 

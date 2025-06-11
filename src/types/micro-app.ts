@@ -15,6 +15,7 @@ export interface MicroApp {
   tags: string[]; // e.g., ["workflow", "ai", "visual-editor", "automation"]
   agentDependencies: string[]; // Array of agent IDs/names (e.g., ["OptimizerPrime", "Orion"])
   authRequired: boolean;
+  requiresSubscription?: boolean; // New flag: if true, app needs an active subscription
   monetization: {
     enabled: boolean;
     price?: number; // e.g., 49.99

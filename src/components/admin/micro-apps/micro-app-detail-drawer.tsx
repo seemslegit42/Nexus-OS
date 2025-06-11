@@ -20,7 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Save, PackageOpen, Settings2, AlertTriangle, DollarSign, ListChecks, Info, SlidersHorizontal, Users2, Eye, CreditCard } from 'lucide-react';
+import { Save, PackageOpen, Settings2, AlertTriangle, DollarSign, ListChecks, Info, SlidersHorizontal, Users2, Eye, CreditCard, ShieldCheckIcon } from 'lucide-react';
 import type { MicroApp } from '@/types/micro-app';
 import { Badge } from '@/components/ui/badge';
 
@@ -50,7 +50,9 @@ export function MicroAppDetailDrawer({ app, isOpen, onOpenChange, onSave, availa
         stripeProductId: undefined,
         accessControlFlags: []
     };
-    setFormData(app ? { ...app, monetization: initialMonetization } : { isVisible: true, monetization: initialMonetization });
+    const initialRequiresSubscription = app?.requiresSubscription ?? (initialMonetization.enabled || false);
+
+    setFormData(app ? { ...app, monetization: initialMonetization, requiresSubscription: initialRequiresSubscription } : { isVisible: true, monetization: initialMonetization, requiresSubscription: initialRequiresSubscription });
   }, [app, isOpen]);
 
   if (!app) return null;
@@ -89,7 +91,11 @@ export function MicroAppDetailDrawer({ app, isOpen, onOpenChange, onSave, availa
             stripeProductId: mergedApp.monetization?.stripeProductId,
             accessControlFlags: mergedApp.monetization?.accessControlFlags,
         };
+        // If monetization is disabled, requiresSubscription should also be false (usually)
+        // but we allow it to be set independently, the admin can decide.
+        // mergedApp.requiresSubscription = false; 
     }
+
 
     onSave(mergedApp as MicroApp);
     onOpenChange(false);
@@ -192,11 +198,15 @@ export function MicroAppDetailDrawer({ app, isOpen, onOpenChange, onSave, availa
                     <AccordionTrigger className="text-sm font-medium py-2 px-1 hover:no-underline"><CreditCard className="mr-2 h-4 w-4 text-primary/80"/>Monetization & Pricing</AccordionTrigger>
                     <AccordionContent className="pt-2 pb-0 px-1 space-y-3">
                         <div className="flex items-center justify-between">
-                            <Label htmlFor="monetizationEnabled">Enable Monetization</Label>
+                            <Label htmlFor="monetizationEnabled" className="text-sm">Enable Monetization</Label>
                             <Switch id="monetizationEnabled" checked={formData.monetization?.enabled || false} onCheckedChange={(checked) => handleNestedChange('monetization', 'enabled', checked)} />
                         </div>
                         {formData.monetization?.enabled && (
                             <>
+                                <div className="flex items-center justify-between mt-2">
+                                    <Label htmlFor="requiresSubscription" className="text-sm">Requires Subscription</Label>
+                                    <Switch id="requiresSubscription" checked={formData.requiresSubscription || false} onCheckedChange={(val) => handleChange('requiresSubscription', val)} />
+                                </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="grid gap-1.5">
                                         <Label htmlFor="price">Price</Label>

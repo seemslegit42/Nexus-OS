@@ -1,9 +1,10 @@
 
+// src/app/page.tsx
 'use client';
 
 import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
-import { Activity, Users, AlertTriangle as AlertTriangleIconLucide, LayoutGrid, Cpu, Rocket, Info as InfoIcon, Zap, Newspaper, BarChartHorizontalBig, Shield, CalendarDays, GitMerge, Bell, Package as PackageIcon } from 'lucide-react';
+import { Activity, Users, AlertTriangle as AlertTriangleIconLucide, LayoutGrid, Cpu, Rocket, Info as InfoIcon, Zap, Newspaper, BarChartHorizontalBig, Shield, CalendarDays, GitMerge, Bell, Package as PackageIcon, Lock } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { WorkspaceGrid, type ZoneConfig } from '@/components/core/workspace-grid';
@@ -138,21 +139,27 @@ interface DashboardWidgetCardProps {
   valueOrStatus: string;
   valueColorClass?: string;
   href: string;
+  isGated?: boolean; // New prop
 }
 
-function DashboardWidgetCard({ title, icon, description, valueOrStatus, valueColorClass, href }: DashboardWidgetCardProps) {
+function DashboardWidgetCard({ title, icon, description, valueOrStatus, valueColorClass, href, isGated }: DashboardWidgetCardProps) {
+  const effectiveHref = isGated ? "/plans" : href; // Redirect to plans if gated
+  const effectiveTitle = isGated ? `${title} (Upgrade Required)` : title;
+  const effectiveValueOrStatus = isGated ? "Upgrade Plan" : valueOrStatus;
+  const effectiveIcon = isGated ? <Lock className="h-4 w-4 text-yellow-500" /> : icon;
+
   return (
-    <Link href={href} passHref className="block h-full">
-      <Card className="bg-card hover:bg-muted/70 border-border/70 transition-colors h-full flex flex-col cursor-pointer">
+    <Link href={effectiveHref} passHref className="block h-full">
+      <Card className={cn("bg-card hover:bg-muted/70 border-border/70 transition-colors h-full flex flex-col cursor-pointer", isGated && "opacity-70 hover:opacity-80 border-yellow-500/50")}>
         <CardHeader className="pb-2 pt-3 px-3">
           <CardTitle className="flex items-center text-sm font-headline text-foreground gap-2">
-            {icon}
-            {title}
+            {effectiveIcon}
+            {effectiveTitle}
           </CardTitle>
         </CardHeader>
         <CardContent className="flex-grow px-3 pb-3">
           <p className="text-xs text-muted-foreground mb-1 line-clamp-2">{description}</p>
-          <p className={cn("text-sm font-semibold", valueColorClass)}>{valueOrStatus}</p>
+          <p className={cn("text-sm font-semibold", isGated ? "text-yellow-600 dark:text-yellow-400" : valueColorClass)}>{effectiveValueOrStatus}</p>
         </CardContent>
       </Card>
     </Link>
@@ -161,6 +168,8 @@ function DashboardWidgetCard({ title, icon, description, valueOrStatus, valueCol
 
 function DeployableAppsGridContent(): ReactNode {
   const deployableApps = useMicroAppRegistryStore(state => state.getDeployableApps());
+  // Simulate user subscription status. In a real app, this would come from auth/user state.
+  const userHasActiveSubscription = true; // Change to false to test gating
 
   return (
     <Card className="h-full bg-transparent border-none shadow-none">
@@ -175,18 +184,21 @@ function DeployableAppsGridContent(): ReactNode {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">
-            {deployableApps.map(app => (
-              <DashboardWidgetCard
-                key={app.id}
-                title={app.displayName}
-                // TODO: Implement dynamic icon mapping based on app.icon string
-                icon={<PackageIcon className="h-4 w-4 text-primary" />} 
-                description={app.description}
-                valueOrStatus={app.category || "Launch App"}
-                valueColorClass="text-primary"
-                href={app.entryPoint || `/`} // Fallback to home if no entry point
-              />
-            ))}
+            {deployableApps.map(app => {
+              const isGated = app.requiresSubscription && !userHasActiveSubscription;
+              return (
+                <DashboardWidgetCard
+                  key={app.id}
+                  title={app.displayName}
+                  icon={<PackageIcon className="h-4 w-4 text-primary" />} 
+                  description={app.description}
+                  valueOrStatus={app.category || "Launch App"}
+                  valueColorClass={isGated ? undefined : "text-primary"}
+                  href={app.entryPoint || `/`}
+                  isGated={isGated}
+                />
+              );
+            })}
           </div>
         )}
       </CardContent>
@@ -230,10 +242,10 @@ const dashboardZoneConfigs: ZoneConfig[] = [
     },
   },
   {
-    id: 'deployableAppsGrid', // Renamed id
-    title: 'Available Micro-Apps', // Renamed title
-    icon: <LayoutGrid className="w-5 h-5" />, // Changed icon to represent apps
-    content: <DeployableAppsGridContent />, // Using the new content component
+    id: 'deployableAppsGrid',
+    title: 'Available Micro-Apps',
+    icon: <LayoutGrid className="w-5 h-5" />,
+    content: <DeployableAppsGridContent />,
     defaultLayout: {
       lg: { x: 0, y: 12, w: 12, h: 6, minW: 6, minH: 4 }, 
       md: { x: 0, y: 12, w: 10, h: 6, minW: 5, minH: 4 }, 
@@ -252,4 +264,5 @@ export default function HomePage() {
     />
   );
 }
+
 
