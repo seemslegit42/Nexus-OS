@@ -20,7 +20,8 @@ export interface MicroAppRegistryState {
   searchApps: (term: string) => MicroApp[];
   getAppsByFlag: (flagName: keyof MicroApp['flags'] | 'monetized') => MicroApp[];
   getDeployableApps: () => MicroApp[];
-  getAppsRequiringSubscription: () => MicroApp[]; // New selector
+  getAppsRequiringSubscription: () => MicroApp[];
+  getDashboardWidgets: () => MicroApp[]; // New selector for dashboard widgets
 }
 
 export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get) => ({
@@ -45,7 +46,7 @@ export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get)
       agentDependencies: newAppData.agentDependencies || [],
       authRequired: newAppData.authRequired !== undefined ? newAppData.authRequired : true,
       isVisible: newAppData.isVisible !== undefined ? newAppData.isVisible : true,
-      requiresSubscription: newAppData.requiresSubscription !== undefined ? newAppData.requiresSubscription : (newAppData.monetization?.enabled || false), // Default based on monetization
+      requiresSubscription: newAppData.requiresSubscription !== undefined ? newAppData.requiresSubscription : (newAppData.monetization?.enabled || false),
       monetization: newAppData.monetization !== undefined ? newAppData.monetization : {
         enabled: false,
         price: undefined,
@@ -57,6 +58,8 @@ export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get)
       },
       flags: newAppData.flags || {},
       version: newAppData.version || '0.1.0',
+      componentKey: newAppData.componentKey,
+      defaultLayout: newAppData.defaultLayout,
       deployableTo: newAppData.deployableTo || ['none'],
       permissionsRequired: newAppData.permissionsRequired || [],
       createdAt: new Date().toISOString(),
@@ -109,12 +112,14 @@ export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get)
     }
     return allApps.filter(app => app.flags && app.flags[flagName as keyof MicroApp['flags']] === true);
   },
-  getDeployableApps: () => {
-    return get().apps.filter(app => app.status === 'enabled' && app.isVisible === true);
+  getDeployableApps: () => { // These are apps for general use / main launchpad
+    return get().apps.filter(app => app.status === 'enabled' && app.isVisible === true && app.category !== 'Dashboard Widget');
   },
-  getAppsRequiringSubscription: () => { // New selector
+  getAppsRequiringSubscription: () => { 
     return get().apps.filter(app => app.requiresSubscription === true);
   },
+  getDashboardWidgets: () => { // Selector specifically for dashboard widgets
+    return get().apps.filter(app => app.category === 'Dashboard Widget' && app.status === 'enabled' && app.isVisible === true);
+  },
 }));
-
     
