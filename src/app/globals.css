@@ -156,19 +156,19 @@
 .react-grid-item > .react-resizable-handle::after {
   content: "";
   position: absolute;
-  right: 3px; /* Adjusted position for larger handle */
-  bottom: 3px; /* Adjusted position for larger handle */
-  width: 8px; /* Increased size */
-  height: 8px; /* Increased size */
-  border-right: 2px solid hsl(var(--foreground) / 0.6); /* Slightly more opaque */
-  border-bottom: 2px solid hsl(var(--foreground) / 0.6); /* Slightly more opaque */
-  border-radius: 1px; /* Optional: slight rounding for the visual cue */
-  opacity: 0.7; /* Base opacity */
+  right: 2px; 
+  bottom: 2px;
+  width: 10px; /* Increased size */
+  height: 10px; /* Increased size */
+  border-right: 2px solid hsl(var(--foreground) / 0.7); 
+  border-bottom: 2px solid hsl(var(--foreground) / 0.7);
+  border-radius: 1px; 
+  opacity: 0.8;
   transition: opacity 0.2s ease-in-out;
 }
 
 .react-grid-item:hover > .react-resizable-handle::after {
-  opacity: 1; /* Full opacity on hover of the grid item */
+  opacity: 1; 
 }
 
 
@@ -210,5 +210,48 @@
     scrollbar-width: thin;
     /* thumb color, track color */
     scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg);
+  }
+}
+
+/* Zone Shimmer Border */
+@layer utilities {
+  .zone-shimmer-border {
+    position: relative;
+    overflow: hidden; /* Keep shimmer contained */
+  }
+
+  .zone-shimmer-border::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background-image: conic-gradient(
+      transparent,
+      transparent,
+      transparent,
+      hsl(var(--primary) / 0.7), /* Brighter primary for shimmer */
+      hsl(var(--accent) / 0.6),  /* Accent color */
+      transparent,
+      transparent
+    );
+    animation: shimmer 4s linear infinite;
+    z-index: -1; /* Behind the card content but above its background potentially */
+    border-radius: inherit; /* Match card's border radius */
+  }
+
+  .zone-shimmer-border > * {
+    position: relative; /* Ensure card content stays above the shimmer */
+    z-index: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }

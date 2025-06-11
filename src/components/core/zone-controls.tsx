@@ -4,7 +4,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Pin, Maximize2, Minimize2, Minus, X } from "lucide-react";
+import { Pin, Maximize2, Minimize2, Minus, X, SlidersHorizontal } from "lucide-react"; // Added SlidersHorizontal
 
 interface ZoneControlsProps {
   onPinToggle?: () => void;
@@ -14,11 +14,13 @@ interface ZoneControlsProps {
   onMinimizeToggle?: () => void; 
   isMinimized?: boolean; 
   onClose?: () => void;
+  onSettingsToggle?: () => void; // New prop for settings
   
   canPin?: boolean;
   canMaximize?: boolean;
   canMinimize?: boolean;
   canClose?: boolean;
+  canSettings?: boolean; // New prop
 }
 
 export function ZoneControls({
@@ -29,15 +31,17 @@ export function ZoneControls({
   onMinimizeToggle,
   isMinimized,
   onClose,
+  onSettingsToggle, // New prop
   canPin = true,
   canMaximize = true,
   canMinimize = true,
   canClose = true,
+  canSettings = true, // New prop
 }: ZoneControlsProps) {
   
   const baseButtonClass = "relative h-6 w-6 p-1 rounded-full border border-white/10 bg-black/20 backdrop-blur-sm shadow-md focus:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:opacity-30 disabled:pointer-events-none transition-all duration-200 ease-in-out overflow-hidden group";
   
-  const iconBaseClass = "h-3.5 w-3.5 transition-all duration-200 ease-in-out"; // Slightly smaller icons
+  const iconBaseClass = "h-3.5 w-3.5 transition-all duration-200 ease-in-out"; 
 
   const controlButtons: JSX.Element[] = [];
 
@@ -61,6 +65,27 @@ export function ZoneControls({
       </Button>
     );
   }
+  
+  if (onSettingsToggle) { // Add Settings button
+    controlButtons.push(
+      <Button
+        key="settings-control"
+        variant="ghost"
+        size="icon"
+        className={cn(
+          baseButtonClass,
+          "text-muted-foreground hover:text-accent hover:border-accent/40 hover:shadow-accent/20 hover:shadow-[0_0_10px_2px_var(--tw-shadow-color)]"
+        )}
+        onClick={onSettingsToggle}
+        title="Zone Settings"
+        disabled={!canSettings}
+      >
+        <SlidersHorizontal className={cn(iconBaseClass, "group-hover:rotate-[15deg]")}/>
+        <span className="sr-only">Settings</span>
+      </Button>
+    );
+  }
+
 
   if (onMinimizeToggle) {
     controlButtons.push(
@@ -131,7 +156,7 @@ export function ZoneControls({
   }
 
   return (
-    <div className="flex items-center gap-1.5 flex-shrink-0"> {/* Reduced gap */}
+    <div className="flex items-center gap-1.5 flex-shrink-0">
       {controlButtons}
     </div>
   );
