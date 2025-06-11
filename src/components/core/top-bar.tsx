@@ -46,7 +46,8 @@ import {
   Rocket, 
   MessageSquare,
   ChevronsUpDown,
-  Zap as LightningIcon 
+  Zap as LightningIcon,
+  RadioTower // Added RadioTower
 } from 'lucide-react';
 import { CommandLauncherDialog } from './command-launcher'; 
 import { ActiveAgentsPopoverContent } from './ActiveAgentsPopoverContent';
@@ -56,6 +57,7 @@ import { ModuleSwitcherDropdownContent } from './ModuleSwitcherDropdownContent';
 const modules = [
   { name: 'Dashboard', href: '/', icon: <Home className="mr-2 h-4 w-4" /> },
   { name: 'Loom Studio', href: '/loom-studio', icon: <LayoutGrid className="mr-2 h-4 w-4" /> },
+  { name: 'Pulse', href: '/pulse', icon: <RadioTower className="mr-2 h-4 w-4" /> }, // Added Pulse
   { name: 'Agent Console', href: '/agents', icon: <Cpu className="mr-2 h-4 w-4" /> },
   { name: 'Command & Cauldron', href: '/command', icon: <CommandIcon className="mr-2 h-4 w-4" /> },
   { name: 'Modules', href: '/modules', icon: <Briefcase className="mr-2 h-4 w-4" /> },
