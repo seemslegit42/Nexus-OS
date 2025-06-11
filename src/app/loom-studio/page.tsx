@@ -278,7 +278,7 @@ function PersistentConsoleContent(): ReactNode {
   return (
     <Card className="h-full flex flex-col bg-transparent border-none shadow-none">
       <CardHeader className="p-1.5 border-b border-border/60 flex flex-row items-center justify-between">
-        <CardTitle className="text-sm font-headline text-foreground">System & Autopilot Console</CardTitle> {/* Updated Title */}
+        <CardTitle className="text-sm font-headline text-foreground">System & Autopilot Console</CardTitle>
         <Button variant="ghost" size="icon" onClick={clearLogs} className="h-6 w-6 text-muted-foreground hover:text-destructive" title="Clear logs">
           <Trash2 className="h-3.5 w-3.5"/>
         </Button>
@@ -361,15 +361,15 @@ function AgentHubContent(): ReactNode {
   );
 }
 
-export default function AutopilotStudioPage() { // Renamed from LoomStudioPage
-  const { addLog } = useLogs(); // Get addLog from context
+export default function LoomStudioPage() { 
+  const { addLog } = useLogs(); 
 
-  const autopilotStudioPageZoneConfigs: ZoneConfig[] = [ // Renamed variable
+  const loomStudioZoneConfigs: ZoneConfig[] = [ 
     {
       id: 'canvas',
-      title: 'Autopilot Workflow Canvas',  // Updated title
+      title: 'Autopilot Workflow Canvas', 
       icon: <Workflow className="w-4 h-4" />, 
-      content: <CanvasContent addLog={addLog} />, // Pass addLog
+      content: <CanvasContent addLog={addLog} />, 
       defaultLayout: { 
         lg: { x: 3, y: 0, w: 6, h: 14, minW: 4, minH: 8 }, 
         md: { x: 2, y: 0, w: 6, h: 14, minW: 4, minH: 8 },
@@ -379,7 +379,7 @@ export default function AutopilotStudioPage() { // Renamed from LoomStudioPage
     },
     {
       id: 'agentBlocksPalette', 
-      title: 'Autopilot Blocks Palette', // Updated title
+      title: 'Autopilot Blocks Palette', 
       icon: <PaletteIcon className="w-4 h-4" />,
       content: <AgentBlocksPaletteContent />, 
       defaultLayout: {
@@ -390,8 +390,8 @@ export default function AutopilotStudioPage() { // Renamed from LoomStudioPage
     },
     {
       id: 'inspector',
-      title: 'Inspector & Suggestions', // Updated title
-      icon: <Settings className="w-4 h-4" />, // Changed Icon
+      title: 'Inspector & Suggestions', 
+      icon: <Settings className="w-4 h-4" />, 
       content: <InspectorContent />,
       defaultLayout: {
         lg: { x: 9, y: 0, w: 3, h: 12, minW: 2, minH: 7 }, 
@@ -401,7 +401,7 @@ export default function AutopilotStudioPage() { // Renamed from LoomStudioPage
     },
      {
       id: 'console',
-      title: 'System & Autopilot Console', // Updated title
+      title: 'System & Autopilot Console', 
       icon: <Terminal className="w-4 h-4" />,
       content: <PersistentConsoleContent />, 
       defaultLayout: {
@@ -412,7 +412,7 @@ export default function AutopilotStudioPage() { // Renamed from LoomStudioPage
     },
     {
       id: 'timeline',
-      title: 'Execution Timeline & Path',  // Updated title
+      title: 'Execution Timeline & Path',  
       icon: <GanttChartSquare className="w-4 h-4" />, 
       content: <TimelineContent />, 
       defaultLayout: {
@@ -447,7 +447,7 @@ export default function AutopilotStudioPage() { // Renamed from LoomStudioPage
 
   return (
     <WorkspaceGrid
-      zoneConfigs={autopilotStudioPageZoneConfigs} // Use renamed variable
+      zoneConfigs={loomStudioZoneConfigs} 
       className="flex-grow p-1" 
       cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }} 
       rowHeight={25} 
@@ -455,3 +455,4 @@ export default function AutopilotStudioPage() { // Renamed from LoomStudioPage
   );
 }
 
+      
