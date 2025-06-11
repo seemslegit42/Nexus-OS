@@ -54,7 +54,7 @@ function CostOverTimeContent(): ReactNode {
 
 function CurrentPlanUsageContent(): ReactNode {
   return (
-    <Card className="bg-background/50 shadow-none h-full">
+    <Card className="h-full"> {/* Removed bg-background/50 and shadow-none for consistency */}
       <CardHeader>
         <CardTitle className="font-headline text-primary">Pro Plan</CardTitle>
         <CardDescription>$99/month</CardDescription>
