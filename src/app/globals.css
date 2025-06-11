@@ -56,10 +56,10 @@
     --background: 140 30% 6%; /* Very dark, slightly desaturated green-cyan - the "smoke" */
     --foreground: 140 25% 92%; /* Very light, slightly desaturated green-cyan - for text */
 
-    --card: 140 28% 12% / 0.25; /* Dark green-cyan glass, translucent, for Zone/TopBar backgrounds */
+    --card: 140 28% 12% / 0.20; /* Dark green-cyan glass, MORE translucent, for Zone/TopBar backgrounds */
     --card-foreground: 140 25% 88%; /* Slightly dimmer text for cards */
 
-    --popover: 140 28% 15% / 0.5; /* Similar to card, but more opaque for popover readability */
+    --popover: 140 28% 15% / 0.35; /* Similar to card, but more opaque for popover readability, increased translucency */
     --popover-foreground: 140 25% 92%;
 
     --primary: 130 70% 50%; /* Vibrant electric green - main accent */
@@ -77,8 +77,8 @@
     --destructive: 0 70% 55%; /* A balanced red */
     --destructive-foreground: 0 0% 98%; /* Light text on red */
 
-    --border: 140 35% 35% / 0.4; /* Subtle translucent green-cyan border for zones/cards */
-    --input: 140 25% 10% / 0.35; /* Translucent input background */
+    --border: 140 35% 35% / 0.30; /* MORE Subtle translucent green-cyan border for zones/cards */
+    --input: 140 25% 10% / 0.25; /* MORE Translucent input background */
     --ring: 130 70% 55%; /* Primary green for focus rings */
     
     /* Chart Colors for Dark "Green Smoke" Theme */
@@ -203,3 +203,4 @@
     scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg);
   }
 }
+
