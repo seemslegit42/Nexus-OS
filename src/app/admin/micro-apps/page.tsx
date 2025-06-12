@@ -240,7 +240,7 @@ export default function MicroAppRegistryPage() {
             />
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="h-9 md:hidden flex items-center" onClick={() => setIsFilterDrawerOpen(true)}>
+            <Button variant="outline" size="sm" className="h-9 flex items-center" onClick={() => setIsFilterDrawerOpen(true)}>
               <FilterIcon className="mr-2 h-4 w-4" />Filters ({appliedStatusFilters.length + appliedFlagFilters.length + (appliedAgentFilter ? 1 : 0)})
             </Button>
             {selectedAppIds.length > 0 && (
@@ -263,7 +263,6 @@ export default function MicroAppRegistryPage() {
                     </DropdownMenuContent>
                 </DropdownMenu>
             )}
-            <Button variant="outline" size="sm" className="h-9 hidden md:inline-flex"><FilterIcon className="mr-2 h-4 w-4" />Filters (Desktop - Conceptual)</Button>
             
             <Dialog open={isDeployModalOpen} onOpenChange={setIsDeployModalOpen}>
               <DialogTrigger asChild>
@@ -274,25 +273,28 @@ export default function MicroAppRegistryPage() {
               <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                   <DialogTitle className="font-headline">Deploy Apps to Dashboard</DialogTitle>
-                  <CardDescription>Select enabled apps to make them visible on the dashboard.</CardDescription>
+                  <DialogDescription>Select enabled apps to make them visible on the dashboard.</DialogDescription>
                 </DialogHeader>
                 <ScrollArea className="max-h-[60vh] my-4">
-                  <div className="space-y-2 p-1">
+                  <div className="space-y-1.5 p-1">
                     {appsEligibleForDeployment.length > 0 ? (
                       appsEligibleForDeployment.map(app => (
-                        <Card key={app.id} className="p-3 flex items-center justify-between hover:bg-muted/30">
-                          <div className="flex items-center gap-2">
+                        <div 
+                          key={app.id} 
+                          className="p-2.5 flex items-center justify-between rounded-lg border border-primary/20 bg-card/50 backdrop-blur-sm hover:bg-primary/10 transition-colors"
+                        >
+                          <div className="flex items-center gap-3">
                             <Checkbox
                               id={`deploy-${app.id}`}
                               checked={appsToDeploySelectedIds.includes(app.id)}
                               onCheckedChange={(checked) => handleSelectAppForDeployment(app.id, !!checked)}
                             />
-                            <Label htmlFor={`deploy-${app.id}`} className="text-sm font-medium cursor-pointer">
+                            <Label htmlFor={`deploy-${app.id}`} className="text-sm font-medium cursor-pointer text-foreground">
                               {app.displayName} <span className="text-xs text-muted-foreground">({app.internalName})</span>
                             </Label>
                           </div>
-                          <Badge variant="outline" className="text-xs">{app.category}</Badge>
-                        </Card>
+                          <Badge variant="outline" className="text-xs border-primary/30 text-primary/90">{app.category}</Badge>
+                        </div>
                       ))
                     ) : (
                       <p className="text-sm text-muted-foreground text-center py-4">No apps currently eligible for deployment (i.e., status 'enabled' and not yet visible).</p>
@@ -324,7 +326,7 @@ export default function MicroAppRegistryPage() {
               <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                   <DialogTitle className="font-headline">Register New Micro-App</DialogTitle>
-                  <CardDescription>Fill in the details for your new micro-application.</CardDescription>
+                  <DialogDescription>Fill in the details for your new micro-application.</DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleRegisterNewAppSubmit} className="py-4 space-y-3">
                   <div>
@@ -616,3 +618,4 @@ export default function MicroAppRegistryPage() {
     </div>
   );
 }
+
