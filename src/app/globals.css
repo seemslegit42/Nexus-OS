@@ -8,97 +8,105 @@
 
 @layer base {
   :root {
-    --background: 160 50% 97%; /* Very Light Jade/Off-white */
-    --foreground: 210 15% 25%; /* Dark Charcoal/Indigo text */
+    /* Fallback basic dark theme for light mode (to be "stripped") */
+    --background: 220 15% 15%; 
+    --foreground: 160 20% 80%;
 
-    --card: 160 40% 92% / 0.75; /* Light Jade glass */
-    --card-foreground: 210 15% 20%;
+    --card: 220 15% 20%; 
+    --card-foreground: 160 20% 75%;
 
-    --popover: 160 40% 90% / 0.85;
-    --popover-foreground: 210 15% 20%;
+    --popover: 220 15% 22%;
+    --popover-foreground: 160 20% 75%;
 
-    --primary: 155 55% 50%; /* Luminous Jade - slightly darker for light mode contrast */
-    --primary-foreground: 155 30% 5%; /* Very Dark contrast for Jade on light */
+    --primary: 160 55% 50%; 
+    --primary-foreground: 160 20% 10%;
 
-    --secondary: 170 40% 75%; /* Lighter Verdigris */
-    --secondary-foreground: 170 30% 25%;
+    --secondary: 170 40% 40%; 
+    --secondary-foreground: 170 20% 85%;
 
-    --muted: 160 30% 90%;
-    --muted-foreground: 170 20% 45%;
+    --muted: 220 10% 25%;
+    --muted-foreground: 170 15% 65%;
 
-    --accent: 35 55% 50%; /* Aged Bronze/Soft Gold - darker for light mode */
-    --accent-foreground: 35 80% 10%;
+    --accent: 150 70% 60%; 
+    --accent-foreground: 150 20% 15%;
 
-    --destructive: 15 65% 55%; /* Terracotta Red */
-    --destructive-foreground: 15 20% 98%;
+    --destructive: 0 60% 55%; 
+    --destructive-foreground: 0 0% 95%;
 
-    --border: 170 30% 70% / 0.6; /* Subtle Verdigris border */
-    --input: 170 30% 88% / 0.7; /* Input background */
-    --ring: 155 55% 50%; /* Jade for focus - matches light primary */
+    --border: 170 25% 40%; 
+    --input: 220 15% 20%;
+    --ring: 150 70% 60%; 
 
-    --radius: 0.75rem; /* Slightly more rounded */
+    --radius: 1rem; /* Default radius, cards etc. will use rounded-2xl */
 
-    /* Chart Colors for Light Theme */
-    --chart-1: 170 45% 48%;   /* Verdigris */
-    --chart-2: 170 35% 60%;  /* Lighter Verdigris */
-    --chart-3: 165 50% 35%;   /* Darker Verdigris */
-    --chart-4: 150 40% 50%;   /* Jade-ish Green for variety */
-    --chart-5: 210 15% 40%;   /* Darker Neutral Blue-Grey for contrast on light bg */
+    /* Chart Colors - Plain for light mode */
+    --chart-1: 170 45% 48%;
+    --chart-2: 170 35% 60%;
+    --chart-3: 165 50% 35%;
+    --chart-4: 150 40% 50%;
+    --chart-5: 210 15% 70%;
 
-    /* Scrollbar Variables - Light Theme */
-    --scrollbar-track-bg: hsl(var(--background) / 0.1); /* More transparent track */
-    --scrollbar-thumb-bg: hsl(var(--primary) / 0.4); /* Primary thumb, less opaque */
-    --scrollbar-thumb-hover-bg: hsl(var(--primary) / 0.6); /* Slightly more opaque on hover */
-    --scrollbar-thumb-border-color: hsl(var(--background) / 0.1);
+    /* Scrollbar Variables - Plain for light mode */
+    --scrollbar-track-bg: hsl(var(--muted));
+    --scrollbar-thumb-bg: hsl(var(--secondary));
+    --scrollbar-thumb-hover-bg: hsl(var(--primary));
+    --scrollbar-thumb-border-color: hsl(var(--background));
   }
 
   .dark {
-    --background: 220 20% 10%; /* Deep Indigo-Charcoal */
-    --foreground: 160 25% 90%; /* Light Desaturated Jade/Verdigris text */
+    --background: 220 15% 8%; /* Deep Obsidian/Slate */
+    --foreground: 160 30% 85%; /* Pale Jade/Verdigris text */
 
-    --card: 220 18% 14% / 0.55; /* Dark Indigo Glass - slightly more opacity for depth */
-    --card-foreground: 160 25% 88%; 
-
-    --popover: 220 18% 17% / 0.7; /* Popover slightly more opaque for readability */
-    --popover-foreground: 160 25% 90%;
-
-    --primary: 155 60% 55%; /* Luminous Jade - Main interactive */
-    --primary-foreground: 155 30% 10%; /* Dark contrast for Jade */
+    /* Base for glassy components - very translucent, actual color comes from tint/border/content */
+    --card-bg-base: 210 15% 12% / 0.1; /* Used by Card.tsx directly with backdrop-blur */
+    --popover-bg-base: 210 15% 15% / 0.25; /* Used by Popover.tsx etc. */
     
-    --secondary: 170 30% 28%; /* Dark Muted Verdigris */
-    --secondary-foreground: 170 20% 75%; 
+    /* Shadcn variables mapped to the glassy look */
+    --card: var(--card-bg-base); /* Shadcn card will use this */
+    --card-foreground: 160 30% 88%; 
 
-    --muted: 220 15% 18%; /* Darker Indigo-Charcoal for subtle backgrounds */
-    --muted-foreground: 170 15% 60%; /* Subdued Verdigris-tinted text */
+    --popover: var(--popover-bg-base); /* Shadcn popover will use this */
+    --popover-foreground: 160 30% 90%;
 
-    --accent: 35 50% 58%; /* Aged Bronze/Soft Gold - Highlights */
-    --accent-foreground: 35 80% 15%; /* Dark contrast for Bronze/Gold */
-
-    --destructive: 15 60% 50%; /* Slightly aged/terracotta Red */
-    --destructive-foreground: 15 20% 95%;
-
-    --border: 170 25% 35% / 0.5; /* Translucent Verdigris-tinted Border - slightly more opacity */
-    --input: 220 18% 13% / 0.55; /* Dark Indigo Input Glass - slightly more opacity */
-    --ring: 155 60% 55%; /* Luminous Jade for focus rings - matches primary */
+    --primary: 160 55% 50%; /* Main Interactive Jade (e.g. #3CC39F) */
+    --primary-foreground: 160 20% 5%; /* Very Dark Jade for text on primary */
     
-    /* Chart Colors for Dark Theme */
-    --chart-1: 170 45% 48%;   /* Verdigris */
-    --chart-2: 170 35% 60%;  /* Lighter Verdigris */
-    --chart-3: 165 50% 35%;   /* Darker Verdigris */
-    --chart-4: 150 40% 50%;   /* Jade-ish Green for variety */
-    --chart-5: 210 15% 70%;   /* Neutral Light Blue-Grey */
+    --secondary: 170 40% 35%; /* Darker, muted Verdigris */
+    --secondary-foreground: 170 20% 80%; 
+
+    --muted: 220 10% 15%; /* Subtle dark background elements (e.g. hover on lists) */
+    --muted-foreground: 170 15% 55%; /* Desaturated Verdigris text on muted */
+
+    --accent: 150 70% 60%; /* Brighter, "glowing" Jade/Verdigris for accents, highlights */
+    --accent-foreground: 150 20% 10%; /* Dark text for on-accent elements */
+
+    --destructive: 0 60% 50%; /* Vibrant Red */
+    --destructive-foreground: 0 0% 100%; /* White text on destructive */
+
+    --border: 160 55% 50% / 0.20; /* Translucent Jade border (Primary with 20% alpha) */
+    --input: 210 15% 12% / 0.25; /* Slightly more opaque dark glass for inputs */
+    --ring: 150 70% 60%; /* Using the accent jade for focus rings */
+    
+    --radius: 1rem; /* Base radius. Specific components will override to rounded-2xl */
+    
+    /* Chart Colors for Dark Theme (Jade/Verdigris/Gold themed) */
+    --chart-1: hsl(var(--primary));   
+    --chart-2: 165 50% 45%;  /* Slightly darker/bluer Jade */
+    --chart-3: 170 45% 60%;   /* Verdigris tint */
+    --chart-4: hsl(var(--accent));    
+    --chart-5: 160 25% 70%;   /* Pale Jade text color for neutral lines */
 
     /* Scrollbar Variables - Dark Theme */
     --scrollbar-track-bg: hsl(var(--background) / 0.05); /* Very subtle track */
-    --scrollbar-thumb-bg: hsl(var(--primary) / 0.5); /* Primary Jade thumb */
-    --scrollbar-thumb-hover-bg: hsl(var(--primary) / 0.7); /* Primary Jade on hover, more opaque */
+    --scrollbar-thumb-bg: hsl(var(--primary) / 0.4); /* Primary Jade thumb, less opaque */
+    --scrollbar-thumb-hover-bg: hsl(var(--primary) / 0.6); /* Primary Jade on hover, more opaque */
     --scrollbar-thumb-border-color: hsl(var(--background) / 0.05);
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border; /* Uses the themed --border variable */
   }
   body {
     @apply bg-background text-foreground;
@@ -113,7 +121,7 @@
 }
 .react-grid-item {
   transition: all 200ms ease;
-  transition-property: left, top, width, height; /* Added width and height for smoother RGL resizes */
+  transition-property: left, top, width, height; 
 }
 .react-grid-item.cssTransforms {
   transition-property: transform;
@@ -143,7 +151,7 @@
   -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
-  border-radius: var(--radius);
+  border-radius: var(--radius); /* Will become rounded-xl */
 }
 
 .react-grid-item > .react-resizable-handle {
@@ -152,14 +160,13 @@
   height: 20px;
 }
 
-/* Updated resize handle for better visibility */
 .react-grid-item > .react-resizable-handle::after {
   content: "";
   position: absolute;
   right: 2px; 
   bottom: 2px;
-  width: 10px; /* Increased size */
-  height: 10px; /* Increased size */
+  width: 10px; 
+  height: 10px; 
   border-right: 2px solid hsl(var(--foreground) / 0.7); 
   border-bottom: 2px solid hsl(var(--foreground) / 0.7);
   border-radius: 1px; 
@@ -178,48 +185,39 @@
 
 /* Custom Scrollbar Styles */
 @layer utilities {
-  /* For Webkit-based browsers (Chrome, Safari, Edge) */
   ::-webkit-scrollbar {
-    width: 8px; /* Slightly slimmer */
-    height: 8px; /* Slightly slimmer */
+    width: 8px; 
+    height: 8px;
   }
-
   ::-webkit-scrollbar-track {
     background: var(--scrollbar-track-bg);
-    border-radius: 10px; /* Fully rounded track */
+    border-radius: 10px; 
   }
-
   ::-webkit-scrollbar-thumb {
     background-color: var(--scrollbar-thumb-bg);
-    border-radius: 10px; /* Fully rounded thumb */
-    border: 2px solid var(--scrollbar-thumb-border-color); /* Creates padding effect */
-    background-clip: padding-box; /* Ensures border doesn't overlap thumb color */
+    border-radius: 10px; 
+    border: 2px solid var(--scrollbar-thumb-border-color); 
+    background-clip: padding-box; 
   }
-
   ::-webkit-scrollbar-thumb:hover {
     background-color: var(--scrollbar-thumb-hover-bg);
     border-color: var(--scrollbar-thumb-border-color);
   }
-  
   ::-webkit-scrollbar-corner {
-    background: transparent; /* Hides the scrollbar corner if both vertical and horizontal are present */
+    background: transparent; 
   }
-
-  /* For Firefox (limited styling) */
   * {
     scrollbar-width: thin;
-    /* thumb color, track color */
     scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg);
   }
 }
 
-/* Zone Shimmer Border */
+/* Zone Shimmer Border - Uses new --primary and --accent */
 @layer utilities {
   .zone-shimmer-border {
     position: relative;
-    overflow: hidden; /* Keep shimmer contained */
+    overflow: hidden;
   }
-
   .zone-shimmer-border::before {
     content: "";
     position: absolute;
@@ -231,18 +229,17 @@
       transparent,
       transparent,
       transparent,
-      hsl(var(--primary) / 0.7), /* Brighter primary for shimmer */
-      hsl(var(--accent) / 0.6),  /* Accent color */
+      hsl(var(--accent) / 0.5), /* Brighter accent for shimmer */
+      hsl(var(--primary) / 0.4),  /* Primary color */
       transparent,
       transparent
     );
     animation: shimmer 4s linear infinite;
-    z-index: -1; /* Behind the card content but above its background potentially */
-    border-radius: inherit; /* Match card's border radius */
+    z-index: -1; 
+    border-radius: inherit; 
   }
-
   .zone-shimmer-border > * {
-    position: relative; /* Ensure card content stays above the shimmer */
+    position: relative; 
     z-index: 1;
   }
 }

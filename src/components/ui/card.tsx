@@ -1,20 +1,20 @@
 
 import * as React from "react"
-import { Slot } from "@radix-ui/react-slot" // Import Slot
+import { Slot } from "@radix-ui/react-slot" 
 import { cn } from "@/lib/utils"
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  asChild?: boolean // Add asChild to props interface
+  asChild?: boolean 
 }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "div" // Determine component to render
+    const Comp = asChild ? Slot : "div" 
     return (
       <Comp
         ref={ref}
         className={cn(
-          "rounded-lg border bg-card text-card-foreground shadow-sm",
+          "rounded-2xl border border-primary/20 bg-card backdrop-blur-md text-card-foreground shadow-[0_0_20px_hsl(var(--primary)/0.15)]", // Updated: rounded-2xl, jade border, glass bg, custom jade glow
           className
         )}
         {...props}
@@ -30,24 +30,20 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col space-y-1.5 p-6", className)}
+    className={cn("flex flex-col space-y-1.5 p-4 md:p-6", className)} // Adjusted padding
     {...props}
   />
 ))
 CardHeader.displayName = "CardHeader"
 
 const CardTitle = React.forwardRef<
-  HTMLDivElement, // Should be HTMLHeadingElement if it renders a heading
-  React.HTMLAttributes<HTMLHeadingElement> // Match the element type
+  HTMLDivElement, 
+  React.HTMLAttributes<HTMLHeadingElement> 
 >(({ className, ...props }, ref) => (
-  // Assuming CardTitle should render a heading, e.g., h3.
-  // If it's just a div, then the types above are fine.
-  // For semantic correctness, it's often a heading.
-  // Let's assume it's meant to be a div wrapper for a title for now as per original.
-  <div
+  <div // Keep as div, font styling applied by parent (e.g. Zone)
     ref={ref}
     className={cn(
-      "text-2xl font-semibold leading-none tracking-tight",
+      "text-lg font-semibold leading-none tracking-tight", // Increased base size
       className
     )}
     {...props}
@@ -56,12 +52,10 @@ const CardTitle = React.forwardRef<
 CardTitle.displayName = "CardTitle"
 
 const CardDescription = React.forwardRef<
-  HTMLParagraphElement, // Should be HTMLParagraphElement
-  React.HTMLAttributes<HTMLParagraphElement> // Match the element type
+  HTMLParagraphElement, 
+  React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  // Assuming CardDescription should render a p tag.
-  // Let's assume it's meant to be a div wrapper for now as per original.
-  <div
+  <div // Keep as div
     ref={ref}
     className={cn("text-sm text-muted-foreground", className)}
     {...props}
@@ -73,7 +67,7 @@ const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
+  <div ref={ref} className={cn("p-4 md:p-6 pt-0", className)} {...props} /> // Adjusted padding
 ))
 CardContent.displayName = "CardContent"
 
@@ -83,7 +77,7 @@ const CardFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex items-center p-6 pt-0", className)}
+    className={cn("flex items-center p-4 md:p-6 pt-0", className)} // Adjusted padding
     {...props}
   />
 ))

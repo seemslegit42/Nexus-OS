@@ -29,7 +29,6 @@ import {
   LogOut,
   UserCircle,
   Cpu,
-  // ShieldAlert, // Not used currently
   Home,
   LayoutGrid,
   Command as CommandIcon,
@@ -69,8 +68,7 @@ const navModules = [
   { name: 'File Vault', href: '/files', icon: <FileArchive className="mr-2 h-4 w-4" /> },
   { name: 'OS Updates', href: '/updates', icon: <GitMerge className="mr-2 h-4 w-4" /> },
   { name: 'Onboarding', href: '/onboarding', icon: <Rocket className="mr-2 h-4 w-4" /> },
-  // Example for item details to test context
-  { name: 'Item Details', href: '/home/items', icon: <Package className="mr-2 h-4 w-4" />}, // Base for items
+  { name: 'Item Details', href: '/home/items', icon: <Package className="mr-2 h-4 w-4" />}, 
 ];
 
 export function TopBar() {
@@ -78,45 +76,32 @@ export function TopBar() {
   const pathname = usePathname();
 
   const currentModule = useMemo(() => {
-    // Sort by href length DESC to match more specific paths first.
-    // Paths that are identical except for a trailing slash should be handled correctly by ensuring consistent trailing slashes in navModules or pathname.
     const sortedModules = [...navModules].sort((a, b) => {
-      // Prioritize exact matches
       if (pathname === a.href) return -1;
       if (pathname === b.href) return 1;
-      // Then prioritize longer paths for more specific parent matching
       return b.href.length - a.href.length;
     });
-
     let foundModule = sortedModules.find(mod => pathname.startsWith(mod.href));
-    
-    // If on the exact root path, ensure it picks the root module.
     if (pathname === '/') {
       foundModule = navModules.find(mod => mod.href === '/');
     }
-    
     return foundModule || { name: 'NexOS Context', href: pathname, icon: <NexosLogo className="h-4 w-4 text-primary" /> };
   }, [pathname]);
 
-
   useEffect(() => {
-    // Dev Console Logging
     console.log(`TopBar Context Update: Active Module - ${currentModule.name}, Path: ${pathname}, CommandLauncher: ${isCommandLauncherOpen}`);
   }, [currentModule, pathname, isCommandLauncherOpen]);
 
-
   const handleMarkAllNotificationsRead = () => {
     console.log("Marking all notifications as read...");
-    // Actual logic to mark notifications as read would go here
   };
 
-  const iconButtonClass = "relative h-9 w-9 md:h-10 md:w-10 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-150 ease-in-out focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background hover:shadow-[0_0_10px_1px_hsl(var(--primary)/0.3)] active:shadow-[0_0_15px_2px_hsl(var(--primary)/0.4)]";
+  const iconButtonClass = "relative h-9 w-9 md:h-10 md:w-10 text-foreground/70 hover:text-primary hover:bg-primary/10 transition-colors duration-150 ease-in-out focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background hover:shadow-[0_0_10px_1px_hsl(var(--primary)/0.3)] active:shadow-[0_0_15px_2px_hsl(var(--primary)/0.4)] rounded-full"; // Updated: text-foreground/70, hover:text-primary, hover:bg-primary/10, rounded-full
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-card/80 backdrop-blur-lg border-b border-border/60 shadow-sm">
+      <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-background/30 backdrop-blur-lg border-b border-primary/20 shadow-[0_2px_15px_hsl(var(--primary)/0.1)]"> {/* Updated: glassy bg, jade border and glow */}
         <div className="container mx-auto h-full flex items-center justify-between px-2 sm:px-4">
-          {/* Left Section: Logo and Context/Module Switcher */}
           <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             <Link href="/" className="flex items-center gap-1.5 sm:gap-2" aria-label="NexOS Home">
               <NexosLogo className="h-7 w-7 sm:h-8 sm:w-8 text-primary flex-shrink-0" />
@@ -128,14 +113,14 @@ export function TopBar() {
                 <Button
                   variant="ghost"
                   className={cn(
-                    "flex items-center gap-1 text-xs sm:text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 px-1.5 sm:px-2 py-1 h-9 sm:h-10 truncate",
+                    "flex items-center gap-1 text-xs sm:text-sm text-muted-foreground hover:text-foreground hover:bg-primary/10 px-1.5 sm:px-2 py-1 h-9 sm:h-10 truncate rounded-lg", // rounded-lg
                     "hover:shadow-[0_0_10px_1px_hsl(var(--primary)/0.2)] active:shadow-[0_0_15px_2px_hsl(var(--primary)/0.3)]",
-                    "max-w-[40px] sm:max-w-[200px]" // Collapse to icon on mobile, expand on sm+
+                    "max-w-[40px] sm:max-w-[200px]" 
                   )}
                   title={`Current: ${currentModule.name}`}
                 >
                   <span className="flex-shrink-0">
-                     {currentModule.icon && cloneElement(currentModule.icon as React.ReactElement, { className: "h-4 w-4 sm:h-5 sm:w-5" })}
+                     {currentModule.icon && cloneElement(currentModule.icon as React.ReactElement, { className: "h-4 w-4 sm:h-5 sm:w-5 text-primary" })} {/* Ensure icon uses primary color */}
                   </span>
                   <span className="hidden sm:inline truncate ml-1">{currentModule.name}</span>
                   <ChevronsUpDown className="h-3.5 w-3.5 opacity-70 flex-shrink-0 ml-0.5" />
@@ -147,21 +132,19 @@ export function TopBar() {
             </DropdownMenu>
           </div>
 
-          {/* Center Section: Search (Desktop) */}
           <div className="flex-1 px-2 sm:px-4 hidden md:flex justify-center">
             <div className="relative w-full max-w-md lg:max-w-lg">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               <Input
                 type="search"
                 placeholder="Command or Search (Ctrl+K)..."
-                className="w-full pl-10 pr-4 py-2 rounded-md bg-input border-input/70 focus:ring-1 focus:ring-primary text-sm h-9 focus:border-primary/70 focus:shadow-[0_0_12px_-2px_hsl(var(--primary)/0.4)] transition-shadow"
+                className="w-full pl-10 pr-4 py-2 rounded-lg bg-input border-primary/20 focus:ring-1 focus:ring-primary text-sm h-9 focus:border-primary/50 focus:shadow-[0_0_12px_-2px_hsl(var(--primary)/0.4)] transition-shadow backdrop-blur-sm" // Updated: rounded-lg, jade border, glassy input
                 onClick={() => setIsCommandLauncherOpen(true)}
                 readOnly 
               />
             </div>
           </div>
 
-          {/* Right Section: Actions & User Menu */}
           <div className="flex items-center gap-0.5 sm:gap-1">
             <Button
               variant="ghost"
@@ -216,8 +199,7 @@ export function TopBar() {
               </PopoverContent>
             </Popover>
 
-            <div className="hidden lg:flex items-center gap-1.5 p-1.5 pr-2.5 rounded-md bg-input/50 border border-transparent hover:border-border/50 transition-colors h-10">
-              {/* Placeholder for Admin/Context Info */}
+            <div className="hidden lg:flex items-center gap-1.5 p-1.5 pr-2.5 rounded-lg bg-input/30 backdrop-blur-sm border border-primary/20 h-10 shadow-sm"> {/* Updated: rounded-lg, glassy bg, jade border */}
               <ShieldCheck className="h-4 w-4 text-primary" /> 
               <div className="text-xs">
                 <span className="text-foreground font-medium">Admin</span>
@@ -227,7 +209,7 @@ export function TopBar() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className={cn(iconButtonClass, "rounded-full p-0")} title="User Menu">
+                <Button variant="ghost" className={cn(iconButtonClass, "p-0")} title="User Menu"> {/* Removed rounded-full to let Avatar handle it */}
                   <Avatar className="h-8 w-8">
                     <AvatarImage src="https://placehold.co/100x100.png" alt="User Avatar" data-ai-hint="user avatar" />
                     <AvatarFallback>NX</AvatarFallback>
@@ -237,7 +219,7 @@ export function TopBar() {
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none font-headline">Alex Ryder</p>
+                    <p className="text-sm font-medium leading-none font-headline text-foreground">Alex Ryder</p> {/* Ensure text color */}
                     <p className="text-xs leading-none text-muted-foreground">
                       alex.ryder@nexos.ai
                     </p>
@@ -257,7 +239,7 @@ export function TopBar() {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => console.log('Log out action')}>
+                <DropdownMenuItem onClick={() => console.log('Log out action')} className="text-destructive focus:text-destructive-foreground">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>

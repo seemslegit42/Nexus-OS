@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { ZoneControls } from "./zone-controls"; 
 
 interface ZoneProps {
-  id: string; // Added id prop
+  id: string; 
   title: string;
   children: ReactNode;
   className?: string;
@@ -33,7 +33,7 @@ interface ZoneProps {
 }
 
 export function Zone({ 
-  id, // Destructure id
+  id, 
   title, 
   children, 
   className, 
@@ -62,14 +62,13 @@ export function Zone({
                      (canPin && onPinToggle) || 
                      (canMaximize && onMaximizeToggle) || 
                      (canMinimize && onMinimizeToggle) || 
-                    //  (canSettings && onSettingsToggle) || // Settings is now part of ellipsis menu primarily
-                    //  (canClose && onClose) || // Close is now part of ellipsis menu primarily
-                     onOpenApp || onRunTask || onViewLogs; // Check if any menu actions are provided
+                     onOpenApp || onRunTask || onViewLogs || (canSettings && onSettingsToggle) || (canClose && onClose); // Simplified check
 
   return (
     <Card className={cn(
-        "bg-card backdrop-blur-md shadow-xl rounded-xl border-border/70 flex flex-col overflow-hidden h-full", 
-        hasActiveAutomation && "zone-shimmer-border border-2 border-transparent",
+        // Base Card styling (rounded-2xl, jade border, glass bg, custom jade glow) is now handled by Card component itself
+        "flex flex-col overflow-hidden h-full", // Removed explicit styling already in Card
+        hasActiveAutomation && "zone-shimmer-border", // Keep shimmer if active
         className
       )}
     >
@@ -77,7 +76,8 @@ export function Zone({
         <CardHeader 
           className={cn(
             "draggable-zone-header", 
-            "flex flex-row items-center justify-between space-y-0 p-2.5 border-b border-border/60 min-h-[44px] cursor-grab" 
+            "flex flex-row items-center justify-between space-y-0 p-2.5 md:p-3 border-b border-primary/20 min-h-[44px] cursor-grab backdrop-blur-sm bg-card/30 rounded-t-2xl", // Ensure header also has some blur and jade border
+            isMinimized && "rounded-b-2xl" // If minimized, header should also have bottom rounded corners
           )}
         >
           <div className="flex items-center gap-2 overflow-hidden">
@@ -85,16 +85,16 @@ export function Zone({
             {title && <CardTitle className="text-sm font-headline text-foreground truncate">{title}</CardTitle>}
           </div>
           <ZoneControls
-            zoneId={id} // Pass id
-            zoneTitle={title} // Pass title
+            zoneId={id} 
+            zoneTitle={title} 
             onPinToggle={onPinToggle}
             isPinned={isPinned}
             onMaximizeToggle={onMaximizeToggle}
             isMaximized={isMaximized}
             onMinimizeToggle={onMinimizeToggle}
             isMinimized={isMinimized}
-            onClose={onClose} // Keep for direct close if needed, or menu will use it
-            onSettingsToggle={onSettingsToggle} // Keep for direct settings or menu
+            onClose={onClose} 
+            onSettingsToggle={onSettingsToggle}
             canPin={canPin}
             canMaximize={canMaximize}
             canMinimize={canMinimize}
@@ -109,7 +109,7 @@ export function Zone({
       <CardContent 
         className={cn(
           "flex-grow overflow-auto transition-all duration-300 ease-in-out",
-          showHeader ? "p-3" : "p-0", 
+          showHeader ? "p-3" : "p-0", // Keep p-0 if no header to allow full bleed content
           isMinimized ? "max-h-0 !p-0 opacity-0 invisible" : "opacity-100 visible"
         )}
       >
