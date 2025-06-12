@@ -14,7 +14,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <Comp
         ref={ref}
         className={cn(
-          "rounded-2xl border border-primary/20 bg-card backdrop-blur-md text-card-foreground shadow-[0_0_20px_hsl(var(--primary)/0.15)]", // Updated: rounded-2xl, jade border, glass bg, custom jade glow
+          "rounded-2xl border border-primary/30 bg-card backdrop-blur-md text-card-foreground shadow-[0_4px_30px_hsl(var(--primary)/0.12)]", // Updated border opacity and shadow
           className
         )}
         {...props}

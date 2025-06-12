@@ -32,7 +32,7 @@ const SheetOverlay = React.forwardRef<
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName
 
 const sheetVariants = cva(
-  "fixed z-50 gap-4 bg-popover backdrop-blur-md p-6 shadow-[0_0_25px_hsl(var(--primary)/0.2)] transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500 border-primary/25", // Base glassy styles, jade border, jade glow
+  "fixed z-50 gap-4 bg-popover backdrop-blur-md p-6 shadow-[0_4px_30px_hsl(var(--primary)/0.12)] transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500 border-primary/30", // Base glassy styles, updated border opacity, updated shadow
   {
     variants: {
       side: {

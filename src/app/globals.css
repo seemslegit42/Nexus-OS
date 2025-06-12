@@ -58,8 +58,8 @@
     --foreground: 160 30% 85%; /* Pale Jade/Verdigris text */
 
     /* Base for glassy components - very translucent, actual color comes from tint/border/content */
-    --card-bg-base: 210 15% 12% / 0.1; /* Used by Card.tsx directly with backdrop-blur */
-    --popover-bg-base: 210 15% 15% / 0.25; /* Used by Popover.tsx etc. */
+    --card-bg-base: 210 15% 12% / 0.2; /* Used by Card.tsx directly with backdrop-blur - Opacity updated */
+    --popover-bg-base: 210 15% 15% / 0.2; /* Used by Popover.tsx etc. - Opacity updated */
     
     /* Shadcn variables mapped to the glassy look */
     --card: var(--card-bg-base); /* Shadcn card will use this */
@@ -83,7 +83,7 @@
     --destructive: 0 60% 50%; /* Vibrant Red */
     --destructive-foreground: 0 0% 100%; /* White text on destructive */
 
-    --border: 160 55% 50% / 0.20; /* Translucent Jade border (Primary with 20% alpha) */
+    --border: 160 55% 50% / 0.30; /* Translucent Jade border (Primary with 30% alpha) - Opacity updated */
     --input: 210 15% 12% / 0.25; /* Slightly more opaque dark glass for inputs */
     --ring: 150 70% 60%; /* Using the accent jade for focus rings */
     
