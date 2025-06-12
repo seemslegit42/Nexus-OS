@@ -132,7 +132,7 @@ function LiveAgentActivityContent(): ReactNode {
         <CardDescription className="text-xs text-muted-foreground">Real-time visualization of actions and decision-making process.</CardDescription>
       </CardHeader>
       <CardContent className="p-2 md:p-3 flex-grow bg-muted/20 rounded-b-md">
-        <Image src="https://placehold.co/600x300.png" alt="Agent Activity Stream / Visual Debugger" width={600} height={300} className="rounded-md border border-border/60" data-ai-hint="data stream activity graph logs" />
+        <Image src="https://placehold.co/600x300.png" alt="Agent Activity Stream / Visual Debugger" width={600} height={300} className="rounded-md border border-border/60 opacity-70" data-ai-hint="data stream activity graph logs" />
       </CardContent>
     </Card>
   );

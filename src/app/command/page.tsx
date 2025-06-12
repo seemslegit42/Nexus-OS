@@ -49,7 +49,7 @@ function SpellbookContent(): ReactNode {
         <ScrollArea className="flex-grow">
           <ul className="space-y-1.5">
             {['Analyze sales data Q3', 'Optimize frontend performance', 'Draft blog post on AI ethics', 'Security scan all services'].map((spell, i) => (
-              <li key={i} className="p-2.5 bg-card rounded-md hover:bg-muted/60 cursor-pointer border border-border/60 shadow-sm transition-colors hover:border-primary/50">
+              <li key={i} className="p-2.5 bg-card rounded-md hover:bg-muted/70 cursor-pointer border border-border/60 shadow-sm transition-colors hover:border-primary/50">
                 <p className="text-sm font-medium text-foreground">{spell}</p>
                 <p className="text-xs text-muted-foreground">Type: {i % 2 === 0 ? 'Prompt Chain' : 'Script'}</p>
               </li>
@@ -69,7 +69,7 @@ function ExecutionChainVisualizerContent(): ReactNode {
     <Card className="h-full bg-transparent border-none shadow-none">
       <CardContent className="p-1 md:p-2 h-full flex flex-col">
         <div className="h-64 bg-muted/20 rounded-md flex items-center justify-center p-4 border border-dashed border-border/50">
-          <Image src="https://placehold.co/800x300.png" alt="Execution Chain" width={800} height={300} className="rounded-md opacity-70" data-ai-hint="flow chart diagram" />
+          <Image src="https://placehold.co/800x300.png" alt="Execution Chain" width={800} height={300} className="rounded-md opacity-70 border border-border/60" data-ai-hint="flow chart diagram" />
         </div>
         <p className="text-xs text-muted-foreground mt-2">Visual feedback on what was triggered and the execution path of the last command.</p>
       </CardContent>

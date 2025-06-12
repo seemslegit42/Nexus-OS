@@ -145,7 +145,7 @@ function FilePreviewContent({ selectedFile }: { selectedFile: FileItem | null })
                 alt={`${selectedFile.name} preview`} 
                 width={600} 
                 height={300} 
-                className="rounded-md object-contain max-h-[70%] opacity-70" 
+                className="rounded-md object-contain max-h-[70%] opacity-70 border border-border/60" 
                 data-ai-hint={selectedFile.dataAiHint || 'file preview placeholder'} 
               />
               <p className="text-sm text-muted-foreground mt-2">{selectedFile.name}</p>
