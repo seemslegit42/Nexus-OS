@@ -8,12 +8,15 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { KeyRound, ShieldCheck, Smartphone, History, LogOut } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 // Placeholder data
 const activeSessions = [
   { id: 'session_1', device: 'Chrome on macOS', ip: '192.168.1.101', lastActive: 'Current session', location: 'New York, USA' },
   { id: 'session_2', device: 'NexOS Mobile App on iOS', ip: '10.0.0.5', lastActive: '2 hours ago', location: 'Remote' },
 ];
+
+const innerCardClassName = "bg-card/70 backdrop-blur-sm border-primary/20 rounded-xl p-3 shadow-lg hover:border-primary/30 transition-all";
 
 export default function AccountSecurityPage() {
   return (
@@ -52,14 +55,14 @@ export default function AccountSecurityPage() {
           <CardDescription>Add an extra layer of security to your account.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between p-3 border rounded-md">
+          <div className={cn(innerCardClassName, "flex items-center justify-between")}>
             <div>
               <Label htmlFor="2fa-status" className="font-medium">Authenticator App</Label>
               <p className="text-xs text-muted-foreground">Status: <span className="text-green-400">Enabled</span> (Google Authenticator)</p>
             </div>
             <Switch id="2fa-status" defaultChecked />
           </div>
-           <div className="flex items-center justify-between p-3 border rounded-md">
+           <div className={cn(innerCardClassName, "flex items-center justify-between")}>
             <div>
               <Label htmlFor="sms-status" className="font-medium">SMS Backup</Label>
               <p className="text-xs text-muted-foreground">Status: <span className="text-muted-foreground">Disabled</span></p>
