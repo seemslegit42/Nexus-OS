@@ -10,9 +10,9 @@ import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuGroup } from '@/components/ui/dropdown-menu';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter, SheetClose } from '@/components/ui/sheet';
-import { PlusCircle, Search, Filter as FilterIcon, Edit, Copy, Rocket, EyeOff, Eye, MoreVertical, SlidersHorizontal, AlertTriangle, Settings, ChevronsUpDown, ChevronDown, PackageSearch } from 'lucide-react';
+import { PlusCircle, Search, Filter as FilterIcon, Edit, Copy, Rocket, EyeOff, Eye, MoreVertical, SlidersHorizontal, AlertTriangle, Settings, ChevronsUpDown, ChevronDown, PackageSearch, Package as PackageIcon } from 'lucide-react';
 import type { MicroApp } from '@/types/micro-app';
 import { MicroAppDetailDrawer } from '@/components/admin/micro-apps/micro-app-detail-drawer';
 import { cn } from '@/lib/utils';
@@ -120,7 +120,7 @@ export default function MicroAppRegistryPage() {
   }, [searchApps, searchTerm, appliedStatusFilters, appliedFlagFilters, appliedAgentFilter]);
 
   const appsEligibleForDeployment = useMemo(() => {
-    return allApps.filter(app => app.status === 'enabled' && !app.isVisible);
+    return allApps.filter(app => app.status === 'enabled' && !app.isVisible && app.deployableTo.includes('dashboard'));
   }, [allApps]);
 
 
@@ -236,7 +236,7 @@ export default function MicroAppRegistryPage() {
               placeholder="Search micro-apps..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 w-full sm:min-w-[250px] bg-input border-input focus:ring-primary h-9"
+              className="pl-9 w-full sm:min-w-[250px] h-9"
             />
           </div>
           <div className="flex gap-2">
@@ -275,13 +275,13 @@ export default function MicroAppRegistryPage() {
                   <DialogTitle className="font-headline">Deploy Apps to Dashboard</DialogTitle>
                   <DialogDescription>Select enabled apps to make them visible on the dashboard.</DialogDescription>
                 </DialogHeader>
-                <ScrollArea className="max-h-[60vh] my-4">
-                  <div className="space-y-1.5 p-1">
+                <ScrollArea className="max-h-[60vh] my-4 -mx-2 px-2">
+                  <div className="space-y-2 p-1">
                     {appsEligibleForDeployment.length > 0 ? (
                       appsEligibleForDeployment.map(app => (
                         <div 
                           key={app.id} 
-                          className="p-2.5 flex items-center justify-between rounded-lg border border-primary/20 bg-card/50 backdrop-blur-sm hover:bg-primary/10 transition-colors"
+                          className="p-3 flex items-center justify-between rounded-xl border border-primary/25 bg-card backdrop-blur-md shadow-[0_4px_30px_hsl(var(--primary)/0.08)] hover:border-primary/40 transition-all"
                         >
                           <div className="flex items-center gap-3">
                             <Checkbox
@@ -289,15 +289,22 @@ export default function MicroAppRegistryPage() {
                               checked={appsToDeploySelectedIds.includes(app.id)}
                               onCheckedChange={(checked) => handleSelectAppForDeployment(app.id, !!checked)}
                             />
-                            <Label htmlFor={`deploy-${app.id}`} className="text-sm font-medium cursor-pointer text-foreground">
-                              {app.displayName} <span className="text-xs text-muted-foreground">({app.internalName})</span>
-                            </Label>
+                            <div>
+                              <Label htmlFor={`deploy-${app.id}`} className="text-sm font-medium cursor-pointer text-foreground">
+                                {app.displayName}
+                              </Label>
+                              <p className="text-xs text-muted-foreground">{app.internalName}</p>
+                            </div>
                           </div>
                           <Badge variant="outline" className="text-xs border-primary/30 text-primary/90">{app.category}</Badge>
                         </div>
                       ))
                     ) : (
-                      <p className="text-sm text-muted-foreground text-center py-4">No apps currently eligible for deployment (i.e., status 'enabled' and not yet visible).</p>
+                      <div className="text-sm text-muted-foreground text-center py-6">
+                        <PackageIcon className="mx-auto h-10 w-10 opacity-50 mb-2" />
+                        No apps currently eligible for dashboard deployment.
+                        <p className="text-xs">(Ensure app status is 'enabled', it's not yet visible, and is deployable to 'dashboard'.)</p>
+                      </div>
                     )}
                   </div>
                 </ScrollArea>
@@ -331,15 +338,15 @@ export default function MicroAppRegistryPage() {
                 <form onSubmit={handleRegisterNewAppSubmit} className="py-4 space-y-3">
                   <div>
                     <Label htmlFor="new-app-name">Display Name <span className="text-destructive">*</span></Label>
-                    <Input id="new-app-name" value={newAppName} onChange={(e) => setNewAppName(e.target.value)} placeholder="e.g., Awesome Analytics" required className="mt-1 bg-input border-input focus:ring-primary"/>
+                    <Input id="new-app-name" value={newAppName} onChange={(e) => setNewAppName(e.target.value)} placeholder="e.g., Awesome Analytics" required className="mt-1"/>
                   </div>
                   <div>
                     <Label htmlFor="new-app-internal-name">Internal Name / Slug <span className="text-destructive">*</span></Label>
-                    <Input id="new-app-internal-name" value={newAppInternalName} onChange={(e) => setNewAppInternalName(e.target.value)} placeholder="e.g., awesome-analytics" required className="mt-1 bg-input border-input focus:ring-primary"/>
+                    <Input id="new-app-internal-name" value={newAppInternalName} onChange={(e) => setNewAppInternalName(e.target.value)} placeholder="e.g., awesome-analytics" required className="mt-1"/>
                   </div>
                   <div>
                     <Label htmlFor="new-app-description">Description</Label>
-                    <Input id="new-app-description" value={newAppDescription} onChange={(e) => setNewAppDescription(e.target.value)} placeholder="A brief description" className="mt-1 bg-input border-input focus:ring-primary"/>
+                    <Input id="new-app-description" value={newAppDescription} onChange={(e) => setNewAppDescription(e.target.value)} placeholder="A brief description" className="mt-1"/>
                   </div>
                   <div className="flex items-center justify-between">
                     <Label htmlFor="new-app-is-visible" className="text-sm">Visible on Dashboard/Launchpad</Label>
@@ -363,10 +370,6 @@ export default function MicroAppRegistryPage() {
       </header>
 
       <Card className="flex-grow flex-col overflow-hidden hidden md:flex">
-        <CardHeader className="hidden">
-          <CardTitle>All Micro-Apps</CardTitle>
-          <CardDescription>Browse and manage all available micro-applications within NexOS.</CardDescription>
-        </CardHeader>
         <CardContent className="p-0 flex-grow overflow-hidden">
           <ScrollArea className="h-full">
             <Table>
@@ -486,7 +489,7 @@ export default function MicroAppRegistryPage() {
         <ScrollArea className="h-full">
           <Accordion type="multiple" className="w-full space-y-2">
             {displayedApps.map((app) => (
-              <AccordionItem value={app.id} key={app.id} className="bg-card border border-border/60 rounded-lg shadow-sm">
+              <AccordionItem value={app.id} key={app.id} className="bg-card border border-primary/25 rounded-2xl shadow-[0_4px_30px_hsl(var(--primary)/0.12)]">
                 <AccordionTrigger className="p-3 hover:no-underline">
                   <div className="flex items-center gap-3 w-full">
                     <Settings className="h-5 w-5 text-primary/70 flex-shrink-0" />
@@ -499,7 +502,7 @@ export default function MicroAppRegistryPage() {
                     </Badge>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="border-t border-border/40">
+                <AccordionContent className="border-t border-primary/20">
                   <div className="p-3 space-y-2">
                     <p className="text-xs text-muted-foreground">{app.description}</p>
                     <div>
@@ -580,7 +583,7 @@ export default function MicroAppRegistryPage() {
                     value={tempAgentFilter || 'all'} 
                     onValueChange={(value) => setTempAgentFilter(value === 'all' ? null : value)}
                 >
-                    <SelectTrigger className="bg-input border-input focus:ring-primary text-xs">
+                    <SelectTrigger className="text-xs">
                         <SelectValue placeholder="Any Agent" />
                     </SelectTrigger>
                     <SelectContent>

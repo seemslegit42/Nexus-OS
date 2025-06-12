@@ -2,9 +2,11 @@
 // src/app/(public)/blog/[slug]/page.tsx
 'use client';
 import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'; // Import Card components
 import { ArrowLeft, CalendarDays, UserCircle, MessageSquare } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function BlogPostPage({ params }: { params: { slug: string } }) {
   // Placeholder data - fetch post details based on params.slug
@@ -75,7 +77,7 @@ Thank you for reading! We hope you found this post on ${params.slug.replace(/-/g
           </div>
         </header>
 
-        <Image src={post.image} alt={post.title} width={1200} height={600} className="rounded-lg shadow-md mb-10 w-full object-cover aspect-[16/8]" data-ai-hint={post.dataAiHint} />
+        <Image src={post.image} alt={post.title} width={1200} height={600} className="rounded-2xl shadow-lg mb-10 w-full object-cover aspect-[16/8]" data-ai-hint={post.dataAiHint} />
 
         {/* Using prose for basic markdown-like styling */}
         <div className="prose prose-invert prose-sm sm:prose-base lg:prose-lg xl:prose-xl max-w-none prose-headings:font-headline prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-primary hover:prose-a:underline prose-strong:text-foreground prose-code:text-sm prose-code:bg-muted/50 prose-code:p-1 prose-code:rounded-sm prose-pre:bg-muted/50 prose-pre:p-4 prose-pre:rounded-md">
@@ -84,23 +86,27 @@ Thank you for reading! We hope you found this post on ${params.slug.replace(/-/g
         </div>
 
         {/* Placeholder for Comments Section */}
-        <section className="mt-16 border-t border-border/60 pt-8">
+        <section className="mt-16 border-t border-primary/25 pt-8">
           <h2 className="text-2xl font-headline font-semibold text-foreground mb-6">Comments (3)</h2>
           <div className="space-y-6">
             {/* Example Comment */}
-            <div className="bg-card p-4 rounded-lg shadow">
-              <div className="flex items-center mb-2">
-                <UserCircle className="h-6 w-6 mr-2 text-muted-foreground" />
-                <span className="font-semibold text-foreground">Reader One</span>
-                <span className="text-xs text-muted-foreground ml-auto">2 days ago</span>
-              </div>
-              <p className="text-sm text-muted-foreground">Great article, very insightful. Thanks for sharing!</p>
-            </div>
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center mb-2">
+                  <UserCircle className="h-6 w-6 mr-2 text-muted-foreground" />
+                  <span className="font-semibold text-foreground">Reader One</span>
+                  <span className="text-xs text-muted-foreground ml-auto">2 days ago</span>
+                </div>
+                <p className="text-sm text-muted-foreground">Great article, very insightful. Thanks for sharing!</p>
+              </CardContent>
+            </Card>
             {/* Add Comment Form Placeholder */}
-            <div>
-              <textarea placeholder="Write a comment..." className="w-full p-2 rounded-md bg-input border-border min-h-[80px] text-sm"></textarea>
-              <Button className="mt-2 bg-primary hover:bg-primary/90 text-primary-foreground">Post Comment</Button>
-            </div>
+            <Card>
+              <CardContent className="p-4">
+                <Textarea placeholder="Write a comment..." className="w-full min-h-[80px] text-sm mb-2" />
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">Post Comment</Button>
+              </CardContent>
+            </Card>
           </div>
         </section>
       </div>

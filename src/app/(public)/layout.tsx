@@ -33,7 +33,7 @@ export default function PublicLayout({
   return (
     <html lang="en" className={cn("dark", comfortaa.variable, lexend.variable)} suppressHydrationWarning>
       <body className="font-body antialiased flex flex-col min-h-screen bg-background text-foreground">
-        <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <header className="sticky top-0 z-40 w-full border-b border-primary/25 bg-background/80 backdrop-blur-lg shadow-[0_2px_15px_hsl(var(--primary)/0.1)]">
           <div className="container flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
               <NexosLogo className="h-7 w-7 text-primary" />
@@ -56,7 +56,7 @@ export default function PublicLayout({
         <main className="flex-grow">
           {children}
         </main>
-        <footer className="border-t border-border/60 py-8 text-center text-muted-foreground">
+        <footer className="border-t border-primary/25 py-8 text-center text-muted-foreground bg-background/80 backdrop-blur-sm">
           <div className="container text-sm">
             © {new Date().getFullYear()} NexOS Platform. All rights reserved.
             <div className="mt-2 space-x-4">
