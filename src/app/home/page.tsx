@@ -62,7 +62,7 @@ export default function HomePage() {
           <CardHeader>
             <CardTitle className="font-headline">Quick Actions</CardTitle>
           </CardHeader>
-          <CardContent className="flex gap-4">
+          <CardContent className="flex flex-wrap gap-2 md:gap-4">
             <Link href="/home/items" legacyBehavior><Button asChild variant="outline"><a>View All Items</a></Button></Link>
             <Link href="/explore" legacyBehavior><Button asChild variant="outline"><a>Explore Modules</a></Button></Link>
             <Link href="/account/profile" legacyBehavior><Button asChild variant="outline"><a>Account Settings</a></Button></Link>

@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { KeyRound, Settings2, PlusCircle, Trash2, Edit2, LinkIcon, Webhook } from 'lucide-react';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 // Placeholder data
 const apiKeys = [
@@ -26,6 +27,8 @@ const availableIntegrations = [
     {id: 'google_drive', name: 'Google Drive', logo: 'https://placehold.co/32x32.png?text=GD', dataAiHint: 'google drive logo', description: 'Connect your cloud storage for file management.', connected: false},
 ];
 
+const innerCardClassName = "bg-card/70 backdrop-blur-sm border-primary/20 rounded-xl p-3 shadow-lg hover:border-primary/30 transition-all";
+
 
 export default function AccountIntegrationsPage() {
   return (
@@ -42,7 +45,7 @@ export default function AccountIntegrationsPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           {apiKeys.map(key => (
-            <Card key={key.id} className="p-3">
+            <div key={key.id} className={cn(innerCardClassName)}>
               <div className="flex justify-between items-start">
                 <div>
                   <h4 className="font-semibold">{key.label}</h4>
@@ -54,7 +57,7 @@ export default function AccountIntegrationsPage() {
                   <Button variant="ghost" size="icon" title="Revoke Key" className="text-destructive hover:text-destructive/80"><Trash2 className="h-4 w-4" /></Button>
                 </div>
               </div>
-            </Card>
+            </div>
           ))}
           {apiKeys.length === 0 && <p className="text-sm text-muted-foreground">No API keys generated yet.</p>}
         </CardContent>
@@ -67,7 +70,7 @@ export default function AccountIntegrationsPage() {
         </CardHeader>
         <CardContent className="space-y-3">
             {webhooks.map(hook => (
-                <Card key={hook.id} className="p-3">
+                <div key={hook.id} className={cn(innerCardClassName)}>
                     <div className="flex justify-between items-start">
                         <div>
                             <h4 className="font-semibold break-all">{hook.url}</h4>
@@ -79,7 +82,7 @@ export default function AccountIntegrationsPage() {
                             <Button variant="ghost" size="icon" title="Delete Webhook" className="text-destructive hover:text-destructive/80"><Trash2 className="h-4 w-4" /></Button>
                         </div>
                     </div>
-                </Card>
+                </div>
             ))}
             {webhooks.length === 0 && <p className="text-sm text-muted-foreground">No webhooks configured.</p>}
         </CardContent>
@@ -92,7 +95,7 @@ export default function AccountIntegrationsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
             {availableIntegrations.map(integration => (
-                <div key={integration.id} className="flex items-center justify-between p-3 border rounded-md">
+                <div key={integration.id} className={cn(innerCardClassName, "flex items-center justify-between")}>
                     <div className="flex items-center gap-3">
                         <Image src={integration.logo} alt={integration.name} width={32} height={32} data-ai-hint={integration.dataAiHint} className="rounded"/>
                         <div>

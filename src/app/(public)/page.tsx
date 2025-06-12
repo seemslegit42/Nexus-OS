@@ -2,6 +2,7 @@
 // src/app/(public)/page.tsx (Landing Page)
 'use client';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight, CheckCircle, Cpu, Layers, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -39,16 +40,20 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-muted/20">
+      <section className="py-16 bg-muted/10">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-headline text-center font-semibold text-foreground mb-12">Why Choose NexOS Platform?</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {features.map(feature => (
-              <div key={feature.title} className="bg-card p-6 rounded-lg shadow-lg text-center">
-                <div className="flex justify-center mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-semibold font-headline text-foreground mb-2">{feature.title}</h3>
-                <p className="text-muted-foreground text-sm">{feature.description}</p>
-              </div>
+              <Card key={feature.title} className="text-center">
+                <CardHeader>
+                    <div className="flex justify-center mb-2">{feature.icon}</div>
+                    <CardTitle className="text-xl font-semibold font-headline text-foreground">{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground text-sm">{feature.description}</p>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
@@ -61,22 +66,28 @@ export default function LandingPage() {
           <p className="text-center text-muted-foreground mb-12 max-w-xl mx-auto">
             From idea to deployment, NexOS provides the tools you need to succeed.
           </p>
-          <Image src="https://placehold.co/1200x600.png?text=NexOS+Platform+Visual+Overview" alt="NexOS Platform Overview" width={1200} height={600} className="rounded-lg shadow-2xl mx-auto" data-ai-hint="platform dashboard builder workflow" />
+          <div className="rounded-2xl shadow-[0_8px_40px_hsl(var(--primary)/0.15)] overflow-hidden border border-primary/25">
+            <Image src="https://placehold.co/1200x600.png?text=NexOS+Platform+Visual+Overview" alt="NexOS Platform Overview" width={1200} height={600} className="mx-auto" data-ai-hint="platform dashboard builder workflow" />
+          </div>
         </div>
       </section>
 
        {/* Call to Action Section */}
-      <section className="py-20 bg-primary/10">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-headline font-semibold text-foreground mb-6">Ready to Innovate?</h2>
-          <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-8">
-            Join thousands of developers building the next wave of applications on NexOS.
-          </p>
-          <Link href="/register" legacyBehavior>
-            <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                <a>Sign Up Now & Start Building</a>
-            </Button>
-          </Link>
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4">
+            <Card className="text-center overflow-hidden">
+                 <CardContent className="p-8 md:p-12">
+                    <h2 className="text-3xl font-headline font-semibold text-foreground mb-6">Ready to Innovate?</h2>
+                    <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-8">
+                        Join thousands of developers building the next wave of applications on NexOS.
+                    </p>
+                    <Link href="/register" legacyBehavior>
+                        <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                            <a>Sign Up Now & Start Building</a>
+                        </Button>
+                    </Link>
+                 </CardContent>
+            </Card>
         </div>
       </section>
     </>

@@ -31,7 +31,7 @@ export default function DocsPage() {
             <Input 
               type="search" 
               placeholder="Search documentation (e.g., API keys, module creation)..." 
-              className="w-full pl-10 pr-4 py-3 rounded-md bg-input border-input focus:ring-primary text-base h-12" 
+              className="w-full pl-10 pr-4 py-3 rounded-xl bg-input border-primary/25 text-base h-12 focus:shadow-[0_0_12px_-2px_hsl(var(--primary)/0.4)]" 
             />
           </div>
         </header>
@@ -39,7 +39,7 @@ export default function DocsPage() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {docCategories.map(category => (
             <Link key={category.name} href={category.link} legacyBehavior>
-              <Card asChild className="hover:shadow-lg hover:border-primary/50 transition-all cursor-pointer">
+              <Card asChild className="hover:shadow-[0_6px_35px_hsl(var(--primary)/0.18)] hover:border-primary/40 transition-all cursor-pointer">
                 <a>
                   <CardHeader className="flex flex-row items-center gap-3 space-y-0">
                     {category.icon}
@@ -54,14 +54,16 @@ export default function DocsPage() {
           ))}
         </div>
         
-        {/* Placeholder for embedded documentation or iframe */}
-        <div className="mt-16 p-4 md:p-6 bg-muted/20 rounded-lg min-h-[500px] flex items-center justify-center">
-            <p className="text-muted-foreground text-center">
-                Detailed documentation content for the selected category will appear here.
-                <br />
-                (This area could embed an external documentation site or render markdown content.)
-            </p>
-        </div>
+        <Card className="mt-16 min-h-[500px] flex items-center justify-center">
+            <CardContent className="text-center">
+                <p className="text-muted-foreground">
+                    Detailed documentation content for the selected category will appear here.
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                    (This area could embed an external documentation site or render markdown content.)
+                </p>
+            </CardContent>
+        </Card>
       </div>
     </div>
   );

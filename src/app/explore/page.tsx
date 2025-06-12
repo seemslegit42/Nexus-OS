@@ -24,7 +24,7 @@ export default function ExplorePage() {
         <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
             <div className="relative flex-grow sm:flex-grow-0 sm:min-w-[300px]">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search items, modules, templates..." className="pl-9 bg-input border-input focus:ring-primary w-full" />
+              <Input placeholder="Search items, modules, templates..." className="pl-9 w-full" />
             </div>
             <Button variant="outline" className="w-full sm:w-auto"><Filter className="mr-2 h-4 w-4" /> Filter</Button>
             <Link href="/explore/submit" legacyBehavior>
@@ -37,9 +37,9 @@ export default function ExplorePage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {exploreItems.map(item => (
-          <Card key={item.id} className="overflow-hidden">
+          <Card key={item.id} className="overflow-hidden hover:shadow-[0_6px_35px_hsl(var(--primary)/0.18)] hover:border-primary/40 transition-all">
             <Link href={`/explore/${item.id}`} className="block">
-              <Image src={item.image} alt={item.name} width={400} height={225} className="w-full h-auto object-cover aspect-video" data-ai-hint={item.dataAiHint} />
+              <Image src={item.image} alt={item.name} width={400} height={225} className="w-full h-auto object-cover aspect-video rounded-t-2xl" data-ai-hint={item.dataAiHint} />
             </Link>
             <CardHeader className="pt-3 pb-2">
               <Link href={`/explore/${item.id}`} className="hover:underline">
@@ -48,7 +48,7 @@ export default function ExplorePage() {
               <CardDescription className="text-xs">By {item.author} | Type: {item.type}</CardDescription>
             </CardHeader>
             <CardContent className="py-2">
-              <p className="text-sm text-muted-foreground line-clamp-2">Placeholder short description for {item.name}. Click to learn more.</p>
+              <p className="text-sm text-muted-foreground line-clamp-2">Placeholder short description for {item.name}. Click to learn more about this amazing creation.</p>
             </CardContent>
             <CardFooter className="py-3 flex justify-end">
               <Link href={`/explore/${item.id}`} legacyBehavior>
