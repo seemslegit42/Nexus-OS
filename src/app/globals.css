@@ -142,8 +142,8 @@
 }
 
 .react-grid-item.react-grid-placeholder {
-  background: hsl(var(--primary));
-  opacity: 0.2;
+  background: hsl(var(--primary) / 0.3); /* Updated to use primary color with translucency */
+  opacity: 0.6; /* Adjusted opacity for better visibility */
   transition-duration: 100ms;
   z-index: 2;
   -webkit-user-select: none;
@@ -151,7 +151,9 @@
   -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
-  border-radius: var(--radius); /* Will become rounded-xl */
+  border-radius: var(--radius); /* Will become rounded-xl or rounded-2xl based on theme */
+  border: 1px dashed hsl(var(--primary) / 0.5); /* Added dashed border for clarity */
+  backdrop-filter: blur(4px); /* Optional: add some blur to placeholder */
 }
 
 .react-grid-item > .react-resizable-handle {

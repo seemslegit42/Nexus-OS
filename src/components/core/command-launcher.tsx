@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useCallback, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog'; // Removed DialogTitle, DialogDescription as they are not directly used
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -11,9 +11,9 @@ import { cn } from '@/lib/utils';
 import {
   Home, Zap, LayoutGrid, Cpu, Command as CommandIconCmdk, Briefcase,
   ListChecks, ShieldCheck, Users, Settings2, MessageSquare, BarChart3,
-  FileArchive, GitMerge, Rocket, LogOut, Search as SearchIconLucide, ExternalLink,
-  FilePlus, Package, Maximize, Minimize, Pin, Lightbulb, Palette, Info, RadioTower // Ensured RadioTower is here
-} from 'lucide-react';
+  FileArchive, GitMerge, Rocket, LogOut, Search as SearchIconLucide,
+  FilePlus, Package, Palette, Info, RadioTower
+} from 'lucide-react'; // Removed Maximize, Minimize, Pin, Lightbulb as they were unused
 import type { ReactNode } from 'react';
 
 export interface CommandAction {
@@ -30,7 +30,6 @@ interface CommandLauncherDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-// Moved allAvailableActions outside the component to make it a stable reference
 const allAvailableActions: CommandAction[] = [
   // Navigation
   { id: 'nav-dashboard', group: 'Navigation', name: 'Go to Dashboard', icon: <Home />, keywords: ['home', 'main'], perform: (close, r) => { r.push('/'); close(); } },
@@ -58,18 +57,18 @@ const allAvailableActions: CommandAction[] = [
 
   // Module Actions
   { id: 'module-manage', group: 'Module Actions', name: 'Manage Modules', icon: <Package />, perform: (close, r) => { r.push('/modules'); close(); } },
-  { id: 'module-create', group: 'Module Actions', name: 'Create New Module', icon: <FilePlus />, perform: (close, r) => { r.push('/modules'); /* TODO: Scroll to editor or open create modal */ close(); } },
+  { id: 'module-create', group: 'Module Actions', name: 'Create New Module', icon: <FilePlus />, perform: (close, r) => { r.push('/modules'); close(); } },
   
   // Item Actions
   { id: 'item-create', group: 'Item Actions', name: 'Create New Item', icon: <FilePlus />, keywords: ['new project', 'new app'], perform: (close, r) => { r.push('/home/items/new'); close(); } },
 
   // UI / System Actions
-  { id: 'ui-theme-settings', group: 'System', name: 'Open Theme Settings', icon: <Palette />, perform: (close, r) => { r.push('/settings'); /* TODO: scroll to theme section */ close(); } },
-  { id: 'sys-logout', group: 'System', name: 'Log Out', icon: <LogOut />, keywords: ['sign out', 'exit'], perform: (close) => { console.log('Logging out...'); /* Actual logout logic */ close(); } },
+  { id: 'ui-theme-settings', group: 'System', name: 'Open Theme Settings', icon: <Palette />, perform: (close, r) => { r.push('/settings'); close(); } },
+  { id: 'sys-logout', group: 'System', name: 'Log Out', icon: <LogOut />, keywords: ['sign out', 'exit'], perform: (close) => { console.log('Logging out...');  close(); } },
   { id: 'sys-docs', group: 'System', name: 'View Documentation', icon: <Info />, keywords: ['help', 'support', 'guide'], perform: (close, r) => { r.push('/docs'); close(); } },
 
   // Example of actions that don't navigate
-  { id: 'action-console-log', group: 'Developer', name: 'Log "Hello NexOS" to console', icon: <Lightbulb />, perform: (close) => { console.log("Hello NexOS from Command Launcher!"); close(); } },
+  { id: 'action-console-log', group: 'Developer', name: 'Log "Hello NexOS" to console', icon: <Zap />, perform: (close) => { console.log("Hello NexOS from Command Launcher!"); close(); } },
 ];
 
 
@@ -82,7 +81,7 @@ export function CommandLauncherDialog({ open, onOpenChange }: CommandLauncherDia
 
   useEffect(() => {
     if (!open) {
-      setSearchTerm(''); // Reset search term when dialog closes
+      setSearchTerm(''); 
     }
   }, [open]);
 
@@ -90,7 +89,6 @@ export function CommandLauncherDialog({ open, onOpenChange }: CommandLauncherDia
     const term = searchTerm.toLowerCase().trim();
     if (!term) {
       setFilteredActions([]);
-      // Group all actions if search is empty
       const grouped = allAvailableActions.reduce((acc, action) => {
         const group = acc[action.group] || [];
         group.push(action);
@@ -107,7 +105,7 @@ export function CommandLauncherDialog({ open, onOpenChange }: CommandLauncherDia
       (action.keywords && action.keywords.some(kw => kw.toLowerCase().includes(term)))
     );
     setFilteredActions(filtered);
-    setGroupedActions({}); // Clear groups when searching
+    setGroupedActions({}); 
   }, [searchTerm]);
 
   const handleActionClick = (action: CommandAction) => {
@@ -122,8 +120,8 @@ export function CommandLauncherDialog({ open, onOpenChange }: CommandLauncherDia
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-0 sm:max-w-2xl max-h-[80vh] flex flex-col border-border/70 shadow-2xl">
-        <DialogHeader className="px-4 pt-4 pb-2 border-b border-border/60">
+      <DialogContent className="p-0 sm:max-w-2xl max-h-[80vh] flex flex-col shadow-2xl !rounded-2xl !border-primary/25 !bg-popover/80 !backdrop-blur-lg">
+        <DialogHeader className="px-4 pt-4 pb-2 border-b border-primary/20">
            <div className="flex items-center gap-2">
              <SearchIconLucide className="h-5 w-5 text-muted-foreground" />
             <Input
@@ -140,15 +138,15 @@ export function CommandLauncherDialog({ open, onOpenChange }: CommandLauncherDia
             {searchTerm.trim() === '' && Object.keys(groupedActions).length > 0 ? (
               Object.entries(groupedActions).map(([groupName, actions]) => (
                 <Fragment key={groupName}>
-                  <h3 className="text-xs font-semibold text-muted-foreground px-2 py-1.5 uppercase tracking-wider">{groupName}</h3>
+                  <h3 className="text-xs font-semibold text-muted-foreground/80 px-2 py-1.5 uppercase tracking-wider">{groupName}</h3>
                   {actions.map((action) => (
                     <Button
                       key={action.id}
                       variant="ghost"
-                      className="w-full justify-start h-auto py-2.5 px-2 text-sm mb-0.5"
+                      className="w-full justify-start h-auto py-2.5 px-2 text-sm mb-0.5 hover:bg-primary/15 focus:bg-primary/20 rounded-lg"
                       onClick={() => handleActionClick(action)}
                     >
-                      {action.icon && <span className="mr-2.5 text-primary/90 w-5 h-5 flex items-center justify-center">{action.icon}</span>}
+                      {action.icon && <span className="mr-2.5 text-primary/90 w-5 h-5 flex items-center justify-center">{React.cloneElement(action.icon as React.ReactElement, { className: "h-4 w-4" })}</span>}
                       <div className="flex flex-col items-start">
                         <span className="text-foreground">{action.name}</span>
                         {action.keywords && searchTerm && (
@@ -166,10 +164,10 @@ export function CommandLauncherDialog({ open, onOpenChange }: CommandLauncherDia
                 <Button
                   key={action.id}
                   variant="ghost"
-                  className="w-full justify-start h-auto py-2.5 px-2 text-sm mb-0.5"
+                  className="w-full justify-start h-auto py-2.5 px-2 text-sm mb-0.5 hover:bg-primary/15 focus:bg-primary/20 rounded-lg"
                   onClick={() => handleActionClick(action)}
                 >
-                  {action.icon && <span className="mr-2.5 text-primary/90 w-5 h-5 flex items-center justify-center">{action.icon}</span>}
+                  {action.icon && <span className="mr-2.5 text-primary/90 w-5 h-5 flex items-center justify-center">{React.cloneElement(action.icon as React.ReactElement, { className: "h-4 w-4" })}</span>}
                    <div className="flex flex-col items-start">
                         <span className="text-foreground">{action.name}</span>
                         <span className="text-xs text-muted-foreground/70">{action.group}</span>
@@ -181,7 +179,7 @@ export function CommandLauncherDialog({ open, onOpenChange }: CommandLauncherDia
             ) : null}
           </div>
         </ScrollArea>
-         <div className="px-4 py-2 border-t border-border/60 text-xs text-muted-foreground flex justify-end">
+         <div className="px-4 py-2 border-t border-primary/20 text-xs text-muted-foreground/70 flex justify-end">
               ⚡ NexOS Command Launcher
         </div>
       </DialogContent>
