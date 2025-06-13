@@ -55,6 +55,92 @@ const getLucideIconSmall = (iconName: string | undefined, customClassName?: stri
   return getLucideIcon(iconName, { className: cn("h-4 w-4 mr-2", customClassName) });
 };
 
+// Moved MicroAppLauncherContent outside CommandObservatory
+const MicroAppLauncherContentInternal: React.FC<{
+  appsToDisplay: MicroApp[];
+  onLaunchApp: (app: MicroApp) => void;
+}> = React.memo(({ appsToDisplay, onLaunchApp }) => {
+  return (
+    <Card className="h-full bg-transparent border-none shadow-none">
+      <CardContent className="p-0 h-full">
+        <ScrollArea className="h-full">
+          <div className="p-2">
+            {appsToDisplay.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2">
+                {appsToDisplay.map((app) => (
+                  <MicroAppCard
+                    key={app.id}
+                    id={app.id}
+                    name={app.displayName}
+                    description={app.description}
+                    onLaunch={() => onLaunchApp(app)}
+                    tags={app.tags?.slice(0, 2)}
+                    icon={getLucideIcon(app.icon, { className: "h-5 w-5 text-primary group-hover:text-accent transition-colors" })}
+                    className="aspect-auto min-h-[150px]"
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-6 text-sm text-muted-foreground h-full flex flex-col items-center justify-center">
+                <PackageSearch className="mx-auto h-10 w-10 opacity-50 mb-2" />
+                No micro-apps available for dashboard.
+                <p className="text-xs mt-1">(Check Admin settings or deploy some!)</p>
+              </div>
+            )}
+          </div>
+        </ScrollArea>
+      </CardContent>
+    </Card>
+  );
+});
+MicroAppLauncherContentInternal.displayName = 'MicroAppLauncherContentInternal';
+
+// Moved LaunchedAppDisplayContent outside CommandObservatory
+const LaunchedAppDisplayContentInternal: React.FC<{ currentApp: MicroApp | null }> = React.memo(({ currentApp }) => {
+  if (!currentApp) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center text-center p-4">
+        <LayoutDashboard className="h-12 w-12 text-muted-foreground/50 mb-3" />
+        <p className="text-sm text-muted-foreground">No micro-app launched.</p>
+        <p className="text-xs text-muted-foreground/80">Select an app from the "Micro-Apps" launcher.</p>
+      </div>
+    );
+  }
+
+  const dynamicImportFn = getDynamicImportFn(currentApp.id);
+
+  if (!dynamicImportFn) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center text-center p-4">
+        <PackageSearch className="h-12 w-12 text-destructive/70 mb-3" />
+        <p className="text-sm text-destructive">Micro-app component not found!</p>
+        <p className="text-xs text-muted-foreground/80">
+          No dynamic import function registered for "{currentApp.displayName}" (ID: {currentApp.id}).
+        </p>
+      </div>
+    );
+  }
+  
+  const AppComponent = lazy(dynamicImportFn);
+  
+  return (
+      <Card className="h-full flex flex-col relative bg-transparent border-none shadow-none">
+          <CardContent className="flex-grow p-0 overflow-y-auto h-full">
+               <Suspense fallback={
+                  <div className="h-full flex flex-col items-center justify-center text-center p-4">
+                      <Loader2 className="h-8 w-8 text-primary animate-spin mb-3" />
+                      <p className="text-sm text-muted-foreground">Loading {currentApp.displayName}...</p>
+                  </div>
+              }>
+                  <AppComponent />
+              </Suspense>
+          </CardContent>
+      </Card>
+  );
+});
+LaunchedAppDisplayContentInternal.displayName = 'LaunchedAppDisplayContentInternal';
+
+
 export default function CommandObservatory() {
   const [launchedApp, setLaunchedApp] = useState<MicroApp | null>(null);
   const allRegisteredApps = useMicroAppRegistryStore(state => state.apps);
@@ -72,87 +158,6 @@ export default function CommandObservatory() {
   const handleCloseApp = useCallback(() => {
     setLaunchedApp(null);
   }, []);
-
-  const MicroAppLauncherContent: React.FC = () => {
-    const appsToDisplay = dashboardMicroApps;
-
-    return (
-      <Card className="h-full bg-transparent border-none shadow-none">
-        <CardContent className="p-0 h-full">
-          <ScrollArea className="h-full">
-            <div className="p-2">
-              {appsToDisplay.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2">
-                  {appsToDisplay.map((app) => (
-                    <MicroAppCard
-                      key={app.id}
-                      id={app.id}
-                      name={app.displayName}
-                      description={app.description}
-                      onLaunch={() => handleLaunchApp(app)}
-                      tags={app.tags?.slice(0, 2)} // Passing tags
-                      // metricPreview can be added if app.metricPreview exists
-                      icon={getLucideIcon(app.icon, { className: "h-5 w-5 text-primary group-hover:text-accent transition-colors" })}
-                      className="aspect-auto min-h-[150px]"
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-6 text-sm text-muted-foreground h-full flex flex-col items-center justify-center">
-                  <PackageSearch className="mx-auto h-10 w-10 opacity-50 mb-2" />
-                  No micro-apps available for dashboard.
-                  <p className="text-xs mt-1">(Check Admin settings or deploy some!)</p>
-                </div>
-              )}
-            </div>
-          </ScrollArea>
-        </CardContent>
-      </Card>
-    );
-  };
-
-  const LaunchedAppDisplayContent: React.FC<{ currentApp: MicroApp | null }> = ({ currentApp }) => {
-    if (!currentApp) {
-      return (
-        <div className="h-full flex flex-col items-center justify-center text-center p-4">
-          <LayoutDashboard className="h-12 w-12 text-muted-foreground/50 mb-3" />
-          <p className="text-sm text-muted-foreground">No micro-app launched.</p>
-          <p className="text-xs text-muted-foreground/80">Select an app from the "Micro-Apps" launcher.</p>
-        </div>
-      );
-    }
-
-    const dynamicImportFn = getDynamicImportFn(currentApp.id);
-
-    if (!dynamicImportFn) {
-      return (
-        <div className="h-full flex flex-col items-center justify-center text-center p-4">
-          <PackageSearch className="h-12 w-12 text-destructive/70 mb-3" />
-          <p className="text-sm text-destructive">Micro-app component not found!</p>
-          <p className="text-xs text-muted-foreground/80">
-            No dynamic import function registered for "{currentApp.displayName}" (ID: {currentApp.id}).
-          </p>
-        </div>
-      );
-    }
-    
-    const AppComponent = lazy(dynamicImportFn);
-    
-    return (
-        <Card className="h-full flex flex-col relative bg-transparent border-none shadow-none">
-            <CardContent className="flex-grow p-0 overflow-y-auto h-full">
-                 <Suspense fallback={
-                    <div className="h-full flex flex-col items-center justify-center text-center p-4">
-                        <Loader2 className="h-8 w-8 text-primary animate-spin mb-3" />
-                        <p className="text-sm text-muted-foreground">Loading {currentApp.displayName}...</p>
-                    </div>
-                }>
-                    <AppComponent />
-                </Suspense>
-            </CardContent>
-        </Card>
-    );
-  };
 
   const zoneConfigs = useMemo((): ZoneConfig[] => [
     {
@@ -173,7 +178,7 @@ export default function CommandObservatory() {
       id: "microAppLauncher",
       title: "Micro-Apps",
       icon: getLucideIconSmall("layoutdashboard"),
-      content: <MicroAppLauncherContent />,
+      content: <MicroAppLauncherContentInternal appsToDisplay={dashboardMicroApps} onLaunchApp={handleLaunchApp} />,
       defaultLayout: { x: 0, y: 16, w: 4, h: 8, minW: 3, minH: 5 },
     },
     {
@@ -187,15 +192,15 @@ export default function CommandObservatory() {
       id: "launchedAppDisplay",
       title: launchedApp ? `App: ${launchedApp.displayName}` : "Application View",
       icon: launchedApp ? getLucideIconSmall(launchedApp.icon, '!mr-0') : <Package className="h-4 w-4" />,
-      content: <LaunchedAppDisplayContent currentApp={launchedApp} />,
+      content: <LaunchedAppDisplayContentInternal currentApp={launchedApp} />,
       defaultLayout: { x: 4, y: 12, w: 8, h: 12, minW: 4, minH: 6 },
       canClose: !!launchedApp,
-      onClose: launchedApp ? handleCloseApp : undefined, // Only allow close if an app is launched
+      onClose: launchedApp ? handleCloseApp : undefined,
       canPin: false, 
-      canMinimize: !!launchedApp, // Allow minimize if an app is launched
-      canMaximize: !!launchedApp, // Allow maximize if an app is launched
+      canMinimize: !!launchedApp,
+      canMaximize: !!launchedApp,
     }
-  ], [launchedApp, dashboardMicroApps, handleLaunchApp, handleCloseApp]); // dashboardMicroApps added to dependency array
+  ], [launchedApp, dashboardMicroApps, handleLaunchApp, handleCloseApp]);
 
   return (
     <div
@@ -207,9 +212,9 @@ export default function CommandObservatory() {
       <WorkspaceGrid
         zoneConfigs={zoneConfigs}
         className="flex-grow p-2 md:p-3"
-        storageKey="commandObservatoryLayout_v3" // Consider updating storageKey if layout structure changes significantly
+        storageKey="commandObservatoryLayout_v3"
         cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }}
-        rowHeight={20} // Adjust row height as needed
+        rowHeight={20}
       />
     </div>
   );
