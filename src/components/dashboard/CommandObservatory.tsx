@@ -1,7 +1,7 @@
 // src/components/dashboard/CommandObservatory.tsx
 'use client';
 
-import React, { useState, useMemo, useCallback, Suspense } from 'react';
+import React, { useState, useMemo, useCallback, Suspense, lazy } from 'react'; // Added lazy
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,7 @@ import AgentPresenceGrid from './AgentPresenceGrid';
 import type { MicroApp } from '@/types/micro-app';
 import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
 import { WorkspaceGrid, type ZoneConfig } from '@/components/core/workspace-grid';
-import { getMicroAppComponent } from '@/micro-apps/registry'; // Import the registry helper
+import { getDynamicImportFn } from '@/micro-apps/registry'; // Updated import
 
 const SystemSnapshotPlaceholder: React.FC = () => {
   return (
@@ -120,21 +120,25 @@ export default function CommandObservatory() {
       );
     }
 
-    const AppComponent = getMicroAppComponent(currentApp.id);
+    const dynamicImportFn = getDynamicImportFn(currentApp.id);
 
-    if (!AppComponent) {
+    if (!dynamicImportFn) {
       return (
         <div className="h-full flex flex-col items-center justify-center text-center p-4">
           <PackageSearch className="h-12 w-12 text-destructive/70 mb-3" />
           <p className="text-sm text-destructive">Micro-app component not found!</p>
-          <p className="text-xs text-muted-foreground/80">Component for "{currentApp.displayName}" (ID: {currentApp.id}) is not registered.</p>
+          <p className="text-xs text-muted-foreground/80">
+            No dynamic import function registered for "{currentApp.displayName}" (ID: {currentApp.id}).
+          </p>
         </div>
       );
     }
     
+    const AppComponent = lazy(dynamicImportFn);
+    
     return (
         <Card className="h-full flex flex-col relative bg-transparent border-none shadow-none">
-            <CardContent className="flex-grow p-0 overflow-y-auto h-full"> {/* Changed p-3 to p-0 */}
+            <CardContent className="flex-grow p-0 overflow-y-auto h-full">
                  <Suspense fallback={
                     <div className="h-full flex flex-col items-center justify-center text-center p-4">
                         <Loader2 className="h-8 w-8 text-primary animate-spin mb-3" />
