@@ -134,42 +134,14 @@ export function WorkspaceGrid({
     });
     setZoneSettingsMap(initialSettings);
   }, [zoneConfigs]);
-
-  useEffect(() => {
-    if (storageKey && typeof window !== 'undefined') {
-      const savedLayouts = localStorage.getItem(storageKey);
-      if (savedLayouts) {
-        try {
-          const parsedLayouts = JSON.parse(savedLayouts);
-          // Basic validation: ensure it's an object and has breakpoint keys
-          if (typeof parsedLayouts === 'object' && parsedLayouts !== null && Object.keys(parsedLayouts).some(key => cols.hasOwnProperty(key))) {
-            setCurrentLayouts(parsedLayouts);
-          } else {
-            console.warn(`Invalid layouts found in localStorage for key "${storageKey}". Using defaults.`);
-            initializeDefaultLayouts();
-          }
-        } catch (e) {
-          console.error(`Error parsing layouts from localStorage for key "${storageKey}":`, e);
-          initializeDefaultLayouts();
-        }
-      } else {
-        initializeDefaultLayouts();
-      }
-    } else {
-      initializeDefaultLayouts();
-    }
-    setIsMounted(true);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [zoneConfigs, cols, dynamicRowHeight, locallyClosedZoneIds, zoneSettingsMap, storageKey]); // storageKey added to deps
-
-  const initializeDefaultLayouts = () => {
+  
+  const initializeDefaultLayouts = useCallback(() => {
     const initialLayouts: Layouts = {};
     Object.keys(cols).forEach(bpKey => {
       const bp = bpKey as keyof typeof cols;
       initialLayouts[bp] = zoneConfigs
         .filter(zc => !locallyClosedZoneIds.includes(zc.id) && (zoneSettingsMap[zc.id]?.isVisible ?? true))
         .map(zc => {
-          // Use zc.defaultLayout directly as it's now mandatory Layout, not Layouts
           const layoutConfig = zc.defaultLayout; 
           const itemStatic = layoutConfig.static ?? zc.static ?? false;
           const itemIsResizable = layoutConfig.isResizable ?? zc.isResizable ?? !itemStatic;
@@ -187,7 +159,34 @@ export function WorkspaceGrid({
         });
     });
     setCurrentLayouts(initialLayouts);
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [zoneConfigs, cols, dynamicRowHeight, locallyClosedZoneIds, zoneSettingsMap]);
+
+
+  useEffect(() => {
+    if (storageKey && typeof window !== 'undefined') {
+      const savedLayouts = localStorage.getItem(storageKey);
+      if (savedLayouts) {
+        try {
+          const parsedLayouts = JSON.parse(savedLayouts);
+          if (typeof parsedLayouts === 'object' && parsedLayouts !== null && Object.keys(parsedLayouts).some(key => cols.hasOwnProperty(key))) {
+            setCurrentLayouts(parsedLayouts);
+          } else {
+            console.warn(`Invalid layouts found in localStorage for key "${storageKey}". Using defaults.`);
+            initializeDefaultLayouts();
+          }
+        } catch (e) {
+          console.error(`Error parsing layouts from localStorage for key "${storageKey}":`, e);
+          initializeDefaultLayouts();
+        }
+      } else {
+        initializeDefaultLayouts();
+      }
+    } else {
+      initializeDefaultLayouts();
+    }
+    setIsMounted(true);
+  }, [storageKey, initializeDefaultLayouts, cols]);
 
 
   const handleLayoutChange = (currentLayout: Layout[], allLayouts: Layouts) => {
@@ -204,14 +203,15 @@ export function WorkspaceGrid({
     }
   };
   
-  const updateLayoutItemForAllBreakpoints = (id: string, newProps: Partial<Layout>) => {
+  const updateLayoutItemForAllBreakpoints = useCallback((id: string, newProps: Partial<Layout>) => {
     setCurrentLayouts(prev => {
       const newLayouts = JSON.parse(JSON.stringify(prev)); 
       Object.keys(newLayouts).forEach(bp => {
         const bpLayout = newLayouts[bp] as Layout[] | undefined;
         const itemIndex = bpLayout?.findIndex(item => item.i === id);
         if (bpLayout && typeof itemIndex === 'number' && itemIndex !== -1 && itemIndex < bpLayout.length) {
-          bpLayout[itemIndex] = { ...bpLayout[itemIndex], ...newProps };
+          const currentItem = bpLayout[itemIndex];
+          bpLayout[itemIndex] = { ...currentItem, ...newProps };
         }
       });
       if (storageKey && typeof window !== 'undefined') {
@@ -219,7 +219,7 @@ export function WorkspaceGrid({
       }
       return newLayouts;
     });
-  };
+  }, [storageKey]);
 
   const handleTogglePin = useCallback((id: string) => {
     if (maximizedZoneId) return;
@@ -326,7 +326,7 @@ export function WorkspaceGrid({
     }
   }, [maximizedZoneId, minimizedZoneIds, currentLayouts, currentBreakpoint, storedHeightsBeforeMinimize, updateLayoutItemForAllBreakpoints]);
 
-  const handleActualClose = (id: string) => {
+  const handleActualClose = useCallback((id: string) => {
     if (maximizedZoneId) return; 
     addLog(`Zone '${zoneConfigs.find(zc => zc.id === id)?.title || id}' removed.`, 'WorkspaceAction');
     if (onZoneClose) {
@@ -340,13 +340,13 @@ export function WorkspaceGrid({
       });
       setMinimizedZoneIds(prev => prev.filter(minId => minId !== id));
     }
-  };
+  }, [maximizedZoneId, addLog, zoneConfigs, onZoneClose]);
 
-  const handleOpenSettingsDrawer = (zoneId: string) => {
+  const handleOpenSettingsDrawer = useCallback((zoneId: string) => {
     setEditingSettingsForZoneId(zoneId);
-  };
+  }, []);
 
-  const handleSaveZoneSettings = (zoneId: string, newSettings: ZoneSpecificSettings) => {
+  const handleSaveZoneSettings = useCallback((zoneId: string, newSettings: ZoneSpecificSettings) => {
     const derivedHasActiveAutomation = !!(newSettings.scheduleTime || (newSettings.linkedAgent && newSettings.linkedAgent !== 'None'));
     setZoneSettingsMap(prev => ({
       ...prev,
@@ -362,7 +362,7 @@ export function WorkspaceGrid({
         }
     }
     addLog(`Settings saved for zone: ${zoneConfigs.find(zc => zc.id === zoneId)?.title || zoneId}`, 'WorkspaceAction');
-  };
+  }, [addLog, zoneConfigs, onZoneClose, locallyClosedZoneIds]);
 
 
   if (!isMounted || !dynamicRowHeight || (dynamicRowHeight === DEFAULT_ROW_HEIGHT_PIXELS && zoneConfigs.length > 0 && typeof window !== 'undefined' && !rowHeight)) {
@@ -417,7 +417,7 @@ export function WorkspaceGrid({
           const canSettingsZone = zoneConfig.canSettings !== false && !isCurrentlyMaximized;
           const currentZoneSettings = zoneSettingsMap[zoneConfig.id];
 
-          if (!rglItem) { // If layout item not found, skip rendering
+          if (!rglItem) { 
             console.warn(`Layout item for zone ${zoneConfig.id} not found for breakpoint ${currentBreakpoint}. Skipping render.`);
             return null;
           }
@@ -430,14 +430,14 @@ export function WorkspaceGrid({
                 id={zoneConfig.id} 
                 title={zoneConfig.title}
                 icon={zoneConfig.icon}
-                onPinToggle={canPinZone ? () => handleTogglePin(zoneConfig.id) : undefined}
+                onPinToggle={handleTogglePin}
                 isPinned={isEffectivelyPinned}
-                onMaximizeToggle={canMaximizeZone ? () => handleToggleMaximize(zoneConfig.id) : undefined}
+                onMaximizeToggle={handleToggleMaximize}
                 isMaximized={isCurrentlyMaximized}
-                onMinimizeToggle={canMinimizeZone ? () => handleToggleMinimize(zoneConfig.id) : undefined}
+                onMinimizeToggle={handleToggleMinimize}
                 isMinimized={isActuallyMinimized}
-                onClose={() => handleActualClose(zoneConfig.id)} 
-                onSettingsToggle={canSettingsZone ? () => handleOpenSettingsDrawer(zoneConfig.id) : undefined} 
+                onClose={handleActualClose} 
+                onSettingsToggle={handleOpenSettingsDrawer} 
                 canPin={canPinZone}
                 canMaximize={canMaximizeZone}
                 canMinimize={canMinimizeZone}
