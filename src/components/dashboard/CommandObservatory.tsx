@@ -1,18 +1,18 @@
-
 // src/components/dashboard/CommandObservatory.tsx
 'use client';
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, Suspense } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Activity, LayoutDashboard, Workflow, ShieldCheck, RadioTower, X as CloseIcon, ExternalLink, Package, TerminalSquare, PackageSearch, Cpu, ListChecks } from 'lucide-react';
+import { Activity, LayoutDashboard, Workflow, ShieldCheck, RadioTower, X as CloseIcon, ExternalLink, Package, TerminalSquare, PackageSearch, Cpu, ListChecks, Loader2 } from 'lucide-react';
 import LiveOrchestrationsFeed from './LiveOrchestrationsFeed';
 import AgentPresenceGrid from './AgentPresenceGrid';
 import type { MicroApp } from '@/types/micro-app';
 import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
 import { WorkspaceGrid, type ZoneConfig } from '@/components/core/workspace-grid';
+import { getMicroAppComponent } from '@/micro-apps/registry'; // Import the registry helper
 
 const SystemSnapshotPlaceholder: React.FC = () => {
   return (
@@ -119,21 +119,30 @@ export default function CommandObservatory() {
         </div>
       );
     }
+
+    const AppComponent = getMicroAppComponent(currentApp.id);
+
+    if (!AppComponent) {
+      return (
+        <div className="h-full flex flex-col items-center justify-center text-center p-4">
+          <PackageSearch className="h-12 w-12 text-destructive/70 mb-3" />
+          <p className="text-sm text-destructive">Micro-app component not found!</p>
+          <p className="text-xs text-muted-foreground/80">Component for "{currentApp.displayName}" (ID: {currentApp.id}) is not registered.</p>
+        </div>
+      );
+    }
+    
     return (
-         <Card
-            className="h-full flex flex-col relative bg-transparent border-none shadow-none"
-        >
-            <CardContent className="flex-grow p-3 overflow-y-auto">
-            <div className="mt-1 p-3 bg-black/20 rounded-md border border-primary/15">
-                <h4 className="text-xs font-semibold text-primary mb-1.5">Micro-App Details:</h4>
-                <p className="text-xs text-muted-foreground mb-0.5"><strong>ID:</strong> {currentApp.id}</p>
-                <p className="text-xs text-muted-foreground mb-0.5"><strong>Description:</strong> {currentApp.description || "No description available."}</p>
-                <p className="text-xs text-muted-foreground"><strong>Entry Point:</strong> <code className="text-primary/80 bg-black/30 px-1 py-0.5 rounded-sm text-[11px]">{currentApp.entryPoint || 'Not configured'}</code></p>
-            </div>
-            <div className="mt-4 text-center text-muted-foreground">
-                Content for "{currentApp.displayName}" (via entry: {currentApp.entryPoint || 'N/A'}) would be rendered here.
-                <p className="text-xs mt-1">This is a placeholder for the actual micro-app UI.</p>
-            </div>
+        <Card className="h-full flex flex-col relative bg-transparent border-none shadow-none">
+            <CardContent className="flex-grow p-0 overflow-y-auto h-full"> {/* Changed p-3 to p-0 */}
+                 <Suspense fallback={
+                    <div className="h-full flex flex-col items-center justify-center text-center p-4">
+                        <Loader2 className="h-8 w-8 text-primary animate-spin mb-3" />
+                        <p className="text-sm text-muted-foreground">Loading {currentApp.displayName}...</p>
+                    </div>
+                }>
+                    <AppComponent />
+                </Suspense>
             </CardContent>
         </Card>
     );
@@ -172,14 +181,14 @@ export default function CommandObservatory() {
     {
       id: "launchedAppDisplay",
       title: launchedApp ? `App: ${launchedApp.displayName}` : "Application View",
-      icon: launchedApp ? getLucideIconSmall(launchedApp.icon, '!mr-0') : <Package className="h-4 w-4" />, // Removed mr-2 for the dynamic icon
+      icon: launchedApp ? getLucideIconSmall(launchedApp.icon, '!mr-0') : <Package className="h-4 w-4" />,
       content: <LaunchedAppDisplayContent currentApp={launchedApp} />,
       defaultLayout: { x: 4, y: 12, w: 8, h: 12, minW: 4, minH: 6 },
       canClose: !!launchedApp,
       onClose: launchedApp ? handleCloseApp : undefined,
-      canPin: false, // Usually app views are not pinnable in this dynamic context
+      canPin: false, 
       canMinimize: !!launchedApp,
-      canMaximize: !!launchedApp, // Allow maximizing the launched app view
+      canMaximize: !!launchedApp, 
     }
   ], [launchedApp, dashboardMicroApps, handleLaunchApp, handleCloseApp]);
 
@@ -194,9 +203,9 @@ export default function CommandObservatory() {
       <WorkspaceGrid
         zoneConfigs={zoneConfigs}
         className="flex-grow p-2 md:p-3"
-        storageKey="commandObservatoryLayout_v3" // Incremented version for layout changes
+        storageKey="commandObservatoryLayout_v3"
         cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }}
-        rowHeight={20} // Consider adjusting if content needs more/less vertical space per unit
+        rowHeight={20}
       />
     </div>
   );
