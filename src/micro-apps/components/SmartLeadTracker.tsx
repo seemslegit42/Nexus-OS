@@ -1,13 +1,13 @@
 
 'use client';
 
-import React, { useState, useMemo, type FormEvent, useEffect } from 'react';
+import React, { useState, useMemo, type FormEvent, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Users, PlusCircle, Trash2, Search, Sparkles, Loader2, AlertCircle, Download } from 'lucide-react';
+import { Users, PlusCircle, Trash2, Search, Sparkles, Loader2, AlertCircle, Download, Upload } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { generateLeadInsight, type GenerateLeadInsightInput, type GenerateLeadInsightOutput } from '@/ai/flows/generate-lead-insight';
@@ -30,6 +30,7 @@ const SmartLeadTracker: React.FC = () => {
   const [leadEmail, setLeadEmail] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null); // Ref for file input
 
   // Load leads from localStorage on initial component mount
   useEffect(() => {
@@ -53,9 +54,11 @@ const SmartLeadTracker: React.FC = () => {
   // Save leads to localStorage whenever the leads state changes
   useEffect(() => {
     try {
+      // Only store core lead data, not transient UI state for insights
       const leadsToStore = leads.map(({ id, name, email }) => ({ id, name, email }));
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(leadsToStore));
-    } catch (error) {
+    } catch (error)
+{
       console.error('Error saving leads to localStorage:', error);
     }
   }, [leads]);
@@ -81,7 +84,7 @@ const SmartLeadTracker: React.FC = () => {
       toast({ title: "Validation Error", description: "Please enter both name and email for the lead.", variant: "destructive" });
       return;
     }
-    if (!trimmedEmail.includes('@')) {
+    if (!trimmedEmail.includes('@')) { // Basic email format check
       toast({ title: "Validation Error", description: "Please enter a valid email address.", variant: "destructive" });
       return;
     }
@@ -92,7 +95,7 @@ const SmartLeadTracker: React.FC = () => {
       email: trimmedEmail,
       isLoadingInsight: false,
     };
-    setLeads(prevLeads => [newLead, ...prevLeads]);
+    setLeads(prevLeads => [newLead, ...prevLeads]); // Add new lead to the beginning
     setLeadName('');
     setLeadEmail('');
     toast({ title: "Lead Added", description: `${trimmedName} has been successfully added.`, variant: "default" });
@@ -152,7 +155,7 @@ const SmartLeadTracker: React.FC = () => {
       return;
     }
 
-    const headers = "Name,Email";
+    const headers = "Name,Email"; // CSV headers
     const rows = filteredLeads.map(lead => 
       `${escapeCSVField(lead.name)},${escapeCSVField(lead.email)}`
     );
@@ -182,6 +185,109 @@ const SmartLeadTracker: React.FC = () => {
       });
     }
   };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      toast({ title: "Import Cancelled", description: "No file selected.", variant: "default" });
+      return;
+    }
+
+    if (file.type !== 'text/csv' && !file.name.toLowerCase().endsWith('.csv')) {
+      toast({ title: "Import Failed", description: "Invalid file type. Please upload a CSV file.", variant: "destructive" });
+      if (fileInputRef.current) fileInputRef.current.value = ''; // Reset file input
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target?.result as string;
+      if (!text) {
+        toast({ title: "Import Failed", description: "Could not read file content.", variant: "destructive" });
+        return;
+      }
+      parseCSVAndAddLeads(text);
+    };
+    reader.onerror = () => {
+      toast({ title: "Import Failed", description: "Error reading file.", variant: "destructive" });
+    };
+    reader.readAsText(file);
+    if (fileInputRef.current) fileInputRef.current.value = ''; // Reset file input after processing
+  };
+
+  const parseCSVAndAddLeads = (csvText: string) => {
+    const lines = csvText.split(/\r\n|\n/).filter(line => line.trim() !== ''); // Split by newline and remove empty lines
+    if (lines.length < 2) { // Must have headers and at least one data row
+      toast({ title: "Import Failed", description: "CSV file is empty or has no data rows.", variant: "destructive" });
+      return;
+    }
+
+    const headers = lines[0].split(',').map(header => header.trim().toLowerCase());
+    const nameIndex = headers.indexOf('name');
+    const emailIndex = headers.indexOf('email');
+
+    if (nameIndex === -1 || emailIndex === -1) {
+      toast({ title: "Import Failed", description: "CSV must contain 'Name' and 'Email' columns.", variant: "destructive" });
+      return;
+    }
+
+    let importedCount = 0;
+    let skippedCount = 0;
+    const newLeads: Lead[] = [];
+
+    for (let i = 1; i < lines.length; i++) {
+      // Basic CSV row split, assumes no commas within quoted fields for simplicity
+      const cells = lines[i].split(','); 
+      const name = cells[nameIndex]?.trim();
+      const email = cells[emailIndex]?.trim();
+
+      if (name && email && email.includes('@')) {
+        // Check for duplicates based on email (case-insensitive)
+        if (!leads.some(lead => lead.email.toLowerCase() === email.toLowerCase()) && !newLeads.some(nl => nl.email.toLowerCase() === email.toLowerCase())) {
+          newLeads.push({
+            id: crypto.randomUUID(),
+            name,
+            email,
+            isLoadingInsight: false,
+          });
+          importedCount++;
+        } else {
+          skippedCount++; // Duplicate
+        }
+      } else {
+        skippedCount++; // Invalid row
+      }
+    }
+
+    if (newLeads.length > 0) {
+      setLeads(prevLeads => [...newLeads, ...prevLeads]); // Add new leads to the beginning
+    }
+
+    if (importedCount > 0) {
+      toast({
+        title: "Import Successful",
+        description: `${importedCount} leads imported. ${skippedCount} rows skipped (invalid or duplicate).`,
+        variant: "default",
+      });
+    } else if (skippedCount > 0) {
+      toast({
+        title: "Import Note",
+        description: `No new leads imported. ${skippedCount} rows were invalid or duplicates.`,
+        variant: "default",
+      });
+    } else {
+       toast({
+        title: "Import Info",
+        description: "No leads found to import in the file.",
+        variant: "default",
+      });
+    }
+  };
+
+  const triggerFileUpload = () => {
+    fileInputRef.current?.click();
+  };
+
 
   const isAddLeadDisabled = !leadName.trim() || !leadEmail.trim();
 
@@ -246,6 +352,23 @@ const SmartLeadTracker: React.FC = () => {
                         className="h-8 text-xs pl-8 bg-input border-input focus:ring-primary w-full"
                     />
                 </div>
+                 <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileUpload}
+                    accept=".csv"
+                    className="hidden"
+                    id="csv-importer"
+                  />
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={triggerFileUpload}
+                    className="h-8 text-xs bg-card hover:bg-muted/70 border-primary/30"
+                    title="Import leads from CSV"
+                >
+                    <Upload className="mr-2 h-3.5 w-3.5" /> Import
+                </Button>
                 <Button
                     variant="outline"
                     size="sm"
@@ -260,7 +383,7 @@ const SmartLeadTracker: React.FC = () => {
 
           {leads.length === 0 ? (
             <div className="flex-grow flex items-center justify-center text-center text-muted-foreground text-xs p-4 bg-muted/20 rounded-lg">
-              No leads added yet. Use the form above to add your first lead.
+              No leads added yet. Use the form above to add your first lead or import from CSV.
             </div>
           ) : filteredLeads.length === 0 && searchTerm ? (
             <div className="flex-grow flex items-center justify-center text-center text-muted-foreground text-xs p-4 bg-muted/20 rounded-lg">
