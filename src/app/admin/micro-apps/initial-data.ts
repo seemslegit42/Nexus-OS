@@ -10,11 +10,11 @@ export const mockMicroApps: MicroApp[] = [
     icon: 'Workflow',
     description: 'Visually create and manage multi-step AI-powered automations and task chains.',
     category: 'Automation',
-    status: 'enabled', // No change needed
+    status: 'enabled', 
     tags: ['workflow', 'ai', 'visual-editor', 'automation', 'low-code'],
     agentDependencies: ['Orion', 'Proxy'],
     authRequired: true,
-    isVisible: true, // No change needed
+    isVisible: true, 
     requiresSubscription: true,
     monetization: {
         enabled: true,
@@ -27,14 +27,14 @@ export const mockMicroApps: MicroApp[] = [
     },
     flags: { isFeatured: true, requiresBetaFeature: false },
     version: '1.1.0',
-    entryPoint: '/loom-studio?app=autopilot', // Exists
-    deployableTo: ['loom-studio', 'dashboard'], // Includes 'dashboard'
+    entryPoint: '/loom-studio?app=autopilot', 
+    deployableTo: ['loom-studio', 'dashboard'], 
     permissionsRequired: ['agent:execute', 'workflow:create'],
     createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date().toISOString(),
   },
   {
-    id: 'guardian_sec_v2.3', // SKIPPED due to systemInternal and Security category
+    id: 'guardian_sec_v2.3', 
     internalName: 'guardian-security-center',
     displayName: 'Guardian Security Center',
     icon: 'ShieldCheck',
@@ -62,17 +62,17 @@ export const mockMicroApps: MicroApp[] = [
     icon: 'RadioTower',
     description: 'Live overview of system health, agent activity, and key performance metrics.',
     category: 'Monitoring',
-    status: 'enabled', // UPDATED from 'beta'
+    status: 'enabled', 
     tags: ['monitoring', 'health', 'real-time', 'kpi'],
     agentDependencies: [],
     authRequired: true,
-    isVisible: true, // No change needed
+    isVisible: true, 
     requiresSubscription: false,
     monetization: null,
     flags: { requiresBetaFeature: true },
     version: '0.9.0-beta',
-    entryPoint: '/pulse', // Exists
-    deployableTo: ['dedicated-tab', 'dashboard'], // Includes 'dashboard'
+    entryPoint: '/pulse', 
+    deployableTo: ['dedicated-tab', 'dashboard'], 
     createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -83,99 +83,24 @@ export const mockMicroApps: MicroApp[] = [
     icon: 'TerminalSquare',
     description: 'Experimental tools and features for NexOS developers. Use with caution.',
     category: 'Development',
-    status: 'enabled', // UPDATED from 'dev-only'
+    status: 'enabled', 
     tags: ['experimental', 'debug', 'tools'],
     agentDependencies: [],
     authRequired: true,
-    isVisible: true, // UPDATED from false
+    isVisible: true, 
     requiresSubscription: false,
     monetization: null,
     flags: { isDevOnly: true },
     version: '0.1.0-alpha',
-    entryPoint: '/app/developer-sandbox', // UPDATED from undefined
-    deployableTo: ['dashboard'], // UPDATED from ['none']
+    entryPoint: '/app/developer-sandbox', 
+    deployableTo: ['dashboard'], 
     createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date().toISOString(),
   },
-  {
-    id: 'dashboard-widget-launchpad', // Not skipped: systemInternal but category 'Utilities'
-    internalName: 'dashboardLaunchpad',
-    displayName: 'Workspace Launchpad',
-    icon: 'Rocket',
-    description: 'Quickly launch common actions and studio environments.',
-    category: 'Utilities',
-    status: 'enabled', // No change needed
-    tags: ['dashboard', 'quick-actions', 'launcher'],
-    agentDependencies: [],
-    authRequired: false,
-    isVisible: true, // No change needed
-    monetization: null,
-    flags: { systemInternal: true },
-    version: '1.0.0',
-    entryPoint: '/launchpad', // Exists
-    deployableTo: ['dashboard'], // Includes 'dashboard'
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: 'dashboard-widget-activity-feed', // Not skipped: systemInternal but category 'Monitoring'
-    internalName: 'dashboardActivityFeed',
-    displayName: 'Recent Activity Feed',
-    icon: 'Activity',
-    description: 'Displays recent system and agent activities.',
-    category: 'Monitoring',
-    status: 'enabled', // No change needed
-    tags: ['logs', 'feed', 'events'],
-    agentDependencies: [],
-    authRequired: false,
-    isVisible: true, // No change needed
-    monetization: null,
-    flags: { systemInternal: true },
-    version: '1.0.0',
-    entryPoint: '/monitoring/activity-feed', // Exists
-    deployableTo: ['dashboard'], // Includes 'dashboard'
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: 'dashboard-widget-agent-presence', // Not skipped: systemInternal but category 'Monitoring'
-    internalName: 'dashboardAgentPresence',
-    displayName: 'Live Agent Presence',
-    icon: 'Cpu',
-    description: 'Shows the status and load of active AI agents.',
-    category: 'Monitoring',
-    status: 'enabled', // No change needed
-    tags: ['agents', 'monitoring', 'status'],
-    agentDependencies: [],
-    authRequired: false,
-    isVisible: true, // No change needed
-    monetization: null,
-    flags: { systemInternal: true },
-    version: '1.0.0',
-    entryPoint: '/monitoring/agent-presence', // Exists
-    deployableTo: ['dashboard'], // Includes 'dashboard'
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: 'dashboard-widget-available-apps', // Not skipped: systemInternal but category 'Discovery'
-    internalName: 'appDiscovery',
-    displayName: 'App Discovery',
-    icon: 'LayoutGrid',
-    description: 'Discover and launch available micro-applications.',
-    category: 'Discovery',
-    status: 'enabled', // No change needed
-    tags: ['apps', 'launchpad', 'marketplace'],
-    agentDependencies: [],
-    authRequired: false,
-    isVisible: true, // No change needed
-    monetization: null,
-    flags: { systemInternal: true },
-    version: '1.0.0',
-    entryPoint: '/explore', // Exists
-    deployableTo: ['dashboard'], // Includes 'dashboard'
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
+  // Removed dashboard widget entries:
+  // - dashboard-widget-launchpad
+  // - dashboard-widget-activity-feed
+  // - dashboard-widget-agent-presence
+  // - dashboard-widget-available-apps
 ];
     
