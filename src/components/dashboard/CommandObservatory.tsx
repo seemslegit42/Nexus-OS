@@ -15,7 +15,33 @@ import { WorkspaceGrid, type ZoneConfig } from '@/components/core/workspace-grid
 import { getDynamicImportFn } from '@/micro-apps/registry';
 import { MicroAppCard } from './MicroAppCard';
 
-const SystemSnapshotPlaceholder: React.FC = () => {
+// Helper function to get Lucide icons dynamically
+const getLucideIcon = (iconName: string | undefined, props?: any): React.ReactNode => {
+  const defaultProps = { className: "h-6 w-6 mb-1 text-primary opacity-80", ...props };
+  if (!iconName) return <Package {...defaultProps} />;
+  switch (iconName.toLowerCase()) {
+    case 'workflow': return <Workflow {...defaultProps} />;
+    case 'shieldcheck': return <ShieldCheck {...defaultProps} />;
+    case 'radiotower': return <RadioTower {...defaultProps} />;
+    case 'terminalsquare': return <TerminalSquare {...defaultProps} />;
+    case 'layoutdashboard': return <LayoutDashboard {...defaultProps} />;
+    case 'cpu': return <Cpu {...defaultProps} />;
+    case 'listchecks': return <ListChecks {...defaultProps} />;
+    case 'package': return <Package {...defaultProps} />;
+    case 'users': return <Users {...defaultProps} />;
+    case 'activity': return <Activity {...defaultProps} />;
+    default: return <Package {...defaultProps} />;
+  }
+};
+
+const getLucideIconSmall = (iconName: string | undefined, customClassName?: string): React.ReactNode => {
+  // Use a different default class for small icons if needed, or adjust props passed in.
+  return getLucideIcon(iconName, { className: cn("h-4 w-4", customClassName) }); // Removed mr-2 as it's context-dependent
+};
+
+
+// Define helper components before CommandObservatory
+const SystemSnapshotPlaceholder: React.FC = React.memo(() => {
   return (
     <Card className="h-full bg-[rgba(15,25,20,0.25)] border border-[rgba(0,255,162,0.15)] backdrop-blur-sm shadow-[0_4px_20px_rgba(0,255,162,0.1)] rounded-2xl">
       <CardHeader className="pb-2 pt-3 px-3">
@@ -32,34 +58,14 @@ const SystemSnapshotPlaceholder: React.FC = () => {
       </CardContent>
     </Card>
   );
-};
+});
+SystemSnapshotPlaceholder.displayName = 'SystemSnapshotPlaceholder';
 
-const getLucideIcon = (iconName: string | undefined, props?: any): React.ReactNode => {
-  const defaultProps = { className: "h-6 w-6 mb-1 text-primary opacity-80", ...props };
-  if (!iconName) return <Package {...defaultProps} />;
-  switch (iconName.toLowerCase()) {
-    case 'workflow': return <Workflow {...defaultProps} />;
-    case 'shieldcheck': return <ShieldCheck {...defaultProps} />;
-    case 'radiotower': return <RadioTower {...defaultProps} />;
-    case 'terminalsquare': return <TerminalSquare {...defaultProps} />;
-    case 'layoutdashboard': return <LayoutDashboard {...defaultProps} />;
-    case 'cpu': return <Cpu {...defaultProps} />;
-    case 'listchecks': return <ListChecks {...defaultProps} />;
-    case 'package': return <Package {...defaultProps} />;
-    case 'users': return <Users {...defaultProps} />;
-    default: return <Package {...defaultProps} />;
-  }
-};
-
-const getLucideIconSmall = (iconName: string | undefined, customClassName?: string): React.ReactNode => {
-  return getLucideIcon(iconName, { className: cn("h-4 w-4 mr-2", customClassName) });
-};
-
-// Moved MicroAppLauncherContent outside CommandObservatory
-const MicroAppLauncherContentInternal: React.FC<{
+interface MicroAppLauncherProps {
   appsToDisplay: MicroApp[];
   onLaunchApp: (app: MicroApp) => void;
-}> = React.memo(({ appsToDisplay, onLaunchApp }) => {
+}
+const MicroAppLauncherContentInternal: React.FC<MicroAppLauncherProps> = React.memo(({ appsToDisplay, onLaunchApp }) => {
   return (
     <Card className="h-full bg-transparent border-none shadow-none">
       <CardContent className="p-0 h-full">
@@ -95,8 +101,10 @@ const MicroAppLauncherContentInternal: React.FC<{
 });
 MicroAppLauncherContentInternal.displayName = 'MicroAppLauncherContentInternal';
 
-// Moved LaunchedAppDisplayContent outside CommandObservatory
-const LaunchedAppDisplayContentInternal: React.FC<{ currentApp: MicroApp | null }> = React.memo(({ currentApp }) => {
+interface LaunchedAppDisplayProps {
+  currentApp: MicroApp | null;
+}
+const LaunchedAppDisplayContentInternal: React.FC<LaunchedAppDisplayProps> = React.memo(({ currentApp }) => {
   if (!currentApp) {
     return (
       <div className="h-full flex flex-col items-center justify-center text-center p-4">
@@ -140,6 +148,10 @@ const LaunchedAppDisplayContentInternal: React.FC<{ currentApp: MicroApp | null 
 });
 LaunchedAppDisplayContentInternal.displayName = 'LaunchedAppDisplayContentInternal';
 
+// Memoized versions of imported static content components
+const MemoizedAgentPresenceGrid = React.memo(AgentPresenceGrid);
+const MemoizedLiveOrchestrationsFeed = React.memo(LiveOrchestrationsFeed);
+
 
 export default function CommandObservatory() {
   const [launchedApp, setLaunchedApp] = useState<MicroApp | null>(null);
@@ -159,40 +171,53 @@ export default function CommandObservatory() {
     setLaunchedApp(null);
   }, []);
 
+  // Memoize content elements to stabilize their references
+  const agentPresenceGridContent = useMemo(() => <MemoizedAgentPresenceGrid />, []);
+  const systemSnapshotContent = useMemo(() => <SystemSnapshotPlaceholder />, []); // Use already memoized component
+  const liveOrchestrationsFeedContent = useMemo(() => <MemoizedLiveOrchestrationsFeed />, []);
+
+  const microAppLauncherContent = useMemo(() => (
+    <MicroAppLauncherContentInternal appsToDisplay={dashboardMicroApps} onLaunchApp={handleLaunchApp} />
+  ), [dashboardMicroApps, handleLaunchApp]);
+
+  const launchedAppDisplayContent = useMemo(() => (
+    <LaunchedAppDisplayContentInternal currentApp={launchedApp} />
+  ), [launchedApp]);
+
   const zoneConfigs = useMemo((): ZoneConfig[] => [
     {
       id: "agentPresence",
       title: "Agent Presence",
-      icon: getLucideIconSmall("cpu"),
-      content: <AgentPresenceGrid />,
+      icon: getLucideIconSmall("cpu", "mr-2"),
+      content: agentPresenceGridContent,
       defaultLayout: { x: 0, y: 0, w: 4, h: 9, minW: 3, minH: 6 },
     },
     {
       id: "systemSnapshot",
       title: "System Snapshot",
-      icon: getLucideIconSmall("activity"),
-      content: <SystemSnapshotPlaceholder />,
+      icon: getLucideIconSmall("activity", "mr-2"),
+      content: systemSnapshotContent,
       defaultLayout: { x: 0, y: 9, w: 4, h: 7, minW: 3, minH: 4 },
     },
     {
       id: "microAppLauncher",
       title: "Micro-Apps",
-      icon: getLucideIconSmall("layoutdashboard"),
-      content: <MicroAppLauncherContentInternal appsToDisplay={dashboardMicroApps} onLaunchApp={handleLaunchApp} />,
+      icon: getLucideIconSmall("layoutdashboard", "mr-2"),
+      content: microAppLauncherContent,
       defaultLayout: { x: 0, y: 16, w: 4, h: 8, minW: 3, minH: 5 },
     },
     {
       id: "orchestrationFeed",
       title: "Live Orchestration Feed",
-      icon: getLucideIconSmall("listchecks"),
-      content: <LiveOrchestrationsFeed />,
+      icon: getLucideIconSmall("listchecks", "mr-2"),
+      content: liveOrchestrationsFeedContent,
       defaultLayout: { x: 4, y: 0, w: 8, h: 12, minW: 4, minH: 6 },
     },
     {
       id: "launchedAppDisplay",
       title: launchedApp ? `App: ${launchedApp.displayName}` : "Application View",
-      icon: launchedApp ? getLucideIconSmall(launchedApp.icon, '!mr-0') : <Package className="h-4 w-4" />,
-      content: <LaunchedAppDisplayContentInternal currentApp={launchedApp} />,
+      icon: launchedApp ? getLucideIconSmall(launchedApp.icon, 'mr-2') : <Package className="h-4 w-4 mr-2" />,
+      content: launchedAppDisplayContent,
       defaultLayout: { x: 4, y: 12, w: 8, h: 12, minW: 4, minH: 6 },
       canClose: !!launchedApp,
       onClose: launchedApp ? handleCloseApp : undefined,
@@ -200,7 +225,15 @@ export default function CommandObservatory() {
       canMinimize: !!launchedApp,
       canMaximize: !!launchedApp,
     }
-  ], [launchedApp, dashboardMicroApps, handleLaunchApp, handleCloseApp]);
+  ], [
+    launchedApp, 
+    handleCloseApp, 
+    agentPresenceGridContent, 
+    systemSnapshotContent, 
+    microAppLauncherContent, 
+    liveOrchestrationsFeedContent, 
+    launchedAppDisplayContent
+  ]);
 
   return (
     <div
@@ -219,3 +252,4 @@ export default function CommandObservatory() {
     </div>
   );
 }
+
