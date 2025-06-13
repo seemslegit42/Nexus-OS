@@ -13,6 +13,18 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Brain, CheckCircle, Cpu, DollarSign, DownloadCloud, FileText, GitBranch, MessageSquare, ShieldCheck, Sparkles, Tag, UserCircle, Users, Workflow } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
 
 const getLucideIcon = (iconName: string | undefined, props?: any): React.ReactNode => {
   const iconProps = { className: "h-5 w-5", ...props };
@@ -66,8 +78,20 @@ export default function AgentDetailPage() {
   const router = useRouter();
   const params = useParams();
   const agentId = typeof params.id === 'string' ? params.id : '';
+  const { toast } = useToast();
   
   const agent = useAgentMarketplaceStore(state => state.getAgentById(agentId));
+
+  const handleDeployConfirm = () => {
+    if (!agent) return;
+    // Placeholder for actual deployment logic
+    console.log(`Deployment initiated for agent: ${agent.name}`);
+    toast({
+      title: "Deployment Initiated",
+      description: `${agent.name} is now being deployed to your NexOS environment.`,
+      variant: "default", // Or "success" if you have that variant
+    });
+  };
 
   if (!agent) {
     return (
@@ -202,9 +226,30 @@ export default function AgentDetailPage() {
                 {agent.pricing?.detailsUrl && <Button variant="link" asChild className="p-0 h-auto text-primary"><Link href={agent.pricing.detailsUrl}>View full pricing details</Link></Button>}
               </CardContent>
               <CardFooter>
-                <Button size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                  <DownloadCloud className="mr-2 h-5 w-5" /> Deploy Agent
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                      <DownloadCloud className="mr-2 h-5 w-5" /> Deploy Agent
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle className="font-headline">Confirm Agent Deployment</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        You are about to deploy the agent: <span className="font-semibold text-primary">{agent.name}</span>.
+                        <br />
+                        Deploying this agent will add it to your NexOS environment. Please review its pricing details if applicable.
+                        Are you sure you want to proceed?
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDeployConfirm} className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                        Confirm & Deploy
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </CardFooter>
             </Card>
 
@@ -267,5 +312,6 @@ export default function AgentDetailPage() {
     </div>
   );
 }
+    
 
     
