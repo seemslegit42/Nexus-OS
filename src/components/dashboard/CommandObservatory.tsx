@@ -49,8 +49,8 @@ const getLucideIcon = (iconName: string | undefined, props?: any): React.ReactNo
   }
 };
 
-const getLucideIconSmall = (iconName: string | undefined): React.ReactNode => {
-  return getLucideIcon(iconName, { className: "h-4 w-4 mr-2" });
+const getLucideIconSmall = (iconName: string | undefined, customClassName?: string): React.ReactNode => {
+  return getLucideIcon(iconName, { className: cn("h-4 w-4 mr-2", customClassName) });
 };
 
 export default function CommandObservatory() {
@@ -100,7 +100,7 @@ export default function CommandObservatory() {
                 <div className="text-center py-6 text-sm text-muted-foreground h-full flex flex-col items-center justify-center">
                 <PackageSearch className="mx-auto h-10 w-10 opacity-50 mb-2" />
                 No micro-apps available.
-                <p className="text-xs mt-1">(Check Admin settings)</p>
+                <p className="text-xs mt-1">(Check Admin settings or deploy some!)</p>
                 </div>
             )}
            </div>
@@ -109,8 +109,8 @@ export default function CommandObservatory() {
     </Card>
   );
 
-  const LaunchedAppDisplayContent: React.FC = () => {
-    if (!launchedApp) {
+  const LaunchedAppDisplayContent: React.FC<{ currentApp: MicroApp | null }> = ({ currentApp }) => {
+    if (!currentApp) {
       return (
         <div className="h-full flex flex-col items-center justify-center text-center p-4">
           <LayoutDashboard className="h-12 w-12 text-muted-foreground/50 mb-3" />
@@ -123,17 +123,16 @@ export default function CommandObservatory() {
          <Card
             className="h-full flex flex-col relative bg-transparent border-none shadow-none"
         >
-            {/* Header is part of the Zone, this is just content */}
             <CardContent className="flex-grow p-3 overflow-y-auto">
             <div className="mt-1 p-3 bg-black/20 rounded-md border border-primary/15">
                 <h4 className="text-xs font-semibold text-primary mb-1.5">Micro-App Details:</h4>
-                <p className="text-xs text-muted-foreground mb-0.5"><strong>ID:</strong> {launchedApp.id}</p>
-                <p className="text-xs text-muted-foreground mb-0.5"><strong>Description:</strong> {launchedApp.description || "No description available."}</p>
-                <p className="text-xs text-muted-foreground"><strong>Entry Point:</strong> <code className="text-primary/80 bg-black/30 px-1 py-0.5 rounded-sm text-[11px]">{launchedApp.entryPoint || 'Not configured'}</code></p>
+                <p className="text-xs text-muted-foreground mb-0.5"><strong>ID:</strong> {currentApp.id}</p>
+                <p className="text-xs text-muted-foreground mb-0.5"><strong>Description:</strong> {currentApp.description || "No description available."}</p>
+                <p className="text-xs text-muted-foreground"><strong>Entry Point:</strong> <code className="text-primary/80 bg-black/30 px-1 py-0.5 rounded-sm text-[11px]">{currentApp.entryPoint || 'Not configured'}</code></p>
             </div>
-            {/* Actual app UI would be embedded here, this text is just to confirm dynamic data is used for description etc. */}
             <div className="mt-4 text-center text-muted-foreground">
-                Content for "{launchedApp.displayName}" would be rendered here.
+                Content for "{currentApp.displayName}" (via entry: {currentApp.entryPoint || 'N/A'}) would be rendered here.
+                <p className="text-xs mt-1">This is a placeholder for the actual micro-app UI.</p>
             </div>
             </CardContent>
         </Card>
@@ -172,14 +171,15 @@ export default function CommandObservatory() {
     },
     {
       id: "launchedAppDisplay",
-      title: launchedApp ? `Launched: ${launchedApp.displayName}` : "Application View",
-      icon: launchedApp ? getLucideIconSmall(launchedApp.icon) : <Package className="h-4 w-4 mr-2" />,
-      content: <LaunchedAppDisplayContent />,
+      title: launchedApp ? `App: ${launchedApp.displayName}` : "Application View",
+      icon: launchedApp ? getLucideIconSmall(launchedApp.icon, '!mr-0') : <Package className="h-4 w-4" />, // Removed mr-2 for the dynamic icon
+      content: <LaunchedAppDisplayContent currentApp={launchedApp} />,
       defaultLayout: { x: 4, y: 12, w: 8, h: 12, minW: 4, minH: 6 },
       canClose: !!launchedApp,
       onClose: launchedApp ? handleCloseApp : undefined,
-      canPin: false,
+      canPin: false, // Usually app views are not pinnable in this dynamic context
       canMinimize: !!launchedApp,
+      canMaximize: !!launchedApp, // Allow maximizing the launched app view
     }
   ], [launchedApp, dashboardMicroApps, handleLaunchApp, handleCloseApp]);
 
@@ -194,11 +194,10 @@ export default function CommandObservatory() {
       <WorkspaceGrid
         zoneConfigs={zoneConfigs}
         className="flex-grow p-2 md:p-3"
-        storageKey="commandObservatoryLayout_v2"
+        storageKey="commandObservatoryLayout_v3" // Incremented version for layout changes
         cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }}
-        rowHeight={20}
+        rowHeight={20} // Consider adjusting if content needs more/less vertical space per unit
       />
     </div>
   );
 }
-
