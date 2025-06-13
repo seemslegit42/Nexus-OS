@@ -14,6 +14,8 @@ import type { MicroApp } from '@/types/micro-app';
 import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
 
 const SystemSnapshotPlaceholder: React.FC = () => {
+  // This component still uses hardcoded data for system vitals.
+  // If "100% real data" applies to this as well, it needs its own dynamic data source.
   return (
     <Card className="h-auto bg-[rgba(15,25,20,0.25)] border border-[rgba(0,255,162,0.15)] backdrop-blur-sm shadow-[0_4px_20px_rgba(0,255,162,0.1)] rounded-2xl">
       <CardHeader className="pb-2 pt-3 px-3">
@@ -46,14 +48,15 @@ const getLucideIcon = (iconName: string | undefined): React.ReactNode => {
       return <TerminalSquare {...iconProps} />;
     case 'layoutdashboard':
       return <LayoutDashboard {...iconProps} />;
+    // Add more cases as needed for other icons used by micro-apps
     default:
-      return <Package {...iconProps} />;
+      return <Package {...iconProps} />; // Default icon
   }
 };
 
 const getLucideIconSmall = (iconName: string | undefined): React.ReactNode => {
   const iconProps = { className: "h-4 w-4 mr-2" };
-   if (!iconName) return <Package {...iconProps} />;
+   if (!iconName) return <Package {...iconProps} />; // Default icon if name is undefined
   switch (iconName.toLowerCase()) {
     case 'workflow':
       return <Workflow {...iconProps} />;
@@ -65,8 +68,9 @@ const getLucideIconSmall = (iconName: string | undefined): React.ReactNode => {
       return <TerminalSquare {...iconProps} />;
     case 'layoutdashboard':
       return <LayoutDashboard {...iconProps} />;
+    // Add more cases as needed
     default:
-      return <Package {...iconProps} />;
+      return <Package {...iconProps} />; // Default icon
   }
 };
 
@@ -172,17 +176,13 @@ export default function CommandObservatory() {
                   </Button>
                 </CardHeader>
                 <CardContent className="flex-grow p-3 overflow-y-auto">
-                  <p className="text-sm text-[rgba(220,255,240,0.9)]">
-                    Placeholder content for <span className="font-semibold">{launchedApp.displayName}</span>.
-                  </p>
-                  <p className="text-xs text-[rgba(220,255,240,0.7)] mt-1">
-                    This area will display the actual micro-application's interface.
-                    The entry point for this app is: <code className="text-primary/80 bg-black/30 px-1 rounded-sm">{launchedApp.entryPoint || 'Not configured'}</code>
-                  </p>
-                   <div className="mt-4 p-4 bg-black/20 rounded-md border border-primary/20">
-                      <h4 className="text-xs font-semibold text-primary mb-1">Micro-App View Details:</h4>
-                      <p className="text-xs text-muted-foreground">ID: {launchedApp.id}</p>
-                      <p className="text-xs text-muted-foreground">Description: {launchedApp.description || "No description available."}</p>
+                  {/* Removed explicit placeholder text. The section below shows actual data about the app. */}
+                  {/* The actual UI of the micro-app would be rendered here in a future implementation. */}
+                  <div className="mt-1 p-3 bg-black/20 rounded-md border border-primary/15">
+                      <h4 className="text-xs font-semibold text-primary mb-1.5">Micro-App Details:</h4>
+                      <p className="text-xs text-muted-foreground mb-0.5"><strong>ID:</strong> {launchedApp.id}</p>
+                      <p className="text-xs text-muted-foreground mb-0.5"><strong>Description:</strong> {launchedApp.description || "No description available."}</p>
+                      <p className="text-xs text-muted-foreground"><strong>Entry Point:</strong> <code className="text-primary/80 bg-black/30 px-1 py-0.5 rounded-sm text-[11px]">{launchedApp.entryPoint || 'Not configured'}</code></p>
                   </div>
                 </CardContent>
               </Card>
