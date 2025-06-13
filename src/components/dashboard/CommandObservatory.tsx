@@ -1,4 +1,3 @@
-
 // src/components/dashboard/CommandObservatory.tsx
 'use client';
 

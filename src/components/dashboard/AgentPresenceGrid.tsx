@@ -1,4 +1,3 @@
-
 // src/components/dashboard/AgentPresenceGrid.tsx
 'use client';
 
@@ -6,6 +5,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Cpu, Zap, Database, CheckCircle, XCircle, AlertTriangle, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -53,7 +53,7 @@ const mockAgentsData: AgentInfo[] = [
     name: 'ReflexRoutine_Bot',
     personaName: 'Automated Responder',
     status: 'Error',
-    workload: 5, // Even in error, it might have residual load
+    workload: 5,
     activeOrchestrations: ['Email_Triage_Failed'],
     memoryPreview: { used: '256MB', total: '1GB', summary: 'Rule engine, NLP model (partially loaded).' },
   },
