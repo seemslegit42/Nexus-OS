@@ -102,7 +102,7 @@ export const mockMicroApps: MicroApp[] = [
     updatedAt: new Date().toISOString(),
   },
   {
-    id: 'smart_lead_tracker_v1', // Keeping ID consistent for now
+    id: 'smart-lead-tracker', // Consistent ID
     internalName: 'smart-lead-tracker',
     displayName: 'Smart Lead Tracker',
     icon: 'Users', // Updated icon
@@ -124,5 +124,27 @@ export const mockMicroApps: MicroApp[] = [
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
+  {
+    id: 'security-surface-scan-app', // Unique ID for the new app
+    internalName: 'security-surface-scan',
+    displayName: 'Security Surface Scan',
+    icon: 'ShieldAlert', // Example Lucide icon
+    description: 'Perform security surface scans on domains or URLs.',
+    category: 'Security',
+    status: 'enabled',
+    tags: ['security', 'scan', 'vulnerability', 'web'],
+    agentDependencies: [], // Can add specific security agents if needed
+    authRequired: true,
+    isVisible: true, // Make it visible on the dashboard
+    requiresSubscription: false,
+    monetization: null,
+    flags: { isFeatured: false },
+    version: '1.0.0',
+    entryPoint: '/micro-apps/security-surface-scan-app', // Convention for micro-app entry points
+    deployableTo: ['dashboard'], // Deployable to the main dashboard
+    defaultLayout: { lg: { x: 4, y: 4, w: 4, h: 6, minW: 3, minH: 4 } }, // Example layout
+    permissionsRequired: ['network:scan'], // Example permission
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
 ];
-
