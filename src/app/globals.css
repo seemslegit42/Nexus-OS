@@ -1,119 +1,165 @@
 
-@import 'react-grid-layout/css/styles.css';
-@import 'react-resizable/css/styles.css';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    /* Fallback theme (currently not directly used as .dark is applied) */
-    --background: 220 15% 15%;
-    --foreground: 160 20% 80%;
-
-    --card: 220 15% 20%;
-    --card-foreground: 160 20% 75%;
-
-    --popover: 220 15% 22%;
-    --popover-foreground: 160 20% 75%;
-
-    --primary: 160 55% 50%;
-    --primary-foreground: 160 20% 10%;
-
-    --secondary: 170 40% 40%;
-    --secondary-foreground: 170 20% 85%;
-
-    --muted: 220 10% 25%;
-    --muted-foreground: 170 15% 65%;
-
-    --accent: 150 70% 60%;
-    --accent-foreground: 150 20% 15%;
-
-    --destructive: 0 60% 55%;
-    --destructive-foreground: 0 0% 95%;
-
-    --border: 170 25% 40%;
-    --input: 220 15% 20%;
-    --ring: 150 70% 60%;
-
-    --radius: 1rem;
-
-    /* Chart Colors */
-    --chart-1: 170 45% 48%;
-    --chart-2: 170 35% 60%;
-    --chart-3: 165 50% 35%;
-    --chart-4: 150 40% 50%;
-    --chart-5: 210 15% 70%;
-
-    /* Scrollbar Variables */
-    --scrollbar-track-bg: hsl(var(--muted));
-    --scrollbar-thumb-bg: hsl(var(--secondary));
-    --scrollbar-thumb-hover-bg: hsl(var(--primary));
-    --scrollbar-thumb-border-color: hsl(var(--background));
-  }
-
-  .dark {
-    /* NexOS Dark Theme - Original State */
-    --background: 220 15% 15%; /* Dark bluish-gray */
-    --foreground: 160 20% 80%; /* Light teal/cyan text */
-
-    --card-bg-base: 220 15% 18% / 0.85; /* Slightly lighter dark bluish-gray, with opacity */
-    --popover-bg-base: 220 15% 20% / 0.85; /* Similar to card */
-
-    --card: var(--card-bg-base);
-    --card-foreground: hsl(var(--foreground));
-
-    --popover: var(--popover-bg-base);
-    --popover-foreground: hsl(var(--foreground));
-
-    --primary: 160 55% 50%; /* Main Interactive Jade */
-    --primary-foreground: 160 20% 10%; /* Very Dark Jade for text on primary */
-
-    --secondary: 170 40% 35%; /* Darker, desaturated Jade/Teal */
-    --secondary-foreground: 170 20% 75%; /* Lighter text for on-secondary */
-
-    --muted: 220 10% 22%; /* Darker gray */
-    --muted-foreground: 170 15% 60%; /* Medium-light teal for muted text */
-
-    --accent: 150 70% 55%; /* Vivid Cyan/Turquoise accent */
-    --accent-foreground: 150 20% 10%; /* Dark text for on-accent */
-
-    --destructive: 0 60% 50%; /* Standard Red */
-    --destructive-foreground: 0 0% 95%; /* White text on destructive */
-
-    --border: 170 25% 30% / 0.65; /* Tealish border, somewhat translucent */
-    --input: 220 15% 18% / 0.75; /* Dark, translucent input backgrounds */
-    --ring: hsl(var(--accent)); /* Cyan/Turquoise for focus rings */
-
-    --radius: 1rem;
-
-    /* Chart Colors - Harmonized with Dark Jade/Cyan */
-    --chart-1: hsl(var(--primary));   /* Jade */
-    --chart-2: hsl(var(--accent));    /* Cyan/Turquoise */
-    --chart-3: 170 40% 65%;           /* Lighter Teal */
-    --chart-4: 150 50% 70%;            /* Lighter Cyan */
-    --chart-5: 210 15% 70%;           /* Neutral Gray for text/lines */
-
-    /* Scrollbar Variables - Dark Theme */
-    --scrollbar-track-bg: hsl(var(--background) / 0.6); /* Semi-transparent dark background */
-    --scrollbar-thumb-bg: hsl(var(--muted-foreground) / 0.3); /* Muted foreground thumb, more translucent */
-    --scrollbar-thumb-hover-bg: hsl(var(--muted-foreground) / 0.5); /* Muted foreground thumb on hover, less translucent */
-    --scrollbar-thumb-border-color: hsl(var(--background) / 0.6); /* Match track for seamless look */
-  }
+/* ========== Base Layer Reset ========== */
+html, body {
+  @apply bg-black text-white antialiased overflow-x-hidden;
+  background-color: #050505; /* softer than #000 */
+  font-family: 'Lexend', 'Comfortaa', sans-serif;
+  scroll-behavior: smooth;
 }
 
+/* ========== Custom Root Theme Tokens ========== */
+:root {
+  --jade: #00ffa2;
+  --jade-soft: rgba(0, 255, 162, 0.2);
+  --jade-glow: 0 0 12px rgba(0, 255, 162, 0.5);
+  --glass-bg: rgba(15, 25, 20, 0.25);
+  --glass-border: rgba(0, 255, 162, 0.15);
+  --text-soft: rgba(255, 255, 255, 0.85);
+  --text-muted: rgba(200, 255, 220, 0.6);
+  --blur: blur(16px);
+  --shadow-soft: 0 4px 20px rgba(0, 255, 162, 0.1);
+
+  /* ShadCN Compatibility - Map new tokens to expected ShadCN variables */
+  /* These are general mappings; specific components might need further tweaks if they use more granular ShadCN variables not covered here. */
+  
+  /* Backgrounds */
+  --background: 5 5% 5%; /* #0C0C0C from #050505 */
+  --foreground: 0 0% 100%; /* white */
+  
+  --card: 140 25% 8%; /* Approx from --glass-bg: rgba(15, 25, 20, 0.25) -> dark green/gray */
+  --card-foreground: 0 0% 95%; /* --text-soft */
+  
+  --popover: 140 25% 10%; /* Slightly lighter than card */
+  --popover-foreground: 0 0% 95%; /* --text-soft */
+
+  /* Primary Interactive Elements (Jade) */
+  --primary: 159 100% 50%; /* --jade: #00ffa2 */
+  --primary-foreground: 159 100% 10%; /* Dark green for text on jade */
+
+  /* Secondary Elements (Subtle Jade/Glass) */
+  --secondary: 159 100% 50%; /* Using jade again, as there's no direct secondary color. Can be adjusted. */
+  --secondary-foreground: 159 100% 10%; 
+
+  /* Muted Text & Borders */
+  --muted: 140 40% 25%; /* --text-muted mapping to a muted bg */
+  --muted-foreground: 140 40% 70%; /* --text-muted */
+  
+  --accent: 159 100% 50%; /* Using jade as accent, can be changed if a different accent color is desired */
+  --accent-foreground: 159 100% 10%;
+  
+  --destructive: 0 84% 60%; /* Standard red for destructive actions */
+  --destructive-foreground: 0 0% 98%;
+
+  /* Borders & Inputs */
+  --border: 159 100% 50% / 0.15; /* --glass-border: rgba(0, 255, 162, 0.15) */
+  --input: 140 25% 8% / 0.5; /* Darker version of glass-bg for inputs */
+  --ring: 159 100% 50%; /* Jade for focus rings */
+
+  --radius: 1rem; /* Keep existing radius or adjust if needed */
+
+  /* Chart Colors - Harmonized with Jade */
+  --chart-1: hsl(var(--primary));
+  --chart-2: 159 80% 60%; /* Lighter Jade */
+  --chart-3: 159 60% 40%; /* Darker Jade */
+  --chart-4: 159 70% 70%; /* Softer Jade */
+  --chart-5: 140 20% 80%; /* Neutral for lines/text */
+
+  /* Scrollbar Variables - Dark Theme to match */
+  --scrollbar-track-bg: hsl(var(--background) / 0.6);
+  --scrollbar-thumb-bg: hsl(var(--muted-foreground) / 0.3);
+  --scrollbar-thumb-hover-bg: hsl(var(--muted-foreground) / 0.5);
+  --scrollbar-thumb-border-color: hsl(var(--background) / 0.6);
+}
+
+
+/* Ensure .dark class is used if ShadCN components rely on it for dark mode styling, even if body is styled directly */
+.dark {
+  /* This block can be empty if all styles are handled by :root and direct body styling.
+     Or, it can reiterate the :root variables if ShadCN components specifically look for .dark context.
+     For simplicity, we'll assume :root is sufficient for now.
+     If components don't pick up the theme, populate this with the :root variables.
+  */
+}
+
+/* Ensure Tailwind base styles use our custom properties for background and text */
 @layer base {
-  * {
-    @apply border-border;
-  }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  * {
+    @apply border-border; /* Default border for components */
   }
 }
 
-/* Custom styles for react-grid-layout */
+
+/* ========== Global Utility Layer ========== */
+.glass-panel {
+  backdrop-filter: var(--blur);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-soft);
+  border-radius: 1.5rem;
+}
+
+.glow-jade {
+  box-shadow: var(--jade-glow);
+  border-color: var(--jade-soft);
+}
+
+.text-glass {
+  color: var(--text-soft);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+/* ========== Buttons & Interactions ========== */
+.button-glassy {
+  @apply px-4 py-2 rounded-xl text-white font-medium transition-all;
+  background: rgba(0, 255, 162, 0.1);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-soft);
+}
+
+.button-glassy:hover {
+  background: rgba(0, 255, 162, 0.2);
+  box-shadow: 0 0 8px var(--jade-soft);
+}
+
+/* ========== Animations & Motion ========== */
+@keyframes pulseJade {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 162, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(0, 255, 162, 0); }
+}
+
+.animate-pulse-jade {
+  animation: pulseJade 2s infinite;
+}
+
+.fade-in-glass {
+  animation: fadeGlassIn 0.6s ease-out forwards;
+}
+
+@keyframes fadeGlassIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    backdrop-filter: var(--blur);
+  }
+}
+
+/* React Grid Layout specific styles - keep if RGL is used */
 .react-grid-layout {
   position: relative;
   transition: height 200ms ease;
@@ -141,7 +187,7 @@
 }
 
 .react-grid-item.react-grid-placeholder {
-  background: hsl(var(--primary) / 0.2);
+  background: hsl(var(--primary) / 0.2); /* Use primary for placeholder */
   opacity: 0.5;
   transition-duration: 100ms;
   z-index: 2;
@@ -151,7 +197,7 @@
   -o-user-select: none;
   user-select: none;
   border-radius: var(--radius);
-  border: 1px dashed hsl(var(--primary) / 0.4);
+  border: 1px dashed hsl(var(--primary) / 0.4); /* Use primary */
   backdrop-filter: blur(2px);
 }
 
@@ -179,41 +225,40 @@
   opacity: 1;
 }
 
-
 .react-resizable-hide > .react-resizable-handle {
   display: none;
 }
 
-/* Custom Scrollbar Styles */
+/* Custom Scrollbar Styles using new tokens */
 @layer utilities {
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: var(--scrollbar-track-bg);
+    background: var(--scrollbar-track-bg); /* Uses new token */
     border-radius: 10px;
   }
   ::-webkit-scrollbar-thumb {
-    background-color: var(--scrollbar-thumb-bg);
+    background-color: var(--scrollbar-thumb-bg); /* Uses new token */
     border-radius: 10px;
-    border: 2px solid var(--scrollbar-thumb-border-color);
+    border: 2px solid var(--scrollbar-thumb-border-color); /* Uses new token */
     background-clip: padding-box;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background-color: var(--scrollbar-thumb-hover-bg);
-    border-color: var(--scrollbar-thumb-border-color);
+    background-color: var(--scrollbar-thumb-hover-bg); /* Uses new token */
+    border-color: var(--scrollbar-thumb-border-color); /* Uses new token */
   }
   ::-webkit-scrollbar-corner {
     background: transparent;
   }
   * {
     scrollbar-width: thin;
-    scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg);
+    scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg); /* Uses new tokens */
   }
 }
 
-/* Zone Shimmer Border */
+/* Zone Shimmer Border - keep if used, make sure accent is defined */
 @layer utilities {
   .zone-shimmer-border {
     position: relative;
@@ -230,17 +275,18 @@
       transparent,
       transparent,
       transparent,
-      hsl(var(--accent) / 0.3), /* Gold accent for shimmer on light theme */
-      hsl(var(--primary) / 0.2),  /* Jade primary color */
+      hsl(var(--accent) / 0.3), /* Uses mapped accent */
+      hsl(var(--primary) / 0.2),  /* Uses mapped primary */
       transparent,
       transparent
     );
     animation: shimmer 4s linear infinite;
-    z-index: -1;
-    border-radius: inherit;
+    z-index: -1; /* Ensure it's behind content */
+    border-radius: inherit; /* Inherit border-radius from parent */
   }
+  /* Ensure direct children of shimmer border are positioned above the pseudo-element */
   .zone-shimmer-border > * {
-    position: relative;
+    position: relative; 
     z-index: 1;
   }
 }
