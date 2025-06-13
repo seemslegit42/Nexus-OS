@@ -9,7 +9,7 @@ import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
 import type { MicroApp } from '@/types/micro-app';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { Badge } from "@/components/ui/badge"; // Ensured Badge is imported
+import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -20,7 +20,7 @@ const iconMap: Record<string, ReactNode> = {
   Cpu: <Cpu className="h-5 w-5" />,
   LayoutGrid: <LayoutGrid className="h-5 w-5" />,
   Package: <PackageIconLucide className="h-5 w-5" />,
-  Workflow: <WorkflowIcon className="h-5 w-5" />, // Ensure WorkflowIcon is mapped if 'Workflow' is an icon key
+  Workflow: <WorkflowIcon className="h-5 w-5" />,
   ShieldCheck: <ShieldCheck className="h-5 w-5" />,
   RadioTower: <RadioTower className="h-5 w-5" />,
   TerminalSquare: <TerminalSquare className="h-5 w-5" />,
@@ -35,7 +35,6 @@ interface MicroAppCardProps {
 function MicroAppCard({ app, userHasActiveSubscription }: MicroAppCardProps) {
   const isGated = app.requiresSubscription && !userHasActiveSubscription;
   const effectiveHref = isGated ? "/plans" : (app.entryPoint || "#");
-  // Ensure app.icon exists and is a valid key in iconMap, otherwise provide a default
   const iconNode = app.icon && iconMap[app.icon] ? iconMap[app.icon] : <PackageIconLucide className="h-5 w-5 text-primary" />;
 
 
@@ -54,10 +53,22 @@ function MicroAppCard({ app, userHasActiveSubscription }: MicroAppCardProps) {
         <CardContent className="flex-grow px-4 pb-3 flex flex-col">
           <p className="text-xs text-muted-foreground mb-2 line-clamp-2 flex-grow">{app.description}</p>
           <div className="flex items-center justify-between mt-auto pt-2 border-t border-border/50">
-             <p className={cn("text-xs font-semibold", isGated ? "text-yellow-600 dark:text-yellow-400" : "text-primary")}>
+             <p className={cn(
+                "text-xs font-semibold", 
+                isGated ? "text-yellow-600 dark:text-yellow-400" : "text-primary"
+              )}>
                 {isGated ? "Upgrade Plan" : "Launch App"}
             </p>
-            <Badge variant={app.status === 'beta' ? 'default' : 'outline'} className={cn("text-[10px]", app.status === 'beta' && "bg-blue-500/80 text-white")}>{app.category}</Badge>
+            <Badge 
+              variant={isGated ? 'outline' : (app.status === 'beta' ? 'default' : 'outline')} 
+              className={cn(
+                "text-[10px]", 
+                app.status === 'beta' && !isGated && "bg-blue-500/80 text-white dark:bg-blue-600/80",
+                isGated && "text-yellow-600 border-yellow-500/60 dark:text-yellow-400"
+              )}
+            >
+              {app.category}
+            </Badge>
           </div>
         </CardContent>
       </Card>
