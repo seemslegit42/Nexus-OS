@@ -3,32 +3,52 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Rocket } from 'lucide-react';
+import { Rocket, Settings } from 'lucide-react'; // Added Settings icon
 import { cn } from '@/lib/utils';
+import type { MicroAppStatus } from '@/stores/micro-app-registry.store'; // Assuming status type is exported
 
 interface MicroAppCardProps {
   id: string;
   name: string;
   description: string;
   onLaunch: (id: string) => void;
+  onConfigure?: (id: string) => void; // Optional configure callback
   tags?: string[];
   metricPreview?: string;
   icon?: React.ReactNode;
+  status?: MicroAppStatus; // Optional status prop
   className?: string;
 }
+
+// Helper to get appropriate badge variant for status
+const getStatusBadgeStyling = (status?: MicroAppStatus): { variant: 'default' | 'secondary' | 'destructive' | 'outline', className: string } => {
+  switch (status) {
+    case 'enabled': return { variant: 'default', className: 'bg-green-500/80 text-white dark:bg-green-600/80' };
+    case 'disabled': return { variant: 'secondary', className: 'bg-gray-400/80 text-gray-800 dark:bg-gray-600/80 dark:text-gray-200' };
+    case 'dev-only': return { variant: 'outline', className: 'border-yellow-500/80 text-yellow-600 dark:border-yellow-500/60 dark:text-yellow-400' };
+    case 'archived': return { variant: 'destructive', className: 'bg-red-700/80 text-white dark:bg-red-800/80' };
+    case 'beta': return { variant: 'default', className: 'bg-blue-500/80 text-white dark:bg-blue-600/80' };
+    default: return { variant: 'outline', className: 'border-border' };
+  }
+};
+
 
 export const MicroAppCard: React.FC<MicroAppCardProps> = ({
   id,
   name,
   description,
   onLaunch,
+  onConfigure,
   tags,
   metricPreview,
   icon,
+  status,
   className,
 }) => {
+  const statusStyling = getStatusBadgeStyling(status);
+
   return (
     <Card
         className={cn(
@@ -36,7 +56,7 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
             className
         )}
     >
-      <CardHeader className="p-0 mb-2">
+      <CardHeader className="p-0 mb-2 relative"> {/* Added relative for status badge positioning */}
         <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
                 {icon ? (
@@ -48,6 +68,11 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
                     {name}
                 </CardTitle>
             </div>
+            {status && (
+              <Badge variant={statusStyling.variant} className={cn("text-[9px] h-5 px-1.5 absolute top-0 right-0 transform translate-x-1 -translate-y-1", statusStyling.className)}>
+                {status}
+              </Badge>
+            )}
         </div>
       </CardHeader>
       <CardContent className="p-0 flex-grow">
@@ -59,24 +84,41 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
         )}
         {tags && tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-2">
-            {tags.slice(0, 3).map((tag) => ( // Show max 3 tags
+            {tags.slice(0, 3).map((tag) => (
               <Badge key={tag} variant="secondary" className="text-[10px] bg-primary/10 text-primary/90 border-primary/20">
                 {tag}
               </Badge>
             ))}
+            {tags.length > 3 && (
+                <Badge variant="secondary" className="text-[10px] bg-muted/50 text-muted-foreground border-border/50">
+                    +{tags.length - 3}
+                </Badge>
+            )}
           </div>
         )}
       </CardContent>
-      <div className="mt-auto pt-2">
+      <CardFooter className="mt-auto pt-2 p-0 flex gap-2"> {/* Use CardFooter for actions */}
         <Button
           onClick={() => onLaunch(id)}
-          className="w-full h-8 text-xs bg-primary/15 hover:bg-primary/25 text-primary border border-primary/30 hover:border-primary/50 group-hover:shadow-[0_0_12px_hsl(var(--primary)/0.3)] transition-all"
+          className="flex-1 h-8 text-xs bg-primary/15 hover:bg-primary/25 text-primary border border-primary/30 hover:border-primary/50 group-hover:shadow-[0_0_12px_hsl(var(--primary)/0.3)] transition-all"
           aria-label={`Launch ${name}`}
         >
           <Rocket className="mr-1.5 h-3.5 w-3.5" />
           Launch
         </Button>
-      </div>
+        {onConfigure && (
+          <Button
+            onClick={() => onConfigure(id)}
+            variant="outline"
+            size="sm" // Ensure consistent size
+            className="h-8 text-xs bg-card/50 border-border/50 hover:bg-muted/70 text-muted-foreground hover:text-foreground"
+            aria-label={`Configure ${name}`}
+          >
+            <Settings className="mr-1.5 h-3.5 w-3.5" />
+            Configure
+          </Button>
+        )}
+      </CardFooter>
     </Card>
   );
 };
