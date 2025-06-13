@@ -5,7 +5,6 @@
 import React, { useState, useMemo, useCallback, Suspense, lazy } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Activity, LayoutDashboard, Workflow, ShieldCheck, RadioTower, X as CloseIcon, ExternalLink, Package, TerminalSquare, PackageSearch, Cpu, ListChecks, Loader2, Users } from 'lucide-react';
 import LiveOrchestrationsFeed from './LiveOrchestrationsFeed';
@@ -91,7 +90,8 @@ export default function CommandObservatory() {
                       name={app.displayName}
                       description={app.description}
                       onLaunch={() => handleLaunchApp(app)}
-                      tags={app.tags?.slice(0, 2)}
+                      tags={app.tags?.slice(0, 2)} // Passing tags
+                      // metricPreview can be added if app.metricPreview exists
                       icon={getLucideIcon(app.icon, { className: "h-5 w-5 text-primary group-hover:text-accent transition-colors" })}
                       className="aspect-auto min-h-[150px]"
                     />
@@ -190,12 +190,12 @@ export default function CommandObservatory() {
       content: <LaunchedAppDisplayContent currentApp={launchedApp} />,
       defaultLayout: { x: 4, y: 12, w: 8, h: 12, minW: 4, minH: 6 },
       canClose: !!launchedApp,
-      onClose: launchedApp ? handleCloseApp : undefined,
+      onClose: launchedApp ? handleCloseApp : undefined, // Only allow close if an app is launched
       canPin: false, 
-      canMinimize: !!launchedApp,
-      canMaximize: !!launchedApp, 
+      canMinimize: !!launchedApp, // Allow minimize if an app is launched
+      canMaximize: !!launchedApp, // Allow maximize if an app is launched
     }
-  ], [launchedApp, dashboardMicroApps, handleLaunchApp, handleCloseApp]);
+  ], [launchedApp, dashboardMicroApps, handleLaunchApp, handleCloseApp]); // dashboardMicroApps added to dependency array
 
   return (
     <div
@@ -207,9 +207,9 @@ export default function CommandObservatory() {
       <WorkspaceGrid
         zoneConfigs={zoneConfigs}
         className="flex-grow p-2 md:p-3"
-        storageKey="commandObservatoryLayout_v3"
+        storageKey="commandObservatoryLayout_v3" // Consider updating storageKey if layout structure changes significantly
         cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }}
-        rowHeight={20}
+        rowHeight={20} // Adjust row height as needed
       />
     </div>
   );
