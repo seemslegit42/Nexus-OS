@@ -164,7 +164,7 @@ function LogStreamFilterContent(): ReactNode {
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground whitespace-nowrap py-1.5">{log.type}</TableCell>
                     <TableCell className="text-xs text-center py-1.5">
-                        <Button variant="ghost" size="icon" className="h-6 w-6"><Eye className="h-3.5 w-3.5"/></Button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7"><Eye className="h-4 w-4"/></Button>
                     </TableCell>
                 </TableRow>
                 ))}

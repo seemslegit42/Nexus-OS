@@ -38,8 +38,8 @@ interface ZoneControlsProps {
   onViewLogs?: (zoneId: string, zoneTitle: string) => void;
 }
 
-const BASE_BUTTON_CLASS = "relative h-6 w-6 p-1 rounded-full border border-white/10 bg-black/20 backdrop-blur-sm shadow-md focus:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:opacity-30 disabled:pointer-events-none transition-all duration-200 ease-in-out overflow-hidden group";
-const ICON_BASE_CLASS = "h-3.5 w-3.5 transition-all duration-200 ease-in-out";
+const BASE_BUTTON_CLASS = "relative h-7 w-7 p-1 rounded-full border border-white/10 bg-black/20 backdrop-blur-sm shadow-md focus:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:opacity-30 disabled:pointer-events-none transition-all duration-200 ease-in-out overflow-hidden group";
+const ICON_BASE_CLASS = "h-4 w-4 transition-all duration-200 ease-in-out";
 
 export function ZoneControls({
   zoneId,
