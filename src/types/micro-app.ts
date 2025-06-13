@@ -10,7 +10,7 @@ export interface MicroApp {
   displayName: string; // User-facing name (e.g., "Autopilot Workflow Builder")
   icon: string; // Icon identifier (e.g., 'Workflow' for a Lucide icon, or a URL)
   description: string;
-  category: string; // e.g., "Automation", "Analytics", "Security", "Productivity", "Development", "Dashboard Widget"
+  category: string; // e.g., "Automation", "Analytics", "Security", "Productivity", "Development", "Monitoring", "Communication", "Utilities", "Core OS", "Discovery", "Information"
   status: 'enabled' | 'disabled' | 'dev-only' | 'archived' | 'beta';
   tags: string[]; // e.g., ["workflow", "ai", "visual-editor", "automation"]
   agentDependencies: string[]; // Array of agent IDs/names (e.g., ["OptimizerPrime", "Orion"])
@@ -34,14 +34,6 @@ export interface MicroApp {
   isVisible: boolean; // Is the app generally visible/deployable on dashboards/launchpads
   version: string; // e.g., "1.0.2"
   entryPoint?: string; // Path to the micro-app, e.g., "/autopilot" or a specific launch command
-  componentKey?: string; // Key to map to a React component for rendering (primarily for dashboard widgets)
-  defaultLayout?: { // Moved defaultLayout here to be part of the micro-app definition
-    lg: { x: number; y: number; w: number; h: number; minW?: number; minH?: number; static?: boolean };
-    md?: { x: number; y: number; w: number; h: number; minW?: number; minH?: number; static?: boolean };
-    sm?: { x: number; y: number; w: number; h: number; minW?: number; minH?: number; static?: boolean };
-    xs?: { x: number; y: number; w: number; h: number; minW?: number; minH?: number; static?: boolean };
-    xxs?: { x: number; y: number; w: number; h: number; minW?: number; minH?: number; static?: boolean };
-  };
   deployableTo: ('dashboard' | 'loom-studio' | 'dedicated-tab' | 'none')[]; // Where it can be deployed/launched from
   permissionsRequired?: string[]; // List of specific permission strings this app needs
   creatorId?: string; // User ID of the creator/publisher

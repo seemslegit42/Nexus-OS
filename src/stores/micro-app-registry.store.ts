@@ -19,9 +19,8 @@ export interface MicroAppRegistryState {
   getAppsByStatus: (statusFilter: MicroAppStatus) => MicroApp[];
   searchApps: (term: string) => MicroApp[];
   getAppsByFlag: (flagName: keyof MicroApp['flags'] | 'monetized') => MicroApp[];
-  getDeployableApps: () => MicroApp[];
+  getDeployableApps: () => MicroApp[]; // Apps suitable for the main dashboard/launcher
   getAppsRequiringSubscription: () => MicroApp[];
-  getDashboardWidgets: () => MicroApp[]; // New selector for dashboard widgets
 }
 
 export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get) => ({
@@ -58,13 +57,12 @@ export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get)
       },
       flags: newAppData.flags || {},
       version: newAppData.version || '0.1.0',
-      componentKey: newAppData.componentKey,
-      defaultLayout: newAppData.defaultLayout,
+      // componentKey and defaultLayout removed as they were widget-specific
       deployableTo: newAppData.deployableTo || ['none'],
       permissionsRequired: newAppData.permissionsRequired || [],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      ...newAppData, 
+      ...newAppData,
     };
     set((state) => ({
       apps: [newApp, ...state.apps],
@@ -112,14 +110,17 @@ export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get)
     }
     return allApps.filter(app => app.flags && app.flags[flagName as keyof MicroApp['flags']] === true);
   },
-  getDeployableApps: () => { // These are apps for general use / main launchpad
-    return get().apps.filter(app => app.status === 'enabled' && app.isVisible === true && app.category !== 'Dashboard Widget');
+  getDeployableApps: () => { // Apps suitable for the main dashboard/launcher
+    // Filters for apps that are enabled, visible, and not critical system-internal security apps.
+    return get().apps.filter(app =>
+        app.status === 'enabled' &&
+        app.isVisible === true &&
+        !(app.flags?.systemInternal && (app.category === 'Security' || app.category === 'Core OS')) && // Example: Don't show core security apps on general launchpad
+        app.deployableTo.includes('dashboard') // Ensure it's intended for dashboard/launchpad display
+    );
   },
-  getAppsRequiringSubscription: () => { 
+  getAppsRequiringSubscription: () => {
     return get().apps.filter(app => app.requiresSubscription === true);
-  },
-  getDashboardWidgets: () => { // Selector specifically for dashboard widgets
-    return get().apps.filter(app => app.category === 'Dashboard Widget' && app.status === 'enabled' && app.isVisible === true);
   },
 }));
     
