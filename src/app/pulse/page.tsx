@@ -78,15 +78,14 @@ function LiveSystemPulseContent(): ReactNode {
   useEffect(() => {
     const intervalId = setInterval(() => {
       const newEvent = generateMockEvent();
-      setEvents(prevEvents => [newEvent, ...prevEvents].slice(0, MAX_HISTORICAL_EVENTS + 50)); // Keep a bit more than max for filtering
+      setEvents(prevEvents => [newEvent, ...prevEvents].slice(0, MAX_HISTORICAL_EVENTS + 50)); 
 
       setSummary(prevSummary => {
         let newOverallStatus: SystemSummary['overallStatus'] = 'healthy';
         if (newEvent.status === 'error') newOverallStatus = 'error';
         else if (newEvent.status === 'degraded' && prevSummary.overallStatus !== 'error') newOverallStatus = 'degraded';
-        else newOverallStatus = prevSummary.overallStatus === 'error' ? 'error' : prevSummary.overallStatus === 'degraded' ? 'degraded' : 'healthy'; // maintain error/degraded if already set
+        else newOverallStatus = prevSummary.overallStatus === 'error' ? 'error' : prevSummary.overallStatus === 'degraded' ? 'degraded' : 'healthy'; 
 
-        // Simulate changes in agent/workflow counts
         const agentDelta = Math.random() > 0.8 ? (Math.random() > 0.5 ? 1 : -1) : 0;
         const workflowDelta = Math.random() > 0.7 ? (Math.random() > 0.5 ? 1 : -1) : 0;
         
@@ -97,7 +96,7 @@ function LiveSystemPulseContent(): ReactNode {
           overallStatus: newOverallStatus,
         };
       });
-    }, 15000); // Refresh every 15 seconds
+    }, 15000); 
 
     return () => clearInterval(intervalId);
   }, []);
@@ -106,7 +105,6 @@ function LiveSystemPulseContent(): ReactNode {
     if (showHistoricalLogs) {
       return events.slice(0, MAX_HISTORICAL_EVENTS);
     }
-    // Active: show events from last 5 minutes, up to MAX_ACTIVE_EVENTS
     const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
     return events.filter(event => event.timestamp.getTime() > fiveMinutesAgo).slice(0, MAX_ACTIVE_EVENTS);
   }, [events, showHistoricalLogs]);
@@ -122,8 +120,8 @@ function LiveSystemPulseContent(): ReactNode {
   
   const getStatusBadgeVariant = (status: SystemEvent['status']): "default" | "secondary" | "destructive" | "outline" => {
      switch (status) {
-      case 'healthy': return 'default'; // Will be styled green
-      case 'degraded': return 'secondary'; // Will be styled yellow
+      case 'healthy': return 'default'; 
+      case 'degraded': return 'secondary'; 
       case 'error': return 'destructive';
       default: return 'outline';
     }
@@ -168,10 +166,11 @@ function LiveSystemPulseContent(): ReactNode {
             <div className="space-y-1.5 p-0.5">
               {displayedEvents.map((event) => (
                 <Card key={event.id} className={cn(
-                  "p-2 shadow-sm hover:shadow-md transition-shadow text-xs border-l-4",
-                  event.status === 'healthy' && 'border-green-500/70 bg-green-500/5 hover:bg-green-500/10',
-                  event.status === 'degraded' && 'border-yellow-500/70 bg-yellow-500/5 hover:bg-yellow-500/10',
-                  event.status === 'error' && 'border-destructive/70 bg-destructive/5 hover:bg-destructive/10',
+                  "p-2 shadow-sm hover:shadow-md transition-shadow text-xs rounded-xl border backdrop-blur-sm", // Glassy card with rounded-xl
+                  "border-primary/25", // Base jade border
+                  event.status === 'healthy' && 'bg-green-500/10',
+                  event.status === 'degraded' && 'bg-yellow-500/10',
+                  event.status === 'error' && 'bg-destructive/10',
                 )}>
                   <div className="flex items-center justify-between mb-0.5">
                     <div className="flex items-center gap-1.5">
@@ -183,6 +182,7 @@ function LiveSystemPulseContent(): ReactNode {
                         className={cn("text-[10px] py-0 px-1.5 h-5 leading-tight",
                             event.status === 'healthy' && 'bg-green-500/80 text-white border-green-600/50',
                             event.status === 'degraded' && 'bg-yellow-500/80 text-yellow-950 border-yellow-600/50 dark:text-yellow-50 dark:bg-yellow-600/70',
+                            event.status === 'error' && 'bg-destructive/80 text-destructive-foreground border-destructive/50' // Ensure destructive badge also has a consistent look
                         )}
                     >
                       {event.status}
@@ -209,7 +209,7 @@ function KeyMetricTrendsContent(): ReactNode {
         <CardTitle className="font-headline text-md text-foreground">Key Metric Trends</CardTitle>
       </CardHeader>
       <CardContent className="text-center">
-        <Image src="https://placehold.co/600x300.png" alt="Key Metric Trends Placeholder" width={600} height={300} className="rounded-md opacity-70" data-ai-hint="data chart graph trends" />
+        <Image src="https://placehold.co/600x300.png" alt="Key Metric Trends Placeholder" width={600} height={300} className="rounded-md opacity-70 border border-border/60" data-ai-hint="data chart graph trends" />
         <p className="text-sm text-muted-foreground mt-2">Detailed metric visualizations coming soon.</p>
       </CardContent>
     </Card>

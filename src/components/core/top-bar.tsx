@@ -76,23 +76,19 @@ export function TopBar() {
     const sortedModules = [...navModules].sort((a, b) => {
       if (pathname === a.href) return -1;
       if (pathname === b.href) return 1;
-      // Sort by length of href to match more specific paths first
-      // e.g., /home/items before /home
       if (pathname.startsWith(a.href) && pathname.startsWith(b.href)) {
         return b.href.length - a.href.length;
       }
-      return b.href.length - a.href.length; // Fallback for non-matching or partially matching
+      if (pathname.startsWith(a.href)) return -1;
+      if (pathname.startsWith(b.href)) return 1;
+      return b.href.length - a.href.length; 
     });
+    
     let foundModule = sortedModules.find(mod => pathname.startsWith(mod.href));
     
-    // Special handling for root path to ensure "Home Dashboard" is selected
-    if (pathname === '/') {
+    if (pathname === '/' || pathname.startsWith('/home/items')) {
       foundModule = navModules.find(mod => mod.href === '/');
-    } else if (!foundModule && pathname.startsWith('/home/items')) {
-        // If on a specific item page, still show "Home Dashboard" as the context, or create a "My Items" context
-        foundModule = navModules.find(mod => mod.href === '/'); // Default to Home Dashboard
     }
-
 
     return foundModule || { name: 'NexOS Context', href: pathname, icon: <NexosLogo className="h-4 w-4 text-primary" /> };
   }, [pathname]);
@@ -105,11 +101,11 @@ export function TopBar() {
     console.log("Marking all notifications as read...");
   };
 
-  const iconButtonClass = "relative h-9 w-9 md:h-10 md:w-10 text-foreground/70 hover:text-primary hover:bg-primary/10 transition-colors duration-150 ease-in-out focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background hover:shadow-[0_0_10px_1px_hsl(var(--primary)/0.3)] active:shadow-[0_0_15px_2px_hsl(var(--primary)/0.4)] rounded-full"; // Updated: text-foreground/70, hover:text-primary, hover:bg-primary/10, rounded-full
+  const iconButtonClass = "relative h-9 w-9 md:h-10 md:w-10 text-foreground/70 hover:text-primary hover:bg-primary/10 transition-colors duration-150 ease-in-out focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background hover:shadow-[0_0_10px_1px_hsl(var(--primary)/0.3)] active:shadow-[0_0_15px_2px_hsl(var(--primary)/0.4)] rounded-full";
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-background/30 backdrop-blur-lg border-b border-primary/20 shadow-[0_2px_15px_hsl(var(--primary)/0.1)]"> {/* Updated: glassy bg, jade border and glow */}
+      <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-background/30 backdrop-blur-lg border-b border-primary/20 shadow-[0_2px_15px_hsl(var(--primary)/0.1)]">
         <div className="container mx-auto h-full flex items-center justify-between px-2 sm:px-4">
           <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             <Link href="/" className="flex items-center gap-1.5 sm:gap-2" aria-label="NexOS Home">
@@ -122,14 +118,14 @@ export function TopBar() {
                 <Button
                   variant="ghost"
                   className={cn(
-                    "flex items-center gap-1 text-xs sm:text-sm text-muted-foreground hover:text-foreground hover:bg-primary/10 px-1.5 sm:px-2 py-1 h-9 sm:h-10 truncate rounded-lg", // rounded-lg
+                    "flex items-center gap-1 text-xs sm:text-sm text-muted-foreground hover:text-foreground hover:bg-primary/10 px-1.5 sm:px-2 py-1 h-9 sm:h-10 truncate rounded-lg", 
                     "hover:shadow-[0_0_10px_1px_hsl(var(--primary)/0.2)] active:shadow-[0_0_15px_2px_hsl(var(--primary)/0.3)]",
                     "max-w-[40px] sm:max-w-[200px]" 
                   )}
                   title={`Current: ${currentModule.name}`}
                 >
                   <span className="flex-shrink-0">
-                     {currentModule.icon && cloneElement(currentModule.icon as React.ReactElement, { className: "h-4 w-4 sm:h-5 sm:w-5 text-primary" })} {/* Ensure icon uses primary color */}
+                     {currentModule.icon && cloneElement(currentModule.icon as React.ReactElement, { className: "h-4 w-4 sm:h-5 sm:w-5 text-primary" })}
                   </span>
                   <span className="hidden sm:inline truncate ml-1">{currentModule.name}</span>
                   <ChevronsUpDown className="h-3.5 w-3.5 opacity-70 flex-shrink-0 ml-0.5" />
@@ -147,7 +143,7 @@ export function TopBar() {
               <Input
                 type="search"
                 placeholder="Command or Search (Ctrl+K)..."
-                className="w-full pl-10 pr-4 py-2 rounded-lg bg-input border-primary/20 focus:ring-1 focus:ring-primary text-sm h-9 focus:border-primary/50 focus:shadow-[0_0_12px_-2px_hsl(var(--primary)/0.4)] transition-shadow backdrop-blur-sm" // Updated: rounded-lg, jade border, glassy input
+                className="w-full pl-10 pr-4 py-2 rounded-xl bg-input border-primary/25 focus:ring-1 focus:ring-primary text-sm h-9 focus:border-primary/50 focus:shadow-[0_0_12px_-2px_hsl(var(--primary)/0.4)] transition-shadow backdrop-blur-sm" 
                 onClick={() => setIsCommandLauncherOpen(true)}
                 readOnly 
               />
@@ -208,7 +204,7 @@ export function TopBar() {
               </PopoverContent>
             </Popover>
 
-            <div className="hidden lg:flex items-center gap-1.5 p-1.5 pr-2.5 rounded-lg bg-input/30 backdrop-blur-sm border border-primary/20 h-10 shadow-sm"> {/* Updated: rounded-lg, glassy bg, jade border */}
+            <div className="hidden lg:flex items-center gap-1.5 p-1.5 pr-2.5 rounded-lg bg-input/30 backdrop-blur-sm border border-primary/20 h-10 shadow-sm">
               <ShieldCheck className="h-4 w-4 text-primary" /> 
               <div className="text-xs">
                 <span className="text-foreground font-medium">Admin</span>
@@ -218,7 +214,7 @@ export function TopBar() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className={cn(iconButtonClass, "p-0")} title="User Menu"> {/* Removed rounded-full to let Avatar handle it */}
+                <Button variant="ghost" className={cn(iconButtonClass, "p-0")} title="User Menu">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src="https://placehold.co/100x100.png" alt="User Avatar" data-ai-hint="user avatar" />
                     <AvatarFallback>NX</AvatarFallback>
@@ -228,7 +224,7 @@ export function TopBar() {
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none font-headline text-foreground">Alex Ryder</p> {/* Ensure text color */}
+                    <p className="text-sm font-medium leading-none font-headline text-foreground">Alex Ryder</p>
                     <p className="text-xs leading-none text-muted-foreground">
                       alex.ryder@nexos.ai
                     </p>

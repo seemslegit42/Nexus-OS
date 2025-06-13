@@ -29,7 +29,10 @@ function OsChangelogContent(): ReactNode {
         <ScrollArea className="h-full">
             <div className="space-y-2 p-1 md:p-2">
             {updates.map((update, i) => (
-            <Card key={i} className="bg-card backdrop-blur-sm shadow-md border-border/60 hover:shadow-lg transition-shadow">
+            <Card 
+              key={i} 
+              className="rounded-2xl border border-primary/25 bg-card backdrop-blur-md text-card-foreground shadow-[0_4px_30px_hsl(var(--primary)/0.12)] hover:shadow-[0_6px_35px_hsl(var(--primary)/0.18)] transition-shadow"
+            >
                 <CardHeader className="p-2.5">
                 <div className="flex justify-between items-center">
                     <CardTitle className="font-headline text-base text-primary">{update.version}</CardTitle>
