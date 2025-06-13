@@ -54,12 +54,12 @@
   }
 
   .dark {
-    --background: 220 15% 8%; /* Deep Obsidian/Slate */
-    --foreground: 160 30% 85%; /* Pale Jade/Verdigris text */
+    --background: 210 15% 15%; /* Lighter Dark Slate/Blue-Gray */
+    --foreground: 160 30% 90%; /* Slightly brighter text for contrast */
 
     /* Base for glassy components - very translucent, actual color comes from tint/border/content */
-    --card-bg-base: 210 15% 12% / 0.15; /* Used by Card.tsx directly with backdrop-blur - Opacity updated */
-    --popover-bg-base: 210 15% 15% / 0.15; /* Used by Popover.tsx etc. - Opacity updated */
+    --card-bg-base: 210 15% 18% / 0.15; /* Slightly lighter card base, Opacity updated */
+    --popover-bg-base: 210 15% 20% / 0.15; /* Slightly lighter popover base, Opacity updated */
     
     /* Shadcn variables mapped to the glassy look */
     --card: var(--card-bg-base); /* Shadcn card will use this */
@@ -74,8 +74,8 @@
     --secondary: 170 40% 35%; /* Darker, muted Verdigris */
     --secondary-foreground: 170 20% 80%; 
 
-    --muted: 220 10% 15%; /* Subtle dark background elements (e.g. hover on lists) */
-    --muted-foreground: 170 15% 55%; /* Desaturated Verdigris text on muted */
+    --muted: 220 10% 20%; /* Lighter subtle dark background elements */
+    --muted-foreground: 170 15% 60%; /* Adjusted for new muted */
 
     --accent: 150 70% 60%; /* Brighter, "glowing" Jade/Verdigris for accents, highlights */
     --accent-foreground: 150 20% 10%; /* Dark text for on-accent elements */
@@ -84,7 +84,7 @@
     --destructive-foreground: 0 0% 100%; /* White text on destructive */
 
     --border: 160 55% 50% / 0.25; /* Translucent Jade border (Primary with 25% alpha) - Opacity updated */
-    --input: 210 15% 12% / 0.25; /* Slightly more opaque dark glass for inputs */
+    --input: 210 15% 18% / 0.25; /* Lighter glassy inputs */
     --ring: 150 70% 60%; /* Using the accent jade for focus rings */
     
     --radius: 1rem; /* Base radius. Specific components will override to rounded-2xl */
@@ -254,3 +254,4 @@
     transform: rotate(360deg);
   }
 }
+
