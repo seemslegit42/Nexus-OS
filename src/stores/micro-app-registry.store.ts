@@ -12,7 +12,7 @@ export interface MicroAppRegistryState {
   apps: MicroApp[];
   getMicroApp: (id: string) => MicroApp | undefined;
   updateMicroApp: (id: string, updatedData: Partial<MicroApp>) => void;
-  registerMicroApp: (newAppData: Partial<Omit<MicroApp, 'id' | 'createdAt' | 'updatedAt'>> & { internalName: string, displayName: string }) => void;
+  registerMicroApp: (newAppData: Partial<Omit<MicroApp, 'id' | 'createdAt' | 'updatedAt' | 'defaultLayout'>> & { internalName: string, displayName: string, defaultLayout?: MicroApp['defaultLayout'] }) => void;
   toggleAppStatus: (id: string) => void;
   bulkUpdateStatus: (ids: string[], newStatus: MicroAppStatus) => void;
   // Selectors
@@ -57,12 +57,12 @@ export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get)
       },
       flags: newAppData.flags || {},
       version: newAppData.version || '0.1.0',
-      // componentKey and defaultLayout removed as they were widget-specific
+      defaultLayout: newAppData.defaultLayout, // Keep this as it's for generic WorkspaceGrid
       deployableTo: newAppData.deployableTo || ['none'],
       permissionsRequired: newAppData.permissionsRequired || [],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      ...newAppData,
+      ...newAppData, // Spread other properties
     };
     set((state) => ({
       apps: [newApp, ...state.apps],
@@ -110,13 +110,12 @@ export const useMicroAppRegistryStore = create<MicroAppRegistryState>((set, get)
     }
     return allApps.filter(app => app.flags && app.flags[flagName as keyof MicroApp['flags']] === true);
   },
-  getDeployableApps: () => { // Apps suitable for the main dashboard/launcher
-    // Filters for apps that are enabled, visible, and not critical system-internal security apps.
+  getDeployableApps: () => { 
     return get().apps.filter(app =>
         app.status === 'enabled' &&
         app.isVisible === true &&
-        !(app.flags?.systemInternal && (app.category === 'Security' || app.category === 'Core OS')) && // Example: Don't show core security apps on general launchpad
-        app.deployableTo.includes('dashboard') // Ensure it's intended for dashboard/launchpad display
+        !(app.flags?.systemInternal && (app.category === 'Security' || app.category === 'Core OS')) &&
+        app.deployableTo.includes('dashboard')
     );
   },
   getAppsRequiringSubscription: () => {
