@@ -254,7 +254,7 @@ export function TopBar() {
             )}>
                 <Clock className="h-3.5 w-3.5 text-muted-foreground"/>
                 <span className={cn("text-xs text-muted-foreground tabular-nums transition-colors duration-300", pulseClock && "text-primary font-medium")}>
-                    {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })} UTC
+                    {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'UTC' })} UTC
                 </span>
             </div>
 
