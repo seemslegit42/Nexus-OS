@@ -6,14 +6,14 @@ import React, { useState, useMemo, useCallback, Suspense, lazy } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { Activity, LayoutDashboard, Workflow, ShieldCheck, RadioTower, X as CloseIcon, ExternalLink, Package, TerminalSquare, PackageSearch, Cpu, ListChecks, Loader2, Users } from 'lucide-react';
+import { Activity, LayoutDashboard, Workflow, ShieldCheck, RadioTower, Package, TerminalSquare, PackageSearch, Cpu, ListChecks, Loader2, Users } from 'lucide-react';
 import LiveOrchestrationsFeed from './LiveOrchestrationsFeed';
 import AgentPresenceGrid from './AgentPresenceGrid';
 import type { MicroApp } from '@/types/micro-app';
 import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
 import { WorkspaceGrid, type ZoneConfig } from '@/components/core/workspace-grid';
 import { getDynamicImportFn } from '@/micro-apps/registry';
-import { MicroAppCard } from './MicroAppCard';
+import { MicroAppCard } from './MicroAppCard'; // Ensure this import is correct
 
 // Helper function to get Lucide icons dynamically
 const getLucideIcon = (iconName: string | undefined, props?: any): React.ReactNode => {
@@ -35,10 +35,8 @@ const getLucideIcon = (iconName: string | undefined, props?: any): React.ReactNo
 };
 
 const getLucideIconSmall = (iconName: string | undefined, customClassName?: string): React.ReactNode => {
-  // Use a different default class for small icons if needed, or adjust props passed in.
-  return getLucideIcon(iconName, { className: cn("h-4 w-4", customClassName) }); // Removed mr-2 as it's context-dependent
+  return getLucideIcon(iconName, { className: cn("h-4 w-4 mr-2", customClassName) });
 };
-
 
 // Define helper components before CommandObservatory
 const SystemSnapshotPlaceholder: React.FC = React.memo(() => {
@@ -79,10 +77,11 @@ const MicroAppLauncherContentInternal: React.FC<MicroAppLauncherProps> = React.m
                     id={app.id}
                     name={app.displayName}
                     description={app.description}
-                    onLaunch={() => onLaunchApp(app)}
-                    tags={app.tags?.slice(0, 2)}
+                    onLaunch={() => onLaunchApp(app)} // Correctly call onLaunchApp with the app object
+                    tags={app.tags} // Pass full tags array, card can decide how many to show
                     icon={getLucideIcon(app.icon, { className: "h-5 w-5 text-primary group-hover:text-accent transition-colors" })}
-                    className="aspect-auto min-h-[150px]"
+                    className="aspect-auto min-h-[150px]" // Ensure cards have a minimum height
+                    // metricPreview prop is optional and not currently supplied by MicroApp type directly
                   />
                 ))}
               </div>
@@ -173,7 +172,7 @@ export default function CommandObservatory() {
 
   // Memoize content elements to stabilize their references
   const agentPresenceGridContent = useMemo(() => <MemoizedAgentPresenceGrid />, []);
-  const systemSnapshotContent = useMemo(() => <SystemSnapshotPlaceholder />, []); // Use already memoized component
+  const systemSnapshotContent = useMemo(() => <SystemSnapshotPlaceholder />, []);
   const liveOrchestrationsFeedContent = useMemo(() => <MemoizedLiveOrchestrationsFeed />, []);
 
   const microAppLauncherContent = useMemo(() => (
@@ -188,35 +187,35 @@ export default function CommandObservatory() {
     {
       id: "agentPresence",
       title: "Agent Presence",
-      icon: getLucideIconSmall("cpu", "mr-2"),
+      icon: getLucideIconSmall("cpu"),
       content: agentPresenceGridContent,
       defaultLayout: { x: 0, y: 0, w: 4, h: 9, minW: 3, minH: 6 },
     },
     {
       id: "systemSnapshot",
       title: "System Snapshot",
-      icon: getLucideIconSmall("activity", "mr-2"),
+      icon: getLucideIconSmall("activity"),
       content: systemSnapshotContent,
       defaultLayout: { x: 0, y: 9, w: 4, h: 7, minW: 3, minH: 4 },
     },
     {
       id: "microAppLauncher",
       title: "Micro-Apps",
-      icon: getLucideIconSmall("layoutdashboard", "mr-2"),
+      icon: getLucideIconSmall("layoutdashboard"),
       content: microAppLauncherContent,
       defaultLayout: { x: 0, y: 16, w: 4, h: 8, minW: 3, minH: 5 },
     },
     {
       id: "orchestrationFeed",
       title: "Live Orchestration Feed",
-      icon: getLucideIconSmall("listchecks", "mr-2"),
+      icon: getLucideIconSmall("listchecks"),
       content: liveOrchestrationsFeedContent,
       defaultLayout: { x: 4, y: 0, w: 8, h: 12, minW: 4, minH: 6 },
     },
     {
       id: "launchedAppDisplay",
       title: launchedApp ? `App: ${launchedApp.displayName}` : "Application View",
-      icon: launchedApp ? getLucideIconSmall(launchedApp.icon, 'mr-2') : <Package className="h-4 w-4 mr-2" />,
+      icon: launchedApp ? getLucideIconSmall(launchedApp.icon) : <Package className="h-4 w-4 mr-2" />,
       content: launchedAppDisplayContent,
       defaultLayout: { x: 4, y: 12, w: 8, h: 12, minW: 4, minH: 6 },
       canClose: !!launchedApp,
@@ -252,4 +251,3 @@ export default function CommandObservatory() {
     </div>
   );
 }
-
