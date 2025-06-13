@@ -1,4 +1,3 @@
-
 // src/components/dashboard/MicroAppCard.tsx
 'use client';
 
@@ -6,7 +5,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Rocket, ExternalLink } from 'lucide-react'; // Rocket for launch, ExternalLink if it's an external app
+import { Rocket } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface MicroAppCardProps {
@@ -16,7 +15,7 @@ interface MicroAppCardProps {
   onLaunch: (id: string) => void;
   tags?: string[];
   metricPreview?: string;
-  icon?: React.ReactNode; // Added optional icon prop based on observatory needs
+  icon?: React.ReactNode;
   className?: string;
 }
 
@@ -31,7 +30,7 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
   className,
 }) => {
   return (
-    <Card 
+    <Card
         className={cn(
             "flex flex-col h-full bg-[rgba(16,42,32,0.65)] border border-[rgba(142,255,215,0.25)] text-[rgba(220,255,240,0.9)] rounded-xl p-3.5 shadow-lg hover:shadow-primary/20 transition-all duration-200 ease-in-out hover:border-primary/50 group",
             className
@@ -68,7 +67,7 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
           </div>
         )}
       </CardContent>
-      <div className="mt-auto pt-2"> 
+      <div className="mt-auto pt-2">
         <Button
           onClick={() => onLaunch(id)}
           className="w-full h-8 text-xs bg-primary/15 hover:bg-primary/25 text-primary border border-primary/30 hover:border-primary/50 group-hover:shadow-[0_0_12px_hsl(var(--primary)/0.3)] transition-all"
@@ -83,4 +82,3 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
 };
 
 export default MicroAppCard;
-    
