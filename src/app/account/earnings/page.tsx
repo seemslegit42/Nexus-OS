@@ -4,7 +4,7 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { DollarSign, TrendingUp, Download, CalendarDays } from "lucide-react";
+import { DollarSign, TrendingUp, Download, CalendarDays, BarChart2 } from "lucide-react"; // Added BarChart2
 // Assuming you might have chart components, import them if needed
 // import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -67,12 +67,11 @@ export default function AccountEarningsPage() {
         </Card>
       </section>
 
-      {/* Placeholder for Earnings Chart - Recharts can be integrated here */}
       <Card>
         <CardHeader>
           <CardTitle className="font-headline">Monthly Earnings Trend</CardTitle>
         </CardHeader>
-        <CardContent className="h-[300px] flex items-center justify-center bg-muted/30 rounded-md">
+        <CardContent className="h-[300px] flex items-center justify-center rounded-md">
           {/* 
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={monthlyChartData}>
@@ -85,7 +84,11 @@ export default function AccountEarningsPage() {
             </BarChart>
           </ResponsiveContainer> 
           */}
-           <p className="text-muted-foreground">Monthly earnings chart placeholder</p>
+           <div className="text-center text-muted-foreground">
+            <BarChart2 className="h-12 w-12 mx-auto opacity-50 mb-2" />
+            <p>Monthly earnings chart placeholder.</p>
+            <p className="text-xs">Chart integration coming soon.</p>
+           </div>
         </CardContent>
       </Card>
 

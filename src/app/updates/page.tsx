@@ -88,7 +88,7 @@ function AgentReleaseLogsContent(): ReactNode {
             <CardDescription className="text-xs text-muted-foreground">Updates and improvements to core agent capabilities and pre-built modules.</CardDescription>
         </CardHeader>
         <CardContent className="p-2 md:p-3 flex-grow text-center flex items-center justify-center bg-muted/20 rounded-md border border-dashed border-border/50">
-            <Image src="https://placehold.co/800x300.png" alt="Agent Release Logs / Changelog Diffusion Graph" width={800} height={300} className="rounded-md opacity-70" data-ai-hint="network graph changes dependencies" />
+            <Image src="https://placehold.co/800x300.png" alt="Agent Release Logs / Changelog Diffusion Graph" width={800} height={300} className="rounded-md border border-border/60 opacity-70" data-ai-hint="network graph changes dependencies" />
         </CardContent>
         <CardFooter className="p-2 md:p-3 border-t border-border/60">
             <Button variant="link" size="sm" className="text-xs text-primary">View Detailed Agent SDK Changelog</Button>
@@ -143,4 +143,3 @@ export default function UpdatesPage() {
     />
   );
 }
-
