@@ -4,7 +4,7 @@
 
 import type { ReactNode } from 'react';
 import Link from 'next/link';
-import { Activity, Cpu, LayoutGrid, Rocket, Package as PackageIconLucide, Lock } from 'lucide-react';
+import { Activity, Cpu, LayoutGrid, Rocket, Package as PackageIconLucide, Lock, ShieldCheck, RadioTower, TerminalSquare } from 'lucide-react'; // Added ShieldCheck, RadioTower, TerminalSquare
 import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
 import type { MicroApp } from '@/types/micro-app';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,9 +20,9 @@ const iconMap: Record<string, ReactNode> = {
   LayoutGrid: <LayoutGrid className="h-5 w-5" />,
   Package: <PackageIconLucide className="h-5 w-5" />,
   Workflow: <LayoutGrid className="h-5 w-5" />, // Assuming Workflow maps to LayoutGrid or similar
-  ShieldCheck: <ShieldCheck className="h-5 w-5" />,
-  RadioTower: <RadioTower className="h-5 w-5" />,
-  TerminalSquare: <TerminalSquare className="h-5 w-5" />,
+  ShieldCheck: <ShieldCheck className="h-5 w-5" />, // Added
+  RadioTower: <RadioTower className="h-5 w-5" />,   // Added
+  TerminalSquare: <TerminalSquare className="h-5 w-5" />, // Added
   // Add other icons as needed
 };
 
