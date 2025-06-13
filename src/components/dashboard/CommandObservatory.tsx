@@ -32,7 +32,7 @@ const SystemSnapshotPlaceholder: React.FC = () => {
   );
 };
 
-// Helper function to get Lucide icon component from string name
+// Helper function to get Lucide icon component from string name for tiles
 const getLucideIcon = (iconName: string | undefined): React.ReactNode => {
   const iconProps = { className: "h-6 w-6 mb-1 text-primary opacity-80" };
   if (!iconName) return <Package {...iconProps} />;
@@ -52,6 +52,7 @@ const getLucideIcon = (iconName: string | undefined): React.ReactNode => {
   }
 };
 
+// Helper function for smaller icons, e.g., in headers
 const getLucideIconSmall = (iconName: string | undefined): React.ReactNode => {
   const iconProps = { className: "h-4 w-4 mr-2" };
    if (!iconName) return <Package {...iconProps} />;
@@ -152,14 +153,14 @@ export default function CommandObservatory() {
 
         {/* Right Column (2/3 width on md+) */}
         <div className="md:col-span-2 h-full flex flex-col overflow-hidden">
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 h-1/2 md:h-2/5 min-h-[250px]"> {/* Adjusted height constraints */}
             <LiveOrchestrationsFeed />
           </div>
           
           {launchedApp && (
             <div className="mt-3 md:mt-4 flex-grow min-h-0">
               <Card 
-                className="h-full max-h-[60vh] flex flex-col relative bg-[rgba(16,42,32,0.8)] border border-[rgba(142,255,215,0.3)] backdrop-blur-md shadow-[0_6px_25px_rgba(0,255,162,0.15)] rounded-2xl"
+                className="h-full max-h-[calc(50vh_-_2rem)] md:max-h-[calc(60vh_-_2rem)] flex flex-col relative bg-[rgba(16,42,32,0.8)] border border-[rgba(142,255,215,0.3)] backdrop-blur-md shadow-[0_6px_25px_rgba(0,255,162,0.15)] rounded-2xl"
               >
                 <CardHeader className="flex-row items-center justify-between p-2 border-b border-[rgba(142,255,215,0.2)]">
                   <CardTitle className="text-sm font-medium text-primary flex items-center">
