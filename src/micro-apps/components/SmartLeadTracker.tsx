@@ -7,14 +7,18 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Users, PlusCircle, Trash2, Search } from 'lucide-react';
+import { Users, PlusCircle, Trash2, Search, Sparkles, Loader2, AlertCircle } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import { generateLeadInsight, type GenerateLeadInsightInput, type GenerateLeadInsightOutput } from '@/ai/flows/generate-lead-insight';
 
 interface Lead {
   id: string;
   name: string;
   email: string;
+  insight?: string;
+  isLoadingInsight?: boolean;
+  insightError?: string;
 }
 
 const LOCAL_STORAGE_KEY = 'nexos-smart-lead-tracker-leads';
@@ -30,32 +34,31 @@ const SmartLeadTracker: React.FC = () => {
     try {
       const storedLeads = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (storedLeads) {
-        const parsedLeads = JSON.parse(storedLeads);
-        // Basic validation to ensure it's an array (could be more robust)
+        const parsedLeads: Omit<Lead, 'isLoadingInsight' | 'insightError' | 'insight'>[] = JSON.parse(storedLeads);
         if (Array.isArray(parsedLeads)) {
-          setLeads(parsedLeads);
+          // Initialize new fields if loading from older storage format
+          setLeads(parsedLeads.map(lead => ({ ...lead, isLoadingInsight: false, insightError: undefined, insight: undefined })));
         } else {
           console.warn('Invalid data found in localStorage for leads, resetting.');
-          localStorage.removeItem(LOCAL_STORAGE_KEY); // Clear corrupted data
+          localStorage.removeItem(LOCAL_STORAGE_KEY);
         }
       }
     } catch (error) {
       console.error('Error loading leads from localStorage:', error);
-      // If there's an error (e.g., corrupted JSON), default to an empty list
-      // and remove potentially corrupted item from storage.
       localStorage.removeItem(LOCAL_STORAGE_KEY);
     }
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, []);
 
   // Save leads to localStorage whenever the leads state changes
   useEffect(() => {
     try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(leads));
+      // Only store core lead data, not transient UI state like isLoadingInsight
+      const leadsToStore = leads.map(({ id, name, email }) => ({ id, name, email }));
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(leadsToStore));
     } catch (error) {
       console.error('Error saving leads to localStorage:', error);
-      // Potentially handle storage full errors or other issues
     }
-  }, [leads]); // Dependency array ensures this runs whenever 'leads' changes
+  }, [leads]);
 
   const filteredLeads = useMemo(() => {
     if (!searchTerm.trim()) {
@@ -87,6 +90,7 @@ const SmartLeadTracker: React.FC = () => {
       id: crypto.randomUUID(),
       name: trimmedName,
       email: trimmedEmail,
+      isLoadingInsight: false,
     };
     setLeads(prevLeads => [newLead, ...prevLeads]);
     setLeadName('');
@@ -95,6 +99,35 @@ const SmartLeadTracker: React.FC = () => {
 
   const handleDeleteLead = (leadId: string) => {
     setLeads(prevLeads => prevLeads.filter(lead => lead.id !== leadId));
+  };
+
+  const handleGetInsight = async (leadId: string) => {
+    setLeads(prevLeads =>
+      prevLeads.map(lead =>
+        lead.id === leadId ? { ...lead, isLoadingInsight: true, insight: undefined, insightError: undefined } : lead
+      )
+    );
+
+    const leadToAnalyze = leads.find(lead => lead.id === leadId);
+    if (!leadToAnalyze) return;
+
+    try {
+      const input: GenerateLeadInsightInput = { name: leadToAnalyze.name, email: leadToAnalyze.email };
+      const result: GenerateLeadInsightOutput = await generateLeadInsight(input);
+      setLeads(prevLeads =>
+        prevLeads.map(lead =>
+          lead.id === leadId ? { ...lead, insight: result.insight, isLoadingInsight: false } : lead
+        )
+      );
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to get insight.';
+      setLeads(prevLeads =>
+        prevLeads.map(lead =>
+          lead.id === leadId ? { ...lead, insightError: errorMessage, isLoadingInsight: false } : lead
+        )
+      );
+      console.error(`Error getting insight for lead ${leadId}:`, err);
+    }
   };
 
   const isAddLeadDisabled = !leadName.trim() || !leadEmail.trim();
@@ -106,7 +139,7 @@ const SmartLeadTracker: React.FC = () => {
           <Users className="mr-2 h-5 w-5 text-primary" /> Smart Lead Tracker
         </CardTitle>
         <CardDescription className="text-xs text-muted-foreground">
-          Manage and track your valuable leads efficiently. Leads are saved in your browser.
+          Manage leads and get AI-powered insights. Data is saved in your browser.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col gap-3 md:gap-4 px-2 md:px-3 overflow-hidden">
@@ -173,21 +206,54 @@ const SmartLeadTracker: React.FC = () => {
             <ScrollArea className="flex-grow border border-primary/20 bg-background/30 rounded-lg p-0.5">
               <div className="space-y-2 p-1.5 md:p-2">
                 {filteredLeads.map((lead) => (
-                  <Card key={lead.id} className="p-2.5 md:p-3 bg-card/80 backdrop-blur-sm border-primary/15 rounded-lg shadow-sm hover:border-primary/30 transition-colors">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="text-sm font-semibold text-foreground">{lead.name}</p>
-                        <p className="text-xs text-muted-foreground">{lead.email}</p>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteLead(lead.id)}
-                        className="h-7 w-7 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
-                        title={`Delete ${lead.name}`}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                  <Card key={lead.id} className="bg-card/80 backdrop-blur-sm border-primary/15 rounded-lg shadow-sm hover:border-primary/30 transition-colors">
+                    <div className="p-2.5 md:p-3">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="text-sm font-semibold text-foreground">{lead.name}</p>
+                            <p className="text-xs text-muted-foreground">{lead.email}</p>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDeleteLead(lead.id)}
+                            className="h-7 w-7 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
+                            title={`Delete ${lead.name}`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="mt-2 pt-2 border-t border-primary/10">
+                          {lead.isLoadingInsight && (
+                            <div className="flex items-center text-xs text-muted-foreground">
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin text-primary" />
+                              Getting insight...
+                            </div>
+                          )}
+                          {lead.insightError && (
+                            <div className="flex items-center text-xs text-destructive">
+                              <AlertCircle className="mr-2 h-4 w-4" />
+                              Error: {lead.insightError}
+                            </div>
+                          )}
+                          {lead.insight && !lead.isLoadingInsight && (
+                            <div className="text-xs">
+                              <p className="font-medium text-primary mb-0.5">AI Insight:</p>
+                              <p className="text-muted-foreground bg-muted/30 p-1.5 rounded-md">{lead.insight}</p>
+                            </div>
+                          )}
+                          {!lead.isLoadingInsight && !lead.insight && !lead.insightError && (
+                             <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleGetInsight(lead.id)}
+                                className="h-7 text-xs bg-accent/10 border-accent/30 text-accent-foreground hover:bg-accent/20"
+                                disabled={lead.isLoadingInsight}
+                              >
+                                <Sparkles className="mr-2 h-3.5 w-3.5" /> Get Insight
+                              </Button>
+                          )}
+                        </div>
                     </div>
                   </Card>
                 ))}
