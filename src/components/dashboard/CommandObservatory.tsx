@@ -2,7 +2,7 @@
 // src/components/dashboard/CommandObservatory.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -32,7 +32,6 @@ const SystemSnapshotPlaceholder: React.FC = () => {
   );
 };
 
-// Helper function to get Lucide icon component from string name for tiles
 const getLucideIcon = (iconName: string | undefined): React.ReactNode => {
   const iconProps = { className: "h-6 w-6 mb-1 text-primary opacity-80" };
   if (!iconName) return <Package {...iconProps} />;
@@ -52,7 +51,6 @@ const getLucideIcon = (iconName: string | undefined): React.ReactNode => {
   }
 };
 
-// Helper function for smaller icons, e.g., in headers
 const getLucideIconSmall = (iconName: string | undefined): React.ReactNode => {
   const iconProps = { className: "h-4 w-4 mr-2" };
    if (!iconName) return <Package {...iconProps} />;
@@ -77,9 +75,11 @@ export default function CommandObservatory() {
   const [launchedApp, setLaunchedApp] = useState<MicroApp | null>(null);
   const allRegisteredApps = useMicroAppRegistryStore(state => state.apps);
 
-  const dashboardMicroApps = allRegisteredApps.filter(
-    app => app.isVisible && app.deployableTo.includes('dashboard')
-  );
+  const dashboardMicroApps = useMemo(() => {
+    return allRegisteredApps.filter(
+      app => app.isVisible && app.deployableTo.includes('dashboard')
+    );
+  }, [allRegisteredApps]);
 
   const handleLaunchApp = (app: MicroApp) => {
     setLaunchedApp(app);
@@ -193,3 +193,4 @@ export default function CommandObservatory() {
     </div>
   );
 }
+
