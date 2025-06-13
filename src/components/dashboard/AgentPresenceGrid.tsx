@@ -4,9 +4,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Cpu, Zap, Database, CheckCircle, XCircle, AlertTriangle, Loader2 } from 'lucide-react';
+import { Cpu, CheckCircle, XCircle, AlertTriangle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface AgentInfo {
@@ -14,9 +12,9 @@ interface AgentInfo {
   name: string;
   personaName: string;
   status: 'Idle' | 'Executing' | 'Offline' | 'Error';
-  workload: number; // percentage
+  workload: number; 
   activeOrchestrations: string[];
-  currentTask: string | null; // Added for current task
+  currentTask: string | null;
   memoryPreview: { used: string; total: string; summary: string };
 }
 
@@ -86,9 +84,9 @@ const AgentStatusIcon: React.FC<{ status: AgentInfo['status'] }> = ({ status }) 
 const AgentDetailPanel: React.FC<{ agent: AgentInfo }> = ({ agent }) => {
   return (
     <div
-      className="bg-[rgba(16,42,32,0.65)] border border-[rgba(142,255,215,0.25)] text-[rgba(220,255,240,0.9)] rounded-lg p-3 mt-2 text-xs"
+      className="bg-[rgba(16,42,32,0.65)] border border-[rgba(142,255,215,0.25)] text-[rgba(220,255,240,0.9)] rounded-lg p-3 mt-2 text-xs space-y-1.5"
     >
-      <h4 className="text-sm font-semibold text-primary mb-1.5">{agent.personaName}</h4>
+      <h4 className="text-sm font-semibold text-primary mb-1">{agent.personaName}</h4>
       <p><strong>Agent ID:</strong> {agent.id}</p>
       <p>
         <strong>Status:</strong> <span className={cn(
@@ -100,34 +98,38 @@ const AgentDetailPanel: React.FC<{ agent: AgentInfo }> = ({ agent }) => {
       </p>
       <p><strong>Current Task:</strong> {agent.currentTask || 'N/A'}</p>
       <div>
-        <strong>Memory (Lorem Ipsum):</strong>
-        <p className="mt-0.5 text-[10px] text-[rgba(220,255,240,0.7)]">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        <strong>Memory Log (Static):</strong>
+        <p className="mt-0.5 text-[10px] text-[rgba(220,255,240,0.7)] leading-relaxed">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+          Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
         </p>
       </div>
-        {agent.activeOrchestrations.length > 0 && (
-            <div className="mt-1.5">
-            <strong>Active Orchestrations:</strong>
-            <ul className="list-disc list-inside pl-2 text-[rgba(220,255,240,0.7)]">
-                {agent.activeOrchestrations.map(orch => <li key={orch} className="text-[10px]">{orch}</li>)}
-            </ul>
-            </div>
-        )}
+      {agent.activeOrchestrations.length > 0 && (
+        <div className="mt-1">
+          <strong>Active Orchestrations:</strong>
+          <ul className="list-disc list-inside pl-2 text-[rgba(220,255,240,0.7)]">
+            {agent.activeOrchestrations.map(orch => <li key={orch} className="text-[10px]">{orch}</li>)}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
 
-
-const AgentBlock: React.FC<{ agent: AgentInfo; isActive: boolean; onClick: () => void; }> = ({ agent, isActive, onClick }) => {
+const AgentEntry: React.FC<{ agent: AgentInfo }> = ({ agent }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
   const isExecuting = agent.status === 'Executing';
+
   return (
-    <div> {/* Container for tile and its detail panel */}
+    <div>
       <div
-        onClick={onClick}
+        onClick={() => setIsExpanded(!isExpanded)}
         className={cn(
           "p-2.5 rounded-lg bg-background/40 hover:bg-primary/10 border border-primary/20 cursor-pointer transition-all hover:shadow-md hover:border-primary/40 active:scale-[0.98]",
-          isExecuting && "shadow-[0_0_15px_1px_hsl(var(--primary)/0.3)] animate-pulse-jade", // Green glow for executing
-          isActive && "ring-1 ring-primary/70 border-primary/60 bg-primary/5" // Style for active (clicked) tile
+          isExecuting && "shadow-[0_0_15px_1px_hsl(var(--primary)/0.3)] animate-pulse-jade",
+          isExpanded && "ring-1 ring-primary/70 border-primary/60 bg-primary/5"
         )}
         title={`Click to view details for ${agent.name}`}
       >
@@ -136,21 +138,15 @@ const AgentBlock: React.FC<{ agent: AgentInfo; isActive: boolean; onClick: () =>
           <AgentStatusIcon status={agent.status} />
         </div>
         <p className="text-xs text-muted-foreground truncate">
-          {agent.currentTask ? `Task: ${agent.currentTask.substring(0,30)}...` : `Workload: ${agent.workload}%`}
+          {agent.currentTask ? `Task: ${agent.currentTask.substring(0,30)}${agent.currentTask.length > 30 ? '...' : ''}` : `Workload: ${agent.workload}%`}
         </p>
       </div>
-      {isActive && <AgentDetailPanel agent={agent} />}
+      {isExpanded && <AgentDetailPanel agent={agent} />}
     </div>
   );
 };
 
 export default function AgentPresenceGrid() {
-  const [activeAgentId, setActiveAgentId] = useState<string | null>(null);
-
-  const handleAgentBlockClick = (agentId: string) => {
-    setActiveAgentId(prevId => (prevId === agentId ? null : agentId));
-  };
-  
   return (
     <Card className="h-auto bg-[rgba(15,25,20,0.25)] border border-[rgba(0,255,162,0.15)] backdrop-blur-sm shadow-[0_4px_20px_rgba(0,255,162,0.1)] rounded-2xl">
       <CardHeader className="pb-2 pt-3 px-3">
@@ -159,16 +155,10 @@ export default function AgentPresenceGrid() {
         </CardTitle>
       </CardHeader>
       <CardContent className="px-3 pb-3">
-        {/* The ScrollArea should wrap the grid of agents, not be inside each agent block */}
         <ScrollArea className="max-h-[calc(100vh_-_var(--topbar-height,_4rem)_-_var(--observatory-padding,_2rem)_-_150px)] sm:max-h-[300px] md:max-h-none pr-1">
           <div className="space-y-2">
             {mockAgentsData.map((agent) => (
-              <AgentBlock
-                key={agent.id}
-                agent={agent}
-                isActive={activeAgentId === agent.id}
-                onClick={() => handleAgentBlockClick(agent.id)}
-              />
+              <AgentEntry key={agent.id} agent={agent} />
             ))}
             {mockAgentsData.length === 0 && <p className="text-sm text-muted-foreground">No active agents.</p>}
           </div>
