@@ -9,33 +9,33 @@
 @layer base {
   :root {
     /* Fallback theme (currently not directly used as .dark is applied) */
-    --background: 220 15% 15%; 
+    --background: 220 15% 15%;
     --foreground: 160 20% 80%;
 
-    --card: 220 15% 20%; 
+    --card: 220 15% 20%;
     --card-foreground: 160 20% 75%;
 
     --popover: 220 15% 22%;
     --popover-foreground: 160 20% 75%;
 
-    --primary: 160 55% 50%; 
+    --primary: 160 55% 50%;
     --primary-foreground: 160 20% 10%;
 
-    --secondary: 170 40% 40%; 
+    --secondary: 170 40% 40%;
     --secondary-foreground: 170 20% 85%;
 
     --muted: 220 10% 25%;
     --muted-foreground: 170 15% 65%;
 
-    --accent: 150 70% 60%; 
+    --accent: 150 70% 60%;
     --accent-foreground: 150 20% 15%;
 
-    --destructive: 0 60% 55%; 
+    --destructive: 0 60% 55%;
     --destructive-foreground: 0 0% 95%;
 
-    --border: 170 25% 40%; 
+    --border: 170 25% 40%;
     --input: 220 15% 20%;
-    --ring: 150 70% 60%; 
+    --ring: 150 70% 60%;
 
     --radius: 1rem;
 
@@ -54,52 +54,51 @@
   }
 
   .dark {
-    /* NexOS Light Theme based on PRD */
-    --background: 60 25% 98%; /* Futuristic off-white (#FAF9F6) */
-    --foreground: 210 10% 23%; /* Dark Slate Gray for text */
+    /* NexOS Dark Theme - Original State */
+    --background: 220 15% 15%; /* Dark bluish-gray */
+    --foreground: 160 20% 80%; /* Light teal/cyan text */
 
-    /* Card & Popover: Light gray (desaturated Jade) with translucency for glassy effect */
-    --card-bg-base: 160 10% 92% / 0.85; /* Desaturated Jade Light Gray (#EAEAEA hue-shifted), with opacity */
-    --popover-bg-base: 160 10% 92% / 0.85; /* Similar to card */
-    
+    --card-bg-base: 220 15% 18% / 0.85; /* Slightly lighter dark bluish-gray, with opacity */
+    --popover-bg-base: 220 15% 20% / 0.85; /* Similar to card */
+
     --card: var(--card-bg-base);
-    --card-foreground: hsl(var(--foreground)); 
+    --card-foreground: hsl(var(--foreground));
 
     --popover: var(--popover-bg-base);
     --popover-foreground: hsl(var(--foreground));
 
-    --primary: 160 55% 50%; /* Main Interactive Jade (e.g. #3CC39F) - Kept from original dark theme */
-    --primary-foreground: 160 20% 5%; /* Very Dark Jade for text on primary */
-    
-    --secondary: 160 30% 80%; /* Light, desaturated Jade for secondary elements */
-    --secondary-foreground: 160 50% 25%; /* Darker Jade text for on-secondary */
+    --primary: 160 55% 50%; /* Main Interactive Jade */
+    --primary-foreground: 160 20% 10%; /* Very Dark Jade for text on primary */
 
-    --muted: 60 20% 94%; /* Slightly darker off-white / very light gray */
-    --muted-foreground: 210 10% 50%; /* Medium gray for muted text */
+    --secondary: 170 40% 35%; /* Darker, desaturated Jade/Teal */
+    --secondary-foreground: 170 20% 75%; /* Lighter text for on-secondary */
 
-    --accent: 45 67% 52%; /* Gold (#D4AF37) for highlights */
-    --accent-foreground: 45 60% 15%; /* Dark text for on-gold elements */
+    --muted: 220 10% 22%; /* Darker gray */
+    --muted-foreground: 170 15% 60%; /* Medium-light teal for muted text */
 
-    --destructive: 0 70% 55%; /* Vibrant Red - slightly brighter for light theme */
-    --destructive-foreground: 0 0% 100%; /* White text on destructive */
+    --accent: 150 70% 55%; /* Vivid Cyan/Turquoise accent */
+    --accent-foreground: 150 20% 10%; /* Dark text for on-accent */
 
-    --border: 0 0% 88% / 0.65; /* Subtle light gray border, somewhat translucent */
-    --input: 0 0% 95% / 0.75; /* Slightly off-white, translucent input backgrounds */
-    --ring: hsl(var(--accent)); /* Gold for focus rings */
-    
+    --destructive: 0 60% 50%; /* Standard Red */
+    --destructive-foreground: 0 0% 95%; /* White text on destructive */
+
+    --border: 170 25% 30% / 0.65; /* Tealish border, somewhat translucent */
+    --input: 220 15% 18% / 0.75; /* Dark, translucent input backgrounds */
+    --ring: hsl(var(--accent)); /* Cyan/Turquoise for focus rings */
+
     --radius: 1rem;
-    
-    /* Chart Colors - Harmonized with Off-White/Gold/Jade */
-    --chart-1: hsl(var(--primary));   /* Jade */
-    --chart-2: hsl(var(--accent));    /* Gold */
-    --chart-3: 165 40% 65%;           /* Verdigris tint */
-    --chart-4: 45 50% 70%;            /* Lighter Gold */
-    --chart-5: 210 15% 60%;           /* Neutral Gray for text/lines */
 
-    /* Scrollbar Variables - Light Theme */
-    --scrollbar-track-bg: hsl(var(--background) / 0.6);      /* Semi-transparent off-white */
-    --scrollbar-thumb-bg: hsl(var(--muted-foreground) / 0.3); /* Medium gray thumb, more translucent */
-    --scrollbar-thumb-hover-bg: hsl(var(--muted-foreground) / 0.5); /* Medium gray thumb on hover, less translucent */
+    /* Chart Colors - Harmonized with Dark Jade/Cyan */
+    --chart-1: hsl(var(--primary));   /* Jade */
+    --chart-2: hsl(var(--accent));    /* Cyan/Turquoise */
+    --chart-3: 170 40% 65%;           /* Lighter Teal */
+    --chart-4: 150 50% 70%;            /* Lighter Cyan */
+    --chart-5: 210 15% 70%;           /* Neutral Gray for text/lines */
+
+    /* Scrollbar Variables - Dark Theme */
+    --scrollbar-track-bg: hsl(var(--background) / 0.6); /* Semi-transparent dark background */
+    --scrollbar-thumb-bg: hsl(var(--muted-foreground) / 0.3); /* Muted foreground thumb, more translucent */
+    --scrollbar-thumb-hover-bg: hsl(var(--muted-foreground) / 0.5); /* Muted foreground thumb on hover, less translucent */
     --scrollbar-thumb-border-color: hsl(var(--background) / 0.6); /* Match track for seamless look */
   }
 }
@@ -121,7 +120,7 @@
 }
 .react-grid-item {
   transition: all 200ms ease;
-  transition-property: left, top, width, height; 
+  transition-property: left, top, width, height;
 }
 .react-grid-item.cssTransforms {
   transition-property: transform;
@@ -142,8 +141,8 @@
 }
 
 .react-grid-item.react-grid-placeholder {
-  background: hsl(var(--primary) / 0.2); /* Primary color with more translucency for light theme */
-  opacity: 0.5; 
+  background: hsl(var(--primary) / 0.2);
+  opacity: 0.5;
   transition-duration: 100ms;
   z-index: 2;
   -webkit-user-select: none;
@@ -152,8 +151,8 @@
   -o-user-select: none;
   user-select: none;
   border-radius: var(--radius);
-  border: 1px dashed hsl(var(--primary) / 0.4); 
-  backdrop-filter: blur(2px); 
+  border: 1px dashed hsl(var(--primary) / 0.4);
+  backdrop-filter: blur(2px);
 }
 
 .react-grid-item > .react-resizable-handle {
@@ -165,19 +164,19 @@
 .react-grid-item > .react-resizable-handle::after {
   content: "";
   position: absolute;
-  right: 2px; 
+  right: 2px;
   bottom: 2px;
-  width: 10px; 
-  height: 10px; 
-  border-right: 2px solid hsl(var(--foreground) / 0.5); /* Adjusted for light theme */
-  border-bottom: 2px solid hsl(var(--foreground) / 0.5); /* Adjusted for light theme */
-  border-radius: 1px; 
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid hsl(var(--foreground) / 0.5);
+  border-bottom: 2px solid hsl(var(--foreground) / 0.5);
+  border-radius: 1px;
   opacity: 0.7;
   transition: opacity 0.2s ease-in-out;
 }
 
 .react-grid-item:hover > .react-resizable-handle::after {
-  opacity: 1; 
+  opacity: 1;
 }
 
 
@@ -188,25 +187,25 @@
 /* Custom Scrollbar Styles */
 @layer utilities {
   ::-webkit-scrollbar {
-    width: 8px; 
+    width: 8px;
     height: 8px;
   }
   ::-webkit-scrollbar-track {
     background: var(--scrollbar-track-bg);
-    border-radius: 10px; 
+    border-radius: 10px;
   }
   ::-webkit-scrollbar-thumb {
     background-color: var(--scrollbar-thumb-bg);
-    border-radius: 10px; 
-    border: 2px solid var(--scrollbar-thumb-border-color); 
-    background-clip: padding-box; 
+    border-radius: 10px;
+    border: 2px solid var(--scrollbar-thumb-border-color);
+    background-clip: padding-box;
   }
   ::-webkit-scrollbar-thumb:hover {
     background-color: var(--scrollbar-thumb-hover-bg);
     border-color: var(--scrollbar-thumb-border-color);
   }
   ::-webkit-scrollbar-corner {
-    background: transparent; 
+    background: transparent;
   }
   * {
     scrollbar-width: thin;
@@ -237,11 +236,11 @@
       transparent
     );
     animation: shimmer 4s linear infinite;
-    z-index: -1; 
-    border-radius: inherit; 
+    z-index: -1;
+    border-radius: inherit;
   }
   .zone-shimmer-border > * {
-    position: relative; 
+    position: relative;
     z-index: 1;
   }
 }
