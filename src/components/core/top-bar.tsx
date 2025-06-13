@@ -149,6 +149,13 @@ export function TopBar() {
               <NexosLogo className="h-7 w-7 sm:h-8 sm:w-8 text-primary flex-shrink-0" />
               <span className="hidden sm:inline text-xl sm:text-2xl font-headline font-bold text-foreground">NexOS</span>
             </Link>
+            
+            {/* BEEP Heartbeat */}
+            <div className="relative flex items-center justify-center h-6 w-6 ml-1 sm:ml-2" title="BEEP System Heartbeat: Active">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+            </div>
+
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -162,7 +169,7 @@ export function TopBar() {
                   title={`Current: ${currentModule.name}`}
                 >
                   <span className="flex-shrink-0">
-                     {currentModule.icon && cloneElement(currentModule.icon as React.ReactElement, { className: "h-4 w-4 sm:h-5 sm:w-5 text-primary" })}
+                     {currentModule.icon && cloneElement(currentModule.icon as React.ReactElement, { className: "h-4 w-4 sm:h-5 sm-w-5 text-primary" })}
                   </span>
                   <span className="hidden sm:inline truncate ml-1">{currentModule.name}</span>
                   <ChevronsUpDown className="h-3.5 w-3.5 opacity-70 flex-shrink-0 ml-0.5" />
