@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Users, PlusCircle, Trash2, Search, Sparkles, Loader2, AlertCircle, Download, Upload, UserCircle as UserIcon } from 'lucide-react'; // Added UserIcon
+import { Users, PlusCircle, Trash2, Search, Sparkles, Loader2, AlertCircle, Download, Upload, UserCircle as UserIcon } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { generateLeadInsight, type GenerateLeadInsightInput, type GenerateLeadInsightOutput } from '@/ai/flows/generate-lead-insight';
@@ -22,12 +22,13 @@ interface Lead {
   insightError?: string;
 }
 
-// Simulate a user context - in a real app, this would come from auth
-const SIMULATED_CURRENT_USER_ID = 'user_default_nexos';
+// Simulate a user context - in a real app, this would come from auth or props
+const SIMULATED_CURRENT_USER_ID = 'user_default_nexos'; 
 
 const SmartLeadTracker: React.FC = () => {
   // User context for data namespacing
   const currentUserId = SIMULATED_CURRENT_USER_ID;
+  // localStorage key is now namespaced by the currentUserId
   const localStorageKey = `nexos-smart-lead-tracker-leads_${currentUserId}`;
 
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -40,34 +41,39 @@ const SmartLeadTracker: React.FC = () => {
   // Load leads from localStorage for the current user on initial component mount
   useEffect(() => {
     try {
-      const storedLeads = localStorage.getItem(localStorageKey);
-      if (storedLeads) {
+      const storedLeadsJson = localStorage.getItem(localStorageKey);
+      if (storedLeadsJson) {
         // Assuming stored leads are just {id, name, email}
-        const parsedLeads: Omit<Lead, 'isLoadingInsight' | 'insightError' | 'insight'>[] = JSON.parse(storedLeads);
-        if (Array.isArray(parsedLeads)) {
-          setLeads(parsedLeads.map(lead => ({ ...lead, isLoadingInsight: false, insightError: undefined, insight: undefined })));
+        const parsedStoredLeads: Omit<Lead, 'isLoadingInsight' | 'insightError' | 'insight'>[] = JSON.parse(storedLeadsJson);
+        if (Array.isArray(parsedStoredLeads)) {
+          // Initialize UI-specific fields for each lead loaded from storage
+          setLeads(parsedStoredLeads.map(lead => ({ ...lead, isLoadingInsight: false, insightError: undefined, insight: undefined })));
         } else {
-          console.warn(`Invalid data found in localStorage for user ${currentUserId}, resetting.`);
+          console.warn(`Invalid data found in localStorage for key ${localStorageKey}, resetting.`);
           localStorage.removeItem(localStorageKey);
+          setLeads([]); // Reset to empty if data is corrupt
         }
+      } else {
+        setLeads([]); // No data for this user, start with empty
       }
     } catch (error) {
-      console.error(`Error loading leads from localStorage for user ${currentUserId}:`, error);
+      console.error(`Error loading leads from localStorage for key ${localStorageKey}:`, error);
       localStorage.removeItem(localStorageKey);
+      setLeads([]); // Reset to empty on error
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUserId, localStorageKey]); // Depend on currentUserId and localStorageKey to reload if user changes
+  }, [localStorageKey]); // Rerun this effect if the localStorageKey changes (e.g., user changes)
 
   // Save leads to localStorage for the current user whenever the leads state changes
   useEffect(() => {
     try {
-      // Only store core lead data, not transient UI state for insights
+      // Only store core lead data (id, name, email), not transient UI state like insights
       const leadsToStore = leads.map(({ id, name, email }) => ({ id, name, email }));
       localStorage.setItem(localStorageKey, JSON.stringify(leadsToStore));
     } catch (error) {
-      console.error(`Error saving leads to localStorage for user ${currentUserId}:`, error);
+      console.error(`Error saving leads to localStorage for key ${localStorageKey}:`, error);
     }
-  }, [leads, currentUserId, localStorageKey]); // Depend on leads and currentUserId
+  }, [leads, localStorageKey]); // Rerun this effect if leads or localStorageKey changes
 
   const filteredLeads = useMemo(() => {
     if (!searchTerm.trim()) {
@@ -94,9 +100,9 @@ const SmartLeadTracker: React.FC = () => {
       toast({ title: "Validation Error", description: "Please enter a valid email address.", variant: "destructive" });
       return;
     }
-    // Check for duplicates for the current user
+    // Check for duplicates within the current user's leads
     if (leads.some(lead => lead.email.toLowerCase() === trimmedEmail.toLowerCase())) {
-        toast({ title: "Duplicate Lead", description: "A lead with this email already exists for the current user.", variant: "destructive" });
+        toast({ title: "Duplicate Lead", description: "A lead with this email already exists for you.", variant: "destructive" });
         return;
     }
 
@@ -104,8 +110,9 @@ const SmartLeadTracker: React.FC = () => {
       id: crypto.randomUUID(),
       name: trimmedName,
       email: trimmedEmail,
-      isLoadingInsight: false,
+      isLoadingInsight: false, // Initialize UI-specific fields
     };
+    // Add new lead to the beginning of the list for better UX
     setLeads(prevLeads => [newLead, ...prevLeads]);
     setLeadName('');
     setLeadEmail('');
@@ -128,7 +135,7 @@ const SmartLeadTracker: React.FC = () => {
     );
 
     const leadToAnalyze = leads.find(lead => lead.id === leadId);
-    if (!leadToAnalyze) return;
+    if (!leadToAnalyze) return; // Should not happen if UI is consistent
 
     try {
       const input: GenerateLeadInsightInput = { name: leadToAnalyze.name, email: leadToAnalyze.email };
@@ -149,11 +156,14 @@ const SmartLeadTracker: React.FC = () => {
     }
   };
 
-  const escapeCSVField = (field: string): string => {
-    if (field.includes(',') || field.includes('"') || field.includes('\n')) {
-      return `"${field.replace(/"/g, '""')}"`;
+  // Helper function to escape CSV fields
+  const escapeCSVField = (field: string | undefined): string => {
+    if (field === undefined || field === null) return '';
+    const stringField = String(field);
+    if (stringField.includes(',') || stringField.includes('"') || stringField.includes('\n')) {
+      return `"${stringField.replace(/"/g, '""')}"`;
     }
-    return field;
+    return stringField;
   };
 
   const exportLeadsToCSV = () => {
@@ -161,13 +171,13 @@ const SmartLeadTracker: React.FC = () => {
     if (filteredLeads.length === 0) {
       toast({
         title: "Export Failed",
-        description: "No leads to export for the current user. Add some leads or adjust your filters.",
+        description: "No leads to export. Add some leads or adjust your filters.",
         variant: "destructive",
       });
       return;
     }
 
-    const headers = "Name,Email";
+    const headers = "Name,Email"; // Intentionally not exporting insights for simplicity and non-persistence requirement
     const rows = filteredLeads.map(lead => 
       `${escapeCSVField(lead.name)},${escapeCSVField(lead.email)}`
     );
@@ -178,7 +188,7 @@ const SmartLeadTracker: React.FC = () => {
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob);
       link.setAttribute("href", url);
-      link.setAttribute("download", `nexos_leads_export_${currentUserId}.csv`);
+      link.setAttribute("download", `nexos_leads_export_${currentUserId}.csv`); // Filename includes user ID
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
@@ -207,7 +217,7 @@ const SmartLeadTracker: React.FC = () => {
 
     if (file.type !== 'text/csv' && !file.name.toLowerCase().endsWith('.csv')) {
       toast({ title: "Import Failed", description: "Invalid file type. Please upload a CSV file.", variant: "destructive" });
-      if (fileInputRef.current) fileInputRef.current.value = '';
+      if (fileInputRef.current) fileInputRef.current.value = ''; // Reset file input
       return;
     }
 
@@ -224,13 +234,13 @@ const SmartLeadTracker: React.FC = () => {
       toast({ title: "Import Failed", description: "Error reading file.", variant: "destructive" });
     };
     reader.readAsText(file);
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (fileInputRef.current) fileInputRef.current.value = ''; // Reset file input after processing
   };
 
   const parseCSVAndAddLeads = (csvText: string) => {
     // Parses and adds leads for the current user
-    const lines = csvText.split(/\r\n|\n/).filter(line => line.trim() !== '');
-    if (lines.length < 2) {
+    const lines = csvText.split(/\r\n|\n/).filter(line => line.trim() !== ''); // Handle different line endings
+    if (lines.length < 2) { // Must have headers + at least one data row
       toast({ title: "Import Failed", description: "CSV file is empty or has no data rows.", variant: "destructive" });
       return;
     }
@@ -240,7 +250,7 @@ const SmartLeadTracker: React.FC = () => {
     const emailIndex = headers.indexOf('email');
 
     if (nameIndex === -1 || emailIndex === -1) {
-      toast({ title: "Import Failed", description: "CSV must contain 'Name' and 'Email' columns.", variant: "destructive" });
+      toast({ title: "Import Failed", description: "CSV must contain 'Name' and 'Email' columns (case-insensitive).", variant: "destructive" });
       return;
     }
 
@@ -249,12 +259,14 @@ const SmartLeadTracker: React.FC = () => {
     const newLeadsBuffer: Lead[] = []; // Buffer to collect new leads before setting state
 
     for (let i = 1; i < lines.length; i++) {
-      const cells = lines[i].split(',');
+      // Basic CSV parsing, does not handle commas within quoted fields robustly.
+      // For production, a proper CSV parsing library is recommended.
+      const cells = lines[i].split(','); 
       const name = cells[nameIndex]?.trim();
       const email = cells[emailIndex]?.trim();
 
       if (name && email && email.includes('@')) {
-        // Check for duplicates against existing leads AND leads already in this import batch
+        // Check for duplicates against existing leads (for the current user) AND leads already in this import batch
         const isDuplicateInExisting = leads.some(lead => lead.email.toLowerCase() === email.toLowerCase());
         const isDuplicateInBatch = newLeadsBuffer.some(nl => nl.email.toLowerCase() === email.toLowerCase());
         
@@ -263,7 +275,7 @@ const SmartLeadTracker: React.FC = () => {
             id: crypto.randomUUID(),
             name,
             email,
-            isLoadingInsight: false,
+            isLoadingInsight: false, // Initialize UI-specific fields
           });
           importedCount++;
         } else {
@@ -279,17 +291,18 @@ const SmartLeadTracker: React.FC = () => {
       setLeads(prevLeads => [...newLeadsBuffer, ...prevLeads]);
     }
 
+    // Provide feedback based on import results
     if (importedCount > 0) {
       toast({
         title: "Import Successful",
-        description: `${importedCount} leads imported for user ${currentUserId}. ${skippedCount} rows skipped.`,
+        description: `${importedCount} new leads imported for user ${currentUserId}. ${skippedCount} rows skipped (invalid or duplicate).`,
         variant: "default",
       });
     } else if (skippedCount > 0) {
       toast({
         title: "Import Note",
         description: `No new leads imported for user ${currentUserId}. ${skippedCount} rows were invalid or duplicates.`,
-        variant: "default",
+        variant: "default", // Use default variant for notes not necessarily errors
       });
     } else {
        toast({
@@ -300,6 +313,7 @@ const SmartLeadTracker: React.FC = () => {
     }
   };
 
+  // Helper to programmatically click the hidden file input
   const triggerFileUpload = () => {
     fileInputRef.current?.click();
   };
@@ -323,6 +337,7 @@ const SmartLeadTracker: React.FC = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col gap-3 md:gap-4 px-2 md:px-3 overflow-hidden">
+        {/* Form for adding leads */}
         <Card className="bg-card/70 backdrop-blur-sm border-primary/20 rounded-xl p-3 md:p-4 shadow-lg flex-shrink-0">
           <form onSubmit={handleAddLead} className="space-y-3">
             <h3 className="text-sm font-medium text-foreground">Add New Lead</h3>
@@ -359,10 +374,12 @@ const SmartLeadTracker: React.FC = () => {
 
         <Separator className="my-1 md:my-2 bg-primary/20" />
 
+        {/* Leads list and controls */}
         <div className="flex-grow flex flex-col min-h-0">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-1.5 md:mb-2 gap-2">
             <h3 className="text-sm font-medium text-foreground">Current Leads ({filteredLeads.length})</h3>
             <div className="flex gap-2 w-full sm:w-auto">
+                {/* Search Input */}
                 <div className="relative flex-grow sm:flex-grow-0 w-full sm:max-w-[200px]">
                     <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground"/>
                     <Input
@@ -373,23 +390,26 @@ const SmartLeadTracker: React.FC = () => {
                         className="h-8 text-xs pl-8 bg-input border-input focus:ring-primary w-full"
                     />
                 </div>
+                {/* Hidden file input for CSV import */}
                  <input
                     type="file"
                     ref={fileInputRef}
                     onChange={handleFileUpload}
-                    accept=".csv"
-                    className="hidden"
-                    id="csv-importer"
+                    accept=".csv" // Restrict to CSV files
+                    className="hidden" // Visually hidden
+                    id="csv-importer" // For potential label association
                   />
+                {/* Import Button */}
                 <Button
                     variant="outline"
                     size="sm"
-                    onClick={triggerFileUpload}
+                    onClick={triggerFileUpload} // Programmatically click the hidden file input
                     className="h-8 text-xs bg-card hover:bg-muted/70 border-primary/30"
                     title="Import leads from CSV"
                 >
                     <Upload className="mr-2 h-3.5 w-3.5" /> Import
                 </Button>
+                {/* Export Button */}
                 <Button
                     variant="outline"
                     size="sm"
@@ -402,6 +422,7 @@ const SmartLeadTracker: React.FC = () => {
             </div>
           </div>
 
+          {/* Leads List Display */}
           {leads.length === 0 ? (
             <div className="flex-grow flex items-center justify-center text-center text-muted-foreground text-xs p-4 bg-muted/20 rounded-lg">
               No leads added yet for user {currentUserId}. Use the form above to add your first lead or import from CSV.
@@ -431,6 +452,7 @@ const SmartLeadTracker: React.FC = () => {
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
+                        {/* AI Insight Section */}
                         <div className="mt-2 pt-2 border-t border-primary/10">
                           {lead.isLoadingInsight && (
                             <div className="flex items-center text-xs text-muted-foreground">
@@ -456,7 +478,7 @@ const SmartLeadTracker: React.FC = () => {
                                 size="sm"
                                 onClick={() => handleGetInsight(lead.id)}
                                 className="h-7 text-xs bg-accent/10 border-accent/30 text-accent-foreground hover:bg-accent/20"
-                                disabled={lead.isLoadingInsight}
+                                disabled={lead.isLoadingInsight} // Ensure button is disabled while loading
                               >
                                 <Sparkles className="mr-2 h-3.5 w-3.5" /> Get Insight
                               </Button>
@@ -475,4 +497,3 @@ const SmartLeadTracker: React.FC = () => {
 };
 
 export default SmartLeadTracker;
-
