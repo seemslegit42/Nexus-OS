@@ -8,7 +8,7 @@
 
 @layer base {
   :root {
-    /* Fallback basic dark theme for light mode (to be "stripped") */
+    /* Fallback theme (currently not directly used as .dark is applied) */
     --background: 220 15% 15%; 
     --foreground: 160 20% 80%;
 
@@ -37,16 +37,16 @@
     --input: 220 15% 20%;
     --ring: 150 70% 60%; 
 
-    --radius: 1rem; /* Default radius, cards etc. will use rounded-2xl */
+    --radius: 1rem;
 
-    /* Chart Colors - Plain for light mode */
+    /* Chart Colors */
     --chart-1: 170 45% 48%;
     --chart-2: 170 35% 60%;
     --chart-3: 165 50% 35%;
     --chart-4: 150 40% 50%;
     --chart-5: 210 15% 70%;
 
-    /* Scrollbar Variables - Plain for light mode */
+    /* Scrollbar Variables */
     --scrollbar-track-bg: hsl(var(--muted));
     --scrollbar-thumb-bg: hsl(var(--secondary));
     --scrollbar-thumb-hover-bg: hsl(var(--primary));
@@ -54,59 +54,59 @@
   }
 
   .dark {
-    --background: 210 15% 15%; /* Lighter Dark Slate/Blue-Gray */
-    --foreground: 160 30% 90%; /* Slightly brighter text for contrast */
+    /* NexOS Light Theme based on PRD */
+    --background: 60 25% 98%; /* Futuristic off-white (#FAF9F6) */
+    --foreground: 210 10% 23%; /* Dark Slate Gray for text */
 
-    /* Base for glassy components - very translucent, actual color comes from tint/border/content */
-    --card-bg-base: 210 15% 18% / 0.15; /* Slightly lighter card base, Opacity updated */
-    --popover-bg-base: 210 15% 20% / 0.15; /* Slightly lighter popover base, Opacity updated */
+    /* Card & Popover: Light gray (desaturated Jade) with translucency for glassy effect */
+    --card-bg-base: 160 10% 92% / 0.85; /* Desaturated Jade Light Gray (#EAEAEA hue-shifted), with opacity */
+    --popover-bg-base: 160 10% 92% / 0.85; /* Similar to card */
     
-    /* Shadcn variables mapped to the glassy look */
-    --card: var(--card-bg-base); /* Shadcn card will use this */
-    --card-foreground: 160 30% 88%; 
+    --card: var(--card-bg-base);
+    --card-foreground: hsl(var(--foreground)); 
 
-    --popover: var(--popover-bg-base); /* Shadcn popover will use this */
-    --popover-foreground: 160 30% 90%;
+    --popover: var(--popover-bg-base);
+    --popover-foreground: hsl(var(--foreground));
 
-    --primary: 160 55% 50%; /* Main Interactive Jade (e.g. #3CC39F) */
+    --primary: 160 55% 50%; /* Main Interactive Jade (e.g. #3CC39F) - Kept from original dark theme */
     --primary-foreground: 160 20% 5%; /* Very Dark Jade for text on primary */
     
-    --secondary: 170 40% 35%; /* Darker, muted Verdigris */
-    --secondary-foreground: 170 20% 80%; 
+    --secondary: 160 30% 80%; /* Light, desaturated Jade for secondary elements */
+    --secondary-foreground: 160 50% 25%; /* Darker Jade text for on-secondary */
 
-    --muted: 220 10% 20%; /* Lighter subtle dark background elements */
-    --muted-foreground: 170 15% 60%; /* Adjusted for new muted */
+    --muted: 60 20% 94%; /* Slightly darker off-white / very light gray */
+    --muted-foreground: 210 10% 50%; /* Medium gray for muted text */
 
-    --accent: 150 70% 60%; /* Brighter, "glowing" Jade/Verdigris for accents, highlights */
-    --accent-foreground: 150 20% 10%; /* Dark text for on-accent elements */
+    --accent: 45 67% 52%; /* Gold (#D4AF37) for highlights */
+    --accent-foreground: 45 60% 15%; /* Dark text for on-gold elements */
 
-    --destructive: 0 60% 50%; /* Vibrant Red */
+    --destructive: 0 70% 55%; /* Vibrant Red - slightly brighter for light theme */
     --destructive-foreground: 0 0% 100%; /* White text on destructive */
 
-    --border: 160 55% 50% / 0.25; /* Translucent Jade border (Primary with 25% alpha) - Opacity updated */
-    --input: 210 15% 18% / 0.25; /* Lighter glassy inputs */
-    --ring: 150 70% 60%; /* Using the accent jade for focus rings */
+    --border: 0 0% 88% / 0.65; /* Subtle light gray border, somewhat translucent */
+    --input: 0 0% 95% / 0.75; /* Slightly off-white, translucent input backgrounds */
+    --ring: hsl(var(--accent)); /* Gold for focus rings */
     
-    --radius: 1rem; /* Base radius. Specific components will override to rounded-2xl */
+    --radius: 1rem;
     
-    /* Chart Colors for Dark Theme (Jade/Verdigris/Gold themed) */
-    --chart-1: hsl(var(--primary));   
-    --chart-2: 165 50% 45%;  /* Slightly darker/bluer Jade */
-    --chart-3: 170 45% 60%;   /* Verdigris tint */
-    --chart-4: hsl(var(--accent));    
-    --chart-5: 160 25% 70%;   /* Pale Jade text color for neutral lines */
+    /* Chart Colors - Harmonized with Off-White/Gold/Jade */
+    --chart-1: hsl(var(--primary));   /* Jade */
+    --chart-2: hsl(var(--accent));    /* Gold */
+    --chart-3: 165 40% 65%;           /* Verdigris tint */
+    --chart-4: 45 50% 70%;            /* Lighter Gold */
+    --chart-5: 210 15% 60%;           /* Neutral Gray for text/lines */
 
-    /* Scrollbar Variables - Dark Theme */
-    --scrollbar-track-bg: hsl(var(--background) / 0.05); /* Very subtle track */
-    --scrollbar-thumb-bg: hsl(var(--primary) / 0.4); /* Primary Jade thumb, less opaque */
-    --scrollbar-thumb-hover-bg: hsl(var(--primary) / 0.6); /* Primary Jade on hover, more opaque */
-    --scrollbar-thumb-border-color: hsl(var(--background) / 0.05);
+    /* Scrollbar Variables - Light Theme */
+    --scrollbar-track-bg: hsl(var(--background) / 0.6);      /* Semi-transparent off-white */
+    --scrollbar-thumb-bg: hsl(var(--muted-foreground) / 0.3); /* Medium gray thumb, more translucent */
+    --scrollbar-thumb-hover-bg: hsl(var(--muted-foreground) / 0.5); /* Medium gray thumb on hover, less translucent */
+    --scrollbar-thumb-border-color: hsl(var(--background) / 0.6); /* Match track for seamless look */
   }
 }
 
 @layer base {
   * {
-    @apply border-border; /* Uses the themed --border variable */
+    @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
@@ -142,8 +142,8 @@
 }
 
 .react-grid-item.react-grid-placeholder {
-  background: hsl(var(--primary) / 0.3); /* Updated to use primary color with translucency */
-  opacity: 0.6; /* Adjusted opacity for better visibility */
+  background: hsl(var(--primary) / 0.2); /* Primary color with more translucency for light theme */
+  opacity: 0.5; 
   transition-duration: 100ms;
   z-index: 2;
   -webkit-user-select: none;
@@ -151,9 +151,9 @@
   -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
-  border-radius: var(--radius); /* Will become rounded-xl or rounded-2xl based on theme */
-  border: 1px dashed hsl(var(--primary) / 0.5); /* Added dashed border for clarity */
-  backdrop-filter: blur(4px); /* Optional: add some blur to placeholder */
+  border-radius: var(--radius);
+  border: 1px dashed hsl(var(--primary) / 0.4); 
+  backdrop-filter: blur(2px); 
 }
 
 .react-grid-item > .react-resizable-handle {
@@ -169,10 +169,10 @@
   bottom: 2px;
   width: 10px; 
   height: 10px; 
-  border-right: 2px solid hsl(var(--foreground) / 0.7); 
-  border-bottom: 2px solid hsl(var(--foreground) / 0.7);
+  border-right: 2px solid hsl(var(--foreground) / 0.5); /* Adjusted for light theme */
+  border-bottom: 2px solid hsl(var(--foreground) / 0.5); /* Adjusted for light theme */
   border-radius: 1px; 
-  opacity: 0.8;
+  opacity: 0.7;
   transition: opacity 0.2s ease-in-out;
 }
 
@@ -214,7 +214,7 @@
   }
 }
 
-/* Zone Shimmer Border - Uses new --primary and --accent */
+/* Zone Shimmer Border */
 @layer utilities {
   .zone-shimmer-border {
     position: relative;
@@ -231,8 +231,8 @@
       transparent,
       transparent,
       transparent,
-      hsl(var(--accent) / 0.5), /* Brighter accent for shimmer */
-      hsl(var(--primary) / 0.4),  /* Primary color */
+      hsl(var(--accent) / 0.3), /* Gold accent for shimmer on light theme */
+      hsl(var(--primary) / 0.2),  /* Jade primary color */
       transparent,
       transparent
     );
@@ -254,4 +254,3 @@
     transform: rotate(360deg);
   }
 }
-
