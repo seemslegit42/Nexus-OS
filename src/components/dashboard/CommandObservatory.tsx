@@ -79,15 +79,15 @@ export default function CommandObservatory() {
             {dashboardMicroApps.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {dashboardMicroApps.map((app) => (
-                    <Card 
-                    key={app.id} 
+                    <Card
+                    key={app.id}
                     className="bg-[rgba(16,42,32,0.65)] border border-[rgba(142,255,215,0.25)] text-[rgba(220,255,240,0.9)] rounded-lg p-3 flex flex-col items-center justify-center text-center aspect-square"
                     >
                     {getLucideIcon(app.icon)}
                     <p className="text-xs font-semibold truncate w-full leading-tight" title={app.displayName}>{app.displayName}</p>
-                    <Button 
-                        variant="outline" 
-                        size="sm" 
+                    <Button
+                        variant="outline"
+                        size="sm"
                         className="mt-2 text-xs h-7 bg-primary/10 border-primary/30 hover:bg-primary/20 text-primary hover:text-primary/90 w-full"
                         onClick={() => handleLaunchApp(app)}
                     >
@@ -120,7 +120,7 @@ export default function CommandObservatory() {
       );
     }
     return (
-         <Card 
+         <Card
             className="h-full flex flex-col relative bg-transparent border-none shadow-none"
         >
             {/* Header is part of the Zone, this is just content */}
@@ -147,39 +147,39 @@ export default function CommandObservatory() {
       title: "Agent Presence",
       icon: getLucideIconSmall("cpu"),
       content: <AgentPresenceGrid />,
-      defaultLayout: { lg: { x: 0, y: 0, w: 4, h: 9, minW: 3, minH: 6 } },
+      defaultLayout: { x: 0, y: 0, w: 4, h: 9, minW: 3, minH: 6 },
     },
     {
       id: "systemSnapshot",
       title: "System Snapshot",
       icon: getLucideIconSmall("activity"),
       content: <SystemSnapshotPlaceholder />,
-      defaultLayout: { lg: { x: 0, y: 9, w: 4, h: 7, minW: 3, minH: 4 } },
+      defaultLayout: { x: 0, y: 9, w: 4, h: 7, minW: 3, minH: 4 },
     },
     {
       id: "microAppLauncher",
       title: "Micro-Apps",
       icon: getLucideIconSmall("layoutdashboard"),
       content: <MicroAppLauncherContent />,
-      defaultLayout: { lg: { x: 0, y: 16, w: 4, h: 8, minW: 3, minH: 5 } },
+      defaultLayout: { x: 0, y: 16, w: 4, h: 8, minW: 3, minH: 5 },
     },
     {
       id: "orchestrationFeed",
       title: "Live Orchestration Feed",
       icon: getLucideIconSmall("listchecks"),
       content: <LiveOrchestrationsFeed />,
-      defaultLayout: { lg: { x: 4, y: 0, w: 8, h: 12, minW: 4, minH: 6 } },
+      defaultLayout: { x: 4, y: 0, w: 8, h: 12, minW: 4, minH: 6 },
     },
     {
       id: "launchedAppDisplay",
       title: launchedApp ? `Launched: ${launchedApp.displayName}` : "Application View",
       icon: launchedApp ? getLucideIconSmall(launchedApp.icon) : <Package className="h-4 w-4 mr-2" />,
       content: <LaunchedAppDisplayContent />,
-      defaultLayout: { lg: { x: 4, y: 12, w: 8, h: 12, minW: 4, minH: 6 } },
-      canClose: !!launchedApp, 
+      defaultLayout: { x: 4, y: 12, w: 8, h: 12, minW: 4, minH: 6 },
+      canClose: !!launchedApp,
       onClose: launchedApp ? handleCloseApp : undefined,
-      canPin: false, 
-      canMinimize: !!launchedApp, 
+      canPin: false,
+      canMinimize: !!launchedApp,
     }
   ], [launchedApp, dashboardMicroApps, handleLaunchApp, handleCloseApp]);
 
@@ -188,15 +188,15 @@ export default function CommandObservatory() {
     <div
       className={cn(
         "w-full h-full flex flex-col max-w-none mx-auto overflow-hidden backdrop-blur-md p-0",
-        "bg-observatory-bg border border-observatory-border shadow-observatory-inner"
+        "bg-observatory-bg border-observatory-border shadow-observatory-inner"
       )}
     >
       <WorkspaceGrid
         zoneConfigs={zoneConfigs}
-        className="flex-grow p-2 md:p-3" 
+        className="flex-grow p-2 md:p-3"
         storageKey="commandObservatoryLayout_v2"
         cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }}
-        rowHeight={20} 
+        rowHeight={20}
       />
     </div>
   );
