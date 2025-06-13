@@ -1,4 +1,3 @@
-
 // src/components/dashboard/CommandObservatory.tsx
 'use client';
 
@@ -13,7 +12,7 @@ import type { MicroApp } from '@/types/micro-app';
 import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
 import { WorkspaceGrid, type ZoneConfig } from '@/components/core/workspace-grid';
 import { getDynamicImportFn } from '@/micro-apps/registry';
-import { MicroAppCard } from './MicroAppCard'; // Ensure this import is correct
+import { MicroAppCard } from './MicroAppCard';
 
 // Helper function to get Lucide icons dynamically
 const getLucideIcon = (iconName: string | undefined, props?: any): React.ReactNode => {
@@ -39,7 +38,7 @@ const getLucideIconSmall = (iconName: string | undefined, customClassName?: stri
 };
 
 // Define helper components before CommandObservatory
-const SystemSnapshotPlaceholder: React.FC = React.memo(() => {
+const SystemSnapshotPlaceholder = React.memo(function SystemSnapshotPlaceholder() {
   return (
     <Card className="h-full bg-[rgba(15,25,20,0.25)] border border-[rgba(0,255,162,0.15)] backdrop-blur-sm shadow-[0_4px_20px_rgba(0,255,162,0.1)] rounded-2xl">
       <CardHeader className="pb-2 pt-3 px-3">
@@ -59,11 +58,12 @@ const SystemSnapshotPlaceholder: React.FC = React.memo(() => {
 });
 SystemSnapshotPlaceholder.displayName = 'SystemSnapshotPlaceholder';
 
+
 interface MicroAppLauncherProps {
   appsToDisplay: MicroApp[];
   onLaunchApp: (app: MicroApp) => void;
 }
-const MicroAppLauncherContentInternal: React.FC<MicroAppLauncherProps> = React.memo(({ appsToDisplay, onLaunchApp }) => {
+const MicroAppLauncherContentInternal = React.memo<MicroAppLauncherProps>(({ appsToDisplay, onLaunchApp }) => {
   return (
     <Card className="h-full bg-transparent border-none shadow-none">
       <CardContent className="p-0 h-full">
@@ -77,11 +77,10 @@ const MicroAppLauncherContentInternal: React.FC<MicroAppLauncherProps> = React.m
                     id={app.id}
                     name={app.displayName}
                     description={app.description}
-                    onLaunch={() => onLaunchApp(app)} // Correctly call onLaunchApp with the app object
-                    tags={app.tags} // Pass full tags array, card can decide how many to show
+                    onLaunch={() => onLaunchApp(app)}
+                    tags={app.tags}
                     icon={getLucideIcon(app.icon, { className: "h-5 w-5 text-primary group-hover:text-accent transition-colors" })}
-                    className="aspect-auto min-h-[150px]" // Ensure cards have a minimum height
-                    // metricPreview prop is optional and not currently supplied by MicroApp type directly
+                    className="aspect-auto min-h-[150px]"
                   />
                 ))}
               </div>
@@ -103,7 +102,7 @@ MicroAppLauncherContentInternal.displayName = 'MicroAppLauncherContentInternal';
 interface LaunchedAppDisplayProps {
   currentApp: MicroApp | null;
 }
-const LaunchedAppDisplayContentInternal: React.FC<LaunchedAppDisplayProps> = React.memo(({ currentApp }) => {
+const LaunchedAppDisplayContentInternal = React.memo<LaunchedAppDisplayProps>(({ currentApp }) => {
   if (!currentApp) {
     return (
       <div className="h-full flex flex-col items-center justify-center text-center p-4">
@@ -120,9 +119,9 @@ const LaunchedAppDisplayContentInternal: React.FC<LaunchedAppDisplayProps> = Rea
     return (
       <div className="h-full flex flex-col items-center justify-center text-center p-4">
         <PackageSearch className="h-12 w-12 text-destructive/70 mb-3" />
-        <p className="text-sm text-destructive">Micro-app component not found!</p>
-        <p className="text-xs text-muted-foreground/80">
-          No dynamic import function registered for "{currentApp.displayName}" (ID: {currentApp.id}).
+        <p className="text-sm font-semibold text-destructive">⚠️ Component not registered for ID: {currentApp.id}</p>
+        <p className="text-xs text-muted-foreground/80 mt-1">
+          Unable to load micro-app "{currentApp.displayName}". Please check the micro-app registry.
         </p>
       </div>
     );
@@ -215,7 +214,7 @@ export default function CommandObservatory() {
     {
       id: "launchedAppDisplay",
       title: launchedApp ? `App: ${launchedApp.displayName}` : "Application View",
-      icon: launchedApp ? getLucideIconSmall(launchedApp.icon) : <Package className="h-4 w-4 mr-2" />,
+      icon: getLucideIconSmall(launchedApp?.icon, launchedApp ? undefined : 'mr-2'), // Adjust icon styling if no app is launched
       content: launchedAppDisplayContent,
       defaultLayout: { x: 4, y: 12, w: 8, h: 12, minW: 4, minH: 6 },
       canClose: !!launchedApp,
