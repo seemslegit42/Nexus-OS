@@ -1,3 +1,4 @@
+
 // src/components/dashboard/CommandObservatory.tsx
 'use client';
 
@@ -9,8 +10,8 @@ import { cn } from '@/lib/utils';
 import { Activity, LayoutDashboard, Workflow, ShieldCheck, RadioTower, X as CloseIcon, ExternalLink, Package, TerminalSquare } from 'lucide-react';
 import LiveOrchestrationsFeed from './LiveOrchestrationsFeed';
 import AgentPresenceGrid from './AgentPresenceGrid';
-import type { MicroApp } from '@/types/micro-app';
-import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
+import type { MicroApp } from '@/types/micro-app'; // Import the type
+import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store'; // Import the store
 
 const SystemSnapshotPlaceholder: React.FC = () => {
   return (
@@ -70,6 +71,7 @@ const getLucideIconSmall = (iconName: string | undefined): React.ReactNode => {
 
 export default function CommandObservatory() {
   const [launchedApp, setLaunchedApp] = useState<MicroApp | null>(null);
+  // Fetch apps from the store
   const allApps = useMicroAppRegistryStore(state => state.apps);
 
   // Filter apps that are visible and deployable to the dashboard
