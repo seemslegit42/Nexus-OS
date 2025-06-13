@@ -7,12 +7,12 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAgentMarketplaceStore } from '@/stores/agent-marketplace.store';
-import { useUserAgentsStore } from '@/stores/user-agents.store'; // Added
+import { useUserAgentsStore } from '@/stores/user-agents.store';
 import type { MarketplaceAgent } from '@/types/marketplace-agent';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Brain, CheckCircle, Cpu, DollarSign, DownloadCloud, FileText, GitBranch, MessageSquare, ShieldCheck, Sparkles, Tag, UserCircle, Users, Workflow, PlusCircle } from 'lucide-react'; // Added PlusCircle
+import { ArrowLeft, Brain, CheckCircle, Cpu, DollarSign, DownloadCloud, FileText, GitBranch, MessageSquare, ShieldCheck, Sparkles, Tag, UserCircle, Users, Workflow, PlusCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 
@@ -78,20 +78,14 @@ export default function AgentDetailPage() {
     addAgentId(agent.id);
     toast({
       title: "Agent Added",
-      description: `${agent.name} has been added to your NexOS environment.`,
+      description: `${agent.name} has been added to your NexOS environment. You can manage it from the 'Agents' page.`,
       variant: "default",
     });
   };
 
   const handleManageAgent = () => {
     if (!agent) return;
-    // Placeholder for actual management logic or navigation
-    toast({
-      title: "Manage Agent",
-      description: `${agent.name} is already in your environment. Management options coming soon!`,
-      variant: "default",
-    });
-    // router.push(`/my-agents/${agent.id}`); // Example future navigation
+    router.push('/agents');
   };
 
   if (!agent) {
