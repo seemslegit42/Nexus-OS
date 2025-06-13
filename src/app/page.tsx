@@ -4,12 +4,12 @@
 
 import type { ReactNode } from 'react';
 import Link from 'next/link';
-import { Activity, Cpu, LayoutGrid, Rocket, Package as PackageIconLucide, Lock, ShieldCheck, RadioTower, TerminalSquare } from 'lucide-react';
+import { Activity, Cpu, LayoutGrid, Rocket, Package as PackageIconLucide, Lock, ShieldCheck, RadioTower, TerminalSquare, Workflow as WorkflowIcon } from 'lucide-react'; // Added WorkflowIcon
 import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
 import type { MicroApp } from '@/types/micro-app';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { Badge } from "@/components/ui/badge"; // Added this import
+import { Badge } from "@/components/ui/badge"; // Ensured Badge is imported
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -20,7 +20,7 @@ const iconMap: Record<string, ReactNode> = {
   Cpu: <Cpu className="h-5 w-5" />,
   LayoutGrid: <LayoutGrid className="h-5 w-5" />,
   Package: <PackageIconLucide className="h-5 w-5" />,
-  Workflow: <LayoutGrid className="h-5 w-5" />,
+  Workflow: <WorkflowIcon className="h-5 w-5" />, // Ensure WorkflowIcon is mapped if 'Workflow' is an icon key
   ShieldCheck: <ShieldCheck className="h-5 w-5" />,
   RadioTower: <RadioTower className="h-5 w-5" />,
   TerminalSquare: <TerminalSquare className="h-5 w-5" />,
@@ -35,7 +35,9 @@ interface MicroAppCardProps {
 function MicroAppCard({ app, userHasActiveSubscription }: MicroAppCardProps) {
   const isGated = app.requiresSubscription && !userHasActiveSubscription;
   const effectiveHref = isGated ? "/plans" : (app.entryPoint || "#");
-  const iconNode = app.icon ? iconMap[app.icon] || <PackageIconLucide className="h-5 w-5 text-primary" /> : <PackageIconLucide className="h-5 w-5 text-primary" />;
+  // Ensure app.icon exists and is a valid key in iconMap, otherwise provide a default
+  const iconNode = app.icon && iconMap[app.icon] ? iconMap[app.icon] : <PackageIconLucide className="h-5 w-5 text-primary" />;
+
 
   return (
     <Link href={effectiveHref} passHref className="block h-full">
