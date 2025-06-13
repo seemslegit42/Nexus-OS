@@ -45,9 +45,11 @@ import {
   ChevronsUpDown,
   Zap as LightningIcon,
   RadioTower,
+  Clock, // Added Clock for session
 } from 'lucide-react';
 import { CommandLauncherDialog } from './command-launcher';
-import { ActiveAgentsPopoverContent } from './ActiveAgentsPopoverContent';
+// import { ActiveAgentsPopoverContent } from './ActiveAgentsPopoverContent'; // Replaced
+import { AgentWorkloadPreview } from './AgentWorkloadPreview'; // Added
 import { RecentNotificationsPopoverContent } from './RecentNotificationsPopoverContent';
 import { ModuleSwitcherDropdownContent } from './ModuleSwitcherDropdownContent';
 import { cn } from '@/lib/utils';
@@ -70,7 +72,25 @@ const navModules = [
 
 export function TopBar() {
   const [isCommandLauncherOpen, setIsCommandLauncherOpen] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
   const pathname = usePathname();
+
+  useEffect(() => {
+    const timerId = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timerId);
+  }, []);
+  
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+        event.preventDefault();
+        setIsCommandLauncherOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
 
   const currentModule = useMemo(() => {
     const sortedModules = [...navModules].sort((a, b) => {
@@ -102,6 +122,10 @@ export function TopBar() {
   };
 
   const iconButtonClass = "relative h-9 w-9 md:h-10 md:w-10 text-foreground/70 hover:text-primary hover:bg-primary/10 transition-colors duration-150 ease-in-out focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background hover:shadow-[0_0_10px_1px_hsl(var(--primary)/0.3)] active:shadow-[0_0_15px_2px_hsl(var(--primary)/0.4)] rounded-full";
+
+  // Mock user session data
+  const userRole = "Admin";
+  const sessionTimeLeft = "28m left"; // This would be dynamic in a real app
 
   return (
     <>
@@ -174,13 +198,13 @@ export function TopBar() {
 
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className={iconButtonClass} title="Agent Status">
+                <Button variant="ghost" size="icon" className={iconButtonClass} title="Agent Workload">
                   <Cpu className="h-5 w-5" />
-                  <span className="sr-only">Agent Status</span>
+                  <span className="sr-only">Agent Workload</span>
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-80" align="end">
-                <ActiveAgentsPopoverContent />
+                <AgentWorkloadPreview /> 
               </PopoverContent>
             </Popover>
 
@@ -203,12 +227,19 @@ export function TopBar() {
                 />
               </PopoverContent>
             </Popover>
+            
+            <div className="hidden lg:flex items-center gap-1.5 p-1.5 pr-2.5 rounded-lg bg-input/30 backdrop-blur-sm border border-primary/20 h-10 shadow-sm">
+                <Clock className="h-3.5 w-3.5 text-muted-foreground"/>
+                <span className="text-xs text-muted-foreground tabular-nums">
+                    {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })} UTC
+                </span>
+            </div>
 
             <div className="hidden lg:flex items-center gap-1.5 p-1.5 pr-2.5 rounded-lg bg-input/30 backdrop-blur-sm border border-primary/20 h-10 shadow-sm">
               <ShieldCheck className="h-4 w-4 text-primary" /> 
               <div className="text-xs">
-                <span className="text-foreground font-medium">Admin</span>
-                <span className="text-muted-foreground"> | ctx: Main</span>
+                <span className="text-foreground font-medium">Role: {userRole}</span>
+                <span className="text-muted-foreground"> | Session: {sessionTimeLeft}</span>
               </div>
             </div>
 
@@ -231,6 +262,13 @@ export function TopBar() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                 <DropdownMenuItem className="lg:hidden"> {/* Show only on smaller screens */}
+                    <div className="text-xs w-full">
+                        <p><span className="font-medium text-foreground">Role:</span> {userRole}</p>
+                        <p><span className="font-medium text-foreground">Session:</span> {sessionTimeLeft}</p>
+                    </div>
+                 </DropdownMenuItem>
+                 <DropdownMenuSeparator className="lg:hidden"/>
                 <DropdownMenuItem asChild>
                   <Link href="/account/profile">
                     <UserCircle className="mr-2 h-4 w-4" />
