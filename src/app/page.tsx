@@ -4,7 +4,7 @@
 
 import type { ReactNode } from 'react';
 import Link from 'next/link';
-import { Activity, Cpu, LayoutGrid, Rocket, Package as PackageIconLucide, Lock, ShieldCheck, RadioTower, TerminalSquare } from 'lucide-react'; // Added ShieldCheck, RadioTower, TerminalSquare
+import { Activity, Cpu, LayoutGrid, Rocket, Package as PackageIconLucide, Lock, ShieldCheck, RadioTower, TerminalSquare } from 'lucide-react';
 import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
 import type { MicroApp } from '@/types/micro-app';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,7 +20,7 @@ const iconMap: Record<string, ReactNode> = {
   Cpu: <Cpu className="h-5 w-5" />,
   LayoutGrid: <LayoutGrid className="h-5 w-5" />,
   Package: <PackageIconLucide className="h-5 w-5" />,
-  Workflow: <LayoutGrid className="h-5 w-5" />, // Assuming Workflow maps to LayoutGrid or similar
+  Workflow: <LayoutGrid className="h-5 w-5" />,
   ShieldCheck: <ShieldCheck className="h-5 w-5" />,
   RadioTower: <RadioTower className="h-5 w-5" />,
   TerminalSquare: <TerminalSquare className="h-5 w-5" />,
@@ -29,12 +29,12 @@ const iconMap: Record<string, ReactNode> = {
 
 interface MicroAppCardProps {
   app: MicroApp;
-  userHasActiveSubscription: boolean; // Example, in a real app this would come from auth/user state
+  userHasActiveSubscription: boolean;
 }
 
 function MicroAppCard({ app, userHasActiveSubscription }: MicroAppCardProps) {
   const isGated = app.requiresSubscription && !userHasActiveSubscription;
-  const effectiveHref = isGated ? "/plans" : (app.entryPoint || "#"); // Fallback to # if no entryPoint
+  const effectiveHref = isGated ? "/plans" : (app.entryPoint || "#");
   const iconNode = app.icon ? iconMap[app.icon] || <PackageIconLucide className="h-5 w-5 text-primary" /> : <PackageIconLucide className="h-5 w-5 text-primary" />;
 
   return (
@@ -83,12 +83,12 @@ export default function HomePage() {
             It looks like there are no micro-applications currently configured for your dashboard.
             An administrator can enable or register new micro-apps in the Admin Micro-App Registry.
           </p>
-          <Link href="/admin/micro-apps" passHref>
+          <Link href="/admin/micro-apps">
             <Button variant="outline">Go to Admin Registry</Button>
           </Link>
         </div>
       ) : (
-        <ScrollArea className="flex-grow min-h-0"> {/* Ensure ScrollArea is within a flex container that allows shrinking */}
+        <ScrollArea className="flex-grow min-h-0">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 p-0.5">
             {deployableApps.map((app) => (
               <MicroAppCard key={app.id} app={app} userHasActiveSubscription={userHasActiveSubscription} />
