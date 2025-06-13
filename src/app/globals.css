@@ -6,7 +6,7 @@
 /* ========== Base Layer Reset ========== */
 html, body {
   @apply bg-black text-white antialiased overflow-x-hidden;
-  background-color: #050505; /* softer than #000 */
+  background-color: #050d0a; /* Deep obsidian with green/blue undertones */
   font-family: 'Lexend', 'Comfortaa', sans-serif;
   scroll-behavior: smooth;
 }
@@ -16,50 +16,56 @@ html, body {
   --jade: #00ffa2;
   --jade-soft: rgba(0, 255, 162, 0.2);
   --jade-glow: 0 0 12px rgba(0, 255, 162, 0.5);
-  --glass-bg: rgba(15, 25, 20, 0.25);
+  --glass-bg: rgba(15, 25, 20, 0.25); /* Base for cards, slightly greenish */
   --glass-border: rgba(0, 255, 162, 0.15);
   --text-soft: rgba(255, 255, 255, 0.85);
-  --text-muted: rgba(200, 255, 220, 0.6);
+  --text-muted: rgba(200, 255, 220, 0.6); /* Muted text with a slight jade tint */
   --blur: blur(16px);
   --shadow-soft: 0 4px 20px rgba(0, 255, 162, 0.1);
 
-  /* ShadCN Compatibility - Map new tokens to expected ShadCN variables */
-  /* These are general mappings; specific components might need further tweaks if they use more granular ShadCN variables not covered here. */
-  
+  /* ShadCN Compatibility - Mapped to new theme */
   /* Backgrounds */
-  --background: 5 5% 5%; /* #0C0C0C from #050505 */
+  --background: 160 43% 4%; /* #050d0a Deep obsidian */
   --foreground: 0 0% 100%; /* white */
   
-  --card: 140 25% 8%; /* Approx from --glass-bg: rgba(15, 25, 20, 0.25) -> dark green/gray */
-  --card-foreground: 0 0% 95%; /* --text-soft */
+  /* Cards & Popovers - Using --glass-bg as base */
+  /* HSL for rgba(15, 25, 20, 0.25) is tricky as alpha is involved. 
+     Let's pick an HSL that represents a dark, slightly green-tinted glass.
+     Approx. HSL for rgb(15,25,20) is 150, 25%, 8% 
+  */
+  --card: 150 25% 8%; /* Dark greenish glass */
+  --card-foreground: 150 25% 90%; /* Light text for cards */
   
-  --popover: 140 25% 10%; /* Slightly lighter than card */
-  --popover-foreground: 0 0% 95%; /* --text-soft */
+  --popover: 150 25% 10%; /* Slightly lighter than card */
+  --popover-foreground: 150 25% 90%;
 
   /* Primary Interactive Elements (Jade) */
   --primary: 159 100% 50%; /* --jade: #00ffa2 */
   --primary-foreground: 159 100% 10%; /* Dark green for text on jade */
 
   /* Secondary Elements (Subtle Jade/Glass) */
-  --secondary: 159 100% 50%; /* Using jade again, as there's no direct secondary color. Can be adjusted. */
-  --secondary-foreground: 159 100% 10%; 
+  --secondary: 159 60% 25%; /* A more desaturated/darker jade */
+  --secondary-foreground: 159 60% 85%; /* Light text for secondary */
 
-  /* Muted Text & Borders */
-  --muted: 140 40% 25%; /* --text-muted mapping to a muted bg */
-  --muted-foreground: 140 40% 70%; /* --text-muted */
+  /* Muted Text & Borders for components */
+  /* --text-muted: rgba(200, 255, 220, 0.6) -> approx HSL 140, 100%, 89% (ignoring alpha)
+     For backgrounds/borders, we need something darker.
+  */
+  --muted: 150 20% 15%; /* Dark muted green/gray for component backgrounds */
+  --muted-foreground: 140 40% 70%; /* For text on muted backgrounds, maps to --text-muted */
   
-  --accent: 159 100% 50%; /* Using jade as accent, can be changed if a different accent color is desired */
-  --accent-foreground: 159 100% 10%;
+  --accent: 159 80% 60%; /* A slightly lighter/brighter Jade for accents */
+  --accent-foreground: 159 100% 10%; /* Dark green for text on accent */
   
   --destructive: 0 84% 60%; /* Standard red for destructive actions */
   --destructive-foreground: 0 0% 98%;
 
   /* Borders & Inputs */
-  --border: 159 100% 50% / 0.15; /* --glass-border: rgba(0, 255, 162, 0.15) */
-  --input: 140 25% 8% / 0.5; /* Darker version of glass-bg for inputs */
-  --ring: 159 100% 50%; /* Jade for focus rings */
+  --border: 159 100% 50% / 0.25; /* --glass-border at 25% opacity for components */
+  --input: 150 25% 10% / 0.8;   /* Darker, more opaque glass for inputs */
+  --ring: 159 100% 50%;       /* Jade for focus rings */
 
-  --radius: 1rem; /* Keep existing radius or adjust if needed */
+  --radius: 1rem; 
 
   /* Chart Colors - Harmonized with Jade */
   --chart-1: hsl(var(--primary));
@@ -75,16 +81,6 @@ html, body {
   --scrollbar-thumb-border-color: hsl(var(--background) / 0.6);
 }
 
-
-/* Ensure .dark class is used if ShadCN components rely on it for dark mode styling, even if body is styled directly */
-.dark {
-  /* This block can be empty if all styles are handled by :root and direct body styling.
-     Or, it can reiterate the :root variables if ShadCN components specifically look for .dark context.
-     For simplicity, we'll assume :root is sufficient for now.
-     If components don't pick up the theme, populate this with the :root variables.
-  */
-}
-
 /* Ensure Tailwind base styles use our custom properties for background and text */
 @layer base {
   body {
@@ -94,7 +90,6 @@ html, body {
     @apply border-border; /* Default border for components */
   }
 }
-
 
 /* ========== Global Utility Layer ========== */
 .glass-panel {
@@ -114,7 +109,7 @@ html, body {
   color: var(--text-soft);
 }
 
-.text-muted {
+.text-muted { /* This utility class will now use the --text-muted token */
   color: var(--text-muted);
 }
 
@@ -159,7 +154,7 @@ html, body {
   }
 }
 
-/* React Grid Layout specific styles - keep if RGL is used */
+/* React Grid Layout specific styles */
 .react-grid-layout {
   position: relative;
   transition: height 200ms ease;
@@ -187,7 +182,7 @@ html, body {
 }
 
 .react-grid-item.react-grid-placeholder {
-  background: hsl(var(--primary) / 0.2); /* Use primary for placeholder */
+  background: hsl(var(--primary) / 0.2); 
   opacity: 0.5;
   transition-duration: 100ms;
   z-index: 2;
@@ -197,7 +192,7 @@ html, body {
   -o-user-select: none;
   user-select: none;
   border-radius: var(--radius);
-  border: 1px dashed hsl(var(--primary) / 0.4); /* Use primary */
+  border: 1px dashed hsl(var(--primary) / 0.4); 
   backdrop-filter: blur(2px);
 }
 
@@ -236,29 +231,29 @@ html, body {
     height: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: var(--scrollbar-track-bg); /* Uses new token */
+    background: var(--scrollbar-track-bg); 
     border-radius: 10px;
   }
   ::-webkit-scrollbar-thumb {
-    background-color: var(--scrollbar-thumb-bg); /* Uses new token */
+    background-color: var(--scrollbar-thumb-bg); 
     border-radius: 10px;
-    border: 2px solid var(--scrollbar-thumb-border-color); /* Uses new token */
+    border: 2px solid var(--scrollbar-thumb-border-color); 
     background-clip: padding-box;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background-color: var(--scrollbar-thumb-hover-bg); /* Uses new token */
-    border-color: var(--scrollbar-thumb-border-color); /* Uses new token */
+    background-color: var(--scrollbar-thumb-hover-bg); 
+    border-color: var(--scrollbar-thumb-border-color); 
   }
   ::-webkit-scrollbar-corner {
     background: transparent;
   }
   * {
     scrollbar-width: thin;
-    scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg); /* Uses new tokens */
+    scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg); 
   }
 }
 
-/* Zone Shimmer Border - keep if used, make sure accent is defined */
+/* Zone Shimmer Border */
 @layer utilities {
   .zone-shimmer-border {
     position: relative;
@@ -275,16 +270,15 @@ html, body {
       transparent,
       transparent,
       transparent,
-      hsl(var(--accent) / 0.3), /* Uses mapped accent */
-      hsl(var(--primary) / 0.2),  /* Uses mapped primary */
+      hsl(var(--accent) / 0.3), 
+      hsl(var(--primary) / 0.2),  
       transparent,
       transparent
     );
     animation: shimmer 4s linear infinite;
-    z-index: -1; /* Ensure it's behind content */
-    border-radius: inherit; /* Inherit border-radius from parent */
+    z-index: -1; 
+    border-radius: inherit; 
   }
-  /* Ensure direct children of shimmer border are positioned above the pseudo-element */
   .zone-shimmer-border > * {
     position: relative; 
     z-index: 1;
@@ -299,3 +293,5 @@ html, body {
     transform: rotate(360deg);
   }
 }
+
+    
