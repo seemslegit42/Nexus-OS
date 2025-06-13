@@ -55,8 +55,8 @@ const allAvailableActions: CommandAction[] = [
   { id: 'agent-manage', group: 'Agent Actions', name: 'Manage Agents', icon: <Cpu />, perform: (close, r) => { r.push('/agents'); close(); } },
 
   // Micro-App Actions (Admin)
-  { id: 'microapp-manage', group: 'Admin Actions', name: 'Manage Micro-Apps', icon: <Package />, perform: (close, r) => { r.push('/admin/micro-apps'); close(); } },
-  { id: 'microapp-register', group: 'Admin Actions', name: 'Register New Micro-App', icon: <FilePlus />, perform: (close, r) => { r.push('/admin/micro-apps'); close(); } },
+  { id: 'microapp-manage', group: 'Admin Actions', name: 'Manage Micro-Apps', icon: <Package />, keywords: ["admin", "registry", "apps"], perform: (close, r) => { r.push('/admin/micro-apps'); close(); } },
+  { id: 'microapp-register', group: 'Admin Actions', name: 'Register New Micro-App', icon: <FilePlus />, keywords: ["admin", "add app"], perform: (close, r) => { r.push('/admin/micro-apps'); close(); } },
   
   // Item Actions
   { id: 'item-create', group: 'Item Actions', name: 'Create New Item', icon: <FilePlus />, keywords: ['new project', 'new app'], perform: (close, r) => { r.push('/home/items/new'); close(); } },
@@ -119,7 +119,17 @@ export function CommandLauncherDialog({ open, onOpenChange }: CommandLauncherDia
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-0 sm:max-w-2xl max-h-[80vh] flex flex-col shadow-2xl !rounded-2xl !border-primary/25 !bg-popover/80 !backdrop-blur-lg">
+      <DialogContent 
+        className={cn(
+            "p-0 sm:max-w-2xl max-h-[80vh] flex flex-col", // Keep existing layout and size constraints
+            // The base DialogContent component in ui/dialog.tsx already provides:
+            // rounded-2xl, border border-primary/25, bg-popover, backdrop-blur-md,
+            // and shadow-[0_4px_30px_hsl(var(--primary)/0.12)]
+            // So, no need to repeat or override those with '!' unless specifically different.
+            // If a stronger blur or more opaque background is desired, it can be added here,
+            // e.g., "bg-popover/80 backdrop-blur-lg", but for consistency, using base is preferred.
+        )}
+      >
         <DialogHeader className="px-4 pt-4 pb-2 border-b border-primary/20">
            <div className="flex items-center gap-2">
              <SearchIconLucide className="h-5 w-5 text-muted-foreground" />
