@@ -7,11 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Activity, LayoutDashboard, Workflow, ShieldCheck, RadioTower, X as CloseIcon, ExternalLink, Package, TerminalSquare } from 'lucide-react';
+import { Activity, LayoutDashboard, Workflow, ShieldCheck, RadioTower, X as CloseIcon, ExternalLink, Package, TerminalSquare, PackageSearch } from 'lucide-react';
 import LiveOrchestrationsFeed from './LiveOrchestrationsFeed';
 import AgentPresenceGrid from './AgentPresenceGrid';
-import type { MicroApp } from '@/types/micro-app'; // Import the type
-import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store'; // Import the store
+import type { MicroApp } from '@/types/micro-app';
+import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
 
 const SystemSnapshotPlaceholder: React.FC = () => {
   return (
@@ -34,47 +34,48 @@ const SystemSnapshotPlaceholder: React.FC = () => {
 
 // Helper function to get Lucide icon component from string name
 const getLucideIcon = (iconName: string | undefined): React.ReactNode => {
-  if (!iconName) return <Package className="h-6 w-6 mb-1 text-primary opacity-80" />;
+  const iconProps = { className: "h-6 w-6 mb-1 text-primary opacity-80" };
+  if (!iconName) return <Package {...iconProps} />;
   switch (iconName.toLowerCase()) {
     case 'workflow':
-      return <Workflow className="h-6 w-6 mb-1 text-primary opacity-80" />;
+      return <Workflow {...iconProps} />;
     case 'shieldcheck':
-      return <ShieldCheck className="h-6 w-6 mb-1 text-primary opacity-80" />;
+      return <ShieldCheck {...iconProps} />;
     case 'radiotower':
-      return <RadioTower className="h-6 w-6 mb-1 text-primary opacity-80" />;
+      return <RadioTower {...iconProps} />;
     case 'terminalsquare':
-      return <TerminalSquare className="h-6 w-6 mb-1 text-primary opacity-80" />;
+      return <TerminalSquare {...iconProps} />;
     case 'layoutdashboard':
-        return <LayoutDashboard className="h-6 w-6 mb-1 text-primary opacity-80" />;
+      return <LayoutDashboard {...iconProps} />;
     default:
-      return <Package className="h-6 w-6 mb-1 text-primary opacity-80" />; // Default icon
+      return <Package {...iconProps} />;
   }
 };
+
 const getLucideIconSmall = (iconName: string | undefined): React.ReactNode => {
-  if (!iconName) return <Package className="h-4 w-4 mr-2" />;
+  const iconProps = { className: "h-4 w-4 mr-2" };
+   if (!iconName) return <Package {...iconProps} />;
   switch (iconName.toLowerCase()) {
     case 'workflow':
-      return <Workflow className="h-4 w-4 mr-2" />;
+      return <Workflow {...iconProps} />;
     case 'shieldcheck':
-      return <ShieldCheck className="h-4 w-4 mr-2" />;
+      return <ShieldCheck {...iconProps} />;
     case 'radiotower':
-      return <RadioTower className="h-4 w-4 mr-2" />;
+      return <RadioTower {...iconProps} />;
     case 'terminalsquare':
-      return <TerminalSquare className="h-4 w-4 mr-2" />;
+      return <TerminalSquare {...iconProps} />;
     case 'layoutdashboard':
-        return <LayoutDashboard className="h-4 w-4 mr-2" />;
+      return <LayoutDashboard {...iconProps} />;
     default:
-      return <Package className="h-4 w-4 mr-2" />; // Default icon
+      return <Package {...iconProps} />;
   }
 };
 
 
 export default function CommandObservatory() {
   const [launchedApp, setLaunchedApp] = useState<MicroApp | null>(null);
-  // Fetch apps from the store
   const allApps = useMicroAppRegistryStore(state => state.apps);
 
-  // Filter apps that are visible and deployable to the dashboard
   const dashboardMicroApps = allApps.filter(
     app => app.isVisible && app.deployableTo.includes('dashboard')
   );
@@ -136,7 +137,11 @@ export default function CommandObservatory() {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-muted-foreground text-center py-4">No micro-apps available for launch.</p>
+                    <div className="text-center py-6 text-sm text-muted-foreground">
+                      <PackageSearch className="mx-auto h-10 w-10 opacity-50 mb-2" />
+                      No micro-apps available for launch.
+                      <p className="text-xs mt-1">(Check visibility and 'deployableTo' settings in Admin.)</p>
+                    </div>
                   )}
                 </CardContent>
               </Card>
