@@ -5,10 +5,8 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ChevronDown, ListChecks, Zap, Users, Clock, CheckCircle, XCircle, AlertTriangle, Loader2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNowStrict, format } from 'date-fns';
 
@@ -70,28 +68,28 @@ const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = ({ e
     switch (entry.status) {
       case 'success':
         return {
-          borderColor: 'border-green-500/70 hover:border-green-500',
+          cardOuterClass: 'border-green-500/70 hover:border-green-500/90 bg-green-500/5 hover:bg-green-500/10',
           icon: <CheckCircle className="h-4 w-4 text-green-500" />,
           badgeVariant: 'default' as const,
           badgeClass: 'bg-green-500/20 text-green-600 dark:text-green-300 border-green-500/30',
         };
       case 'in-progress':
         return {
-          borderColor: 'border-yellow-500/70 hover:border-yellow-500',
+          cardOuterClass: 'border-yellow-500/70 hover:border-yellow-500/90 bg-yellow-500/5 hover:bg-yellow-500/10',
           icon: <Loader2 className="h-4 w-4 text-yellow-500 animate-spin" />,
           badgeVariant: 'secondary' as const,
           badgeClass: 'bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border-yellow-500/30 animate-pulse',
         };
       case 'failure':
         return {
-          borderColor: 'border-red-500/70 hover:border-red-500',
+          cardOuterClass: 'border-red-500/70 hover:border-red-500/90 bg-red-500/5 hover:bg-red-500/10',
           icon: <XCircle className="h-4 w-4 text-red-500" />,
           badgeVariant: 'destructive'as const,
           badgeClass: 'bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/30',
         };
       default:
         return {
-          borderColor: 'border-primary/20 hover:border-primary/40',
+          cardOuterClass: 'border-primary/20 hover:border-primary/40 bg-card/40 hover:bg-card/60',
           icon: <AlertTriangle className="h-4 w-4 text-muted-foreground" />,
           badgeVariant: 'outline'as const,
           badgeClass: 'border-muted-foreground/50 text-muted-foreground',
@@ -100,97 +98,90 @@ const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = ({ e
   };
 
   const statusStyles = getStatusStyles();
-
   const formattedTimestamp = format(entry.timestamp, "HH:mm:ss.SSS");
   const timeAgo = formatDistanceToNowStrict(entry.timestamp, { addSuffix: true });
 
   return (
-    <motion.div
-      layout
-      initial={{ borderRadius: "0.75rem" }} // Corresponds to rounded-xl from Card
-      className={cn(
-        "p-0.5 rounded-xl transition-all duration-300",
-        statusStyles.borderColor,
-        isExpanded ? "bg-card/70" : "bg-card/40 hover:bg-card/60"
+    <Card className={cn(
+        "rounded-xl transition-all duration-300 backdrop-blur-sm shadow-[0_2px_10px_rgba(0,255,162,0.08)]", // Base glassy jade
+        statusStyles.cardOuterClass // Status-specific border and hover background
       )}
     >
-      <Card className={cn("bg-transparent border-none shadow-none")}>
-        <CardHeader
-          className="flex flex-row items-center justify-between p-2 cursor-pointer"
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
-          <div className="flex items-center gap-2 overflow-hidden">
-            {statusStyles.icon}
-            <div className="flex-grow overflow-hidden">
-              <p className="text-xs font-medium text-foreground truncate" title={entry.inputEvent}>
-                {entry.inputEvent.length > 60 ? entry.inputEvent.substring(0, 57) + "..." : entry.inputEvent}
-              </p>
-              <p className="text-[10px] text-muted-foreground">
-                {formattedTimestamp} ({timeAgo})
-              </p>
+      <CardHeader
+        className="flex flex-row items-center justify-between p-2 cursor-pointer"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <div className="flex items-center gap-2 overflow-hidden">
+          {statusStyles.icon}
+          <div className="flex-grow overflow-hidden">
+            <p className="text-xs font-medium text-foreground truncate" title={entry.inputEvent}>
+              {entry.inputEvent.length > 60 ? entry.inputEvent.substring(0, 57) + "..." : entry.inputEvent}
+            </p>
+            <p className="text-[10px] text-muted-foreground">
+              {formattedTimestamp} ({timeAgo})
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+           <Badge variant={statusStyles.badgeVariant} className={cn("text-[9px] h-5 px-1.5 hidden sm:inline-flex", statusStyles.badgeClass)}>
+              {entry.status}
+           </Badge>
+          <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform duration-200", isExpanded && "rotate-180")} />
+        </div>
+      </CardHeader>
+
+      {isExpanded && (
+        <CardContent className="px-2.5 pb-2.5 pt-1.5 text-xs space-y-2 border-t border-primary/10">
+          <div>
+            <strong className="text-muted-foreground block mb-0.5">Triggered Agents:</strong>
+            <div className="flex flex-wrap gap-1">
+              {entry.agentsInvolved.length > 0 ? 
+                entry.agentsInvolved.map(agent => <Badge key={agent} variant="secondary" className="text-[10px] bg-muted/70 text-muted-foreground">{agent}</Badge>) :
+                <span className="text-foreground">N/A</span>
+              }
             </div>
           </div>
-          <div className="flex items-center gap-2">
-             <Badge variant={statusStyles.badgeVariant} className={cn("text-[9px] h-5 px-1.5 hidden sm:inline-flex", statusStyles.badgeClass)}>
-                {entry.status}
-             </Badge>
-            <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
-            </motion.div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <strong className="text-muted-foreground">Started:</strong>
+              <span className="text-foreground ml-1">{format(entry.startTime, "HH:mm:ss.SSS")}</span>
+            </div>
+            {entry.durationMs !== undefined && (
+              <div>
+                <strong className="text-muted-foreground">Duration:</strong>
+                <span className="text-foreground ml-1">{(entry.durationMs / 1000).toFixed(2)}s</span>
+              </div>
+            )}
           </div>
-        </CardHeader>
-
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="overflow-hidden"
-            >
-              <CardContent className="px-2.5 pb-2.5 pt-1.5 text-xs space-y-1.5 border-t border-primary/10">
-                <div>
-                  <strong className="text-muted-foreground">Agents:</strong>
-                  <span className="text-foreground ml-1">{entry.agentsInvolved.join(', ') || 'N/A'}</span>
-                </div>
-                <div>
-                  <strong className="text-muted-foreground">Started:</strong>
-                  <span className="text-foreground ml-1">{format(entry.startTime, "HH:mm:ss")}</span>
-                  {entry.durationMs !== undefined && (
-                    <span className="text-muted-foreground ml-2">
-                      (Duration: {(entry.durationMs / 1000).toFixed(2)}s)
-                    </span>
-                  )}
-                </div>
-                {entry.outcome && (
-                  <div>
-                    <strong className="text-muted-foreground">Outcome:</strong>
-                    <span className="text-foreground ml-1">{entry.outcome}</span>
-                  </div>
-                )}
-                {entry.rawInput && (
-                   <div>
-                    <strong className="text-muted-foreground">Input Data:</strong>
-                    <pre className="mt-0.5 p-1.5 bg-black/20 rounded-md text-[10px] max-h-20 overflow-auto font-code text-muted-foreground/80">
-                        {JSON.stringify(entry.rawInput, null, 2)}
-                    </pre>
-                   </div>
-                )}
-                 {entry.rawOutput && (
-                   <div>
-                    <strong className="text-muted-foreground">Output Data:</strong>
-                     <pre className="mt-0.5 p-1.5 bg-black/20 rounded-md text-[10px] max-h-20 overflow-auto font-code text-muted-foreground/80">
-                        {JSON.stringify(entry.rawOutput, null, 2)}
-                    </pre>
-                   </div>
-                )}
-              </CardContent>
-            </motion.div>
+          {entry.outcome && (
+            <div>
+              <strong className="text-muted-foreground">Outcome/Result:</strong>
+              <p className="text-foreground mt-0.5 p-1.5 bg-black/20 rounded-md text-[11px] whitespace-pre-wrap">{entry.outcome}</p>
+            </div>
           )}
-        </AnimatePresence>
-      </Card>
-    </motion.div>
+          {entry.rawInput && (
+             <div>
+              <strong className="text-muted-foreground">Payload (Input):</strong>
+              <ScrollArea className="mt-0.5 max-h-24">
+                <pre className="p-1.5 bg-black/20 rounded-md text-[10px] font-code text-muted-foreground/80">
+                    {JSON.stringify(entry.rawInput, null, 2)}
+                </pre>
+              </ScrollArea>
+             </div>
+          )}
+           {entry.rawOutput && (
+             <div>
+              <strong className="text-muted-foreground">Payload (Output):</strong>
+              <ScrollArea className="mt-0.5 max-h-24">
+                <pre className="p-1.5 bg-black/20 rounded-md text-[10px] font-code text-muted-foreground/80">
+                    {JSON.stringify(entry.rawOutput, null, 2)}
+                </pre>
+              </ScrollArea>
+             </div>
+          )}
+        </CardContent>
+      )}
+    </Card>
   );
 };
 
@@ -203,15 +194,17 @@ export default function LiveOrchestrationsFeed() {
       const newEntry: OrchestrationEntryData = {
         id: `orch_${Date.now()}`,
         timestamp: new Date(),
-        inputEvent: Math.random() > 0.5 ? "System Event: Health Check" : "Agent Task: Process X",
-        agentsInvolved: Math.random() > 0.3 ? ['SystemMonitor', 'AlertAgent'] : ['TaskRunner'],
-        startTime: new Date(),
+        inputEvent: Math.random() > 0.5 ? "System Event: Health Check Complete" : "Agent Task: Analyze User Sentiment",
+        agentsInvolved: Math.random() > 0.3 ? ['SentimentAnalyzer', 'Notifier'] : ['SystemHealthAgent'],
+        startTime: new Date(Date.now() - (Math.floor(Math.random() * 5000) + 500)), // started 0.5s to 5.5s ago
         status: Math.random() > 0.2 ? (Math.random() > 0.4 ? 'success' : 'failure') : 'in-progress',
-        outcome: Math.random() > 0.2 ? 'Completed successfully.' : 'Processing...',
+        outcome: Math.random() > 0.2 ? 'Analysis complete. Report generated.' : 'Processing data stream...',
         durationMs: Math.random() > 0.2 ? Math.floor(Math.random() * 5000) + 1000 : undefined,
+        rawInput: { source: Math.random() > 0.5 ? "twitter_feed" : "internal_metrics_api" },
+        rawOutput: Math.random() > 0.3 ? { result_score: Math.random().toFixed(2) } : { status_code: 200 }
       };
       setEntries(prev => [newEntry, ...prev.slice(0, 19)]); // Keep last 20 entries
-    }, 7000); // Add new entry every 7 seconds
+    }, 7000); 
     return () => clearInterval(interval);
   }, []);
 
@@ -230,20 +223,9 @@ export default function LiveOrchestrationsFeed() {
             </div>
           ) : (
             <div className="space-y-1.5 py-1">
-              <AnimatePresence initial={false}>
-                {entries.map((entry) => (
-                   <motion.div
-                    key={entry.id}
-                    layout
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, height: 0, marginBottom: 0, paddingTop:0, paddingBottom:0 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                  >
-                    <OrchestrationEntryCard entry={entry} />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+              {entries.map((entry) => (
+                <OrchestrationEntryCard key={entry.id} entry={entry} />
+              ))}
             </div>
           )}
         </ScrollArea>
