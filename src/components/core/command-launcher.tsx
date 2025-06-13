@@ -54,9 +54,9 @@ const allAvailableActions: CommandAction[] = [
   { id: 'agent-spawn', group: 'Agent Actions', name: 'Spawn New Agent', icon: <Zap />, keywords: ['create agent', 'new bot'], perform: (close, r) => { r.push('/onboarding'); close(); } }, // Or a dedicated agent creation page
   { id: 'agent-manage', group: 'Agent Actions', name: 'Manage Agents', icon: <Cpu />, perform: (close, r) => { r.push('/agents'); close(); } },
 
-  // Module Actions (Assuming 'modules' are now handled by micro-apps or item modules)
-  { id: 'module-manage', group: 'Micro-App Actions', name: 'Manage Micro-Apps (Admin)', icon: <Package />, perform: (close, r) => { r.push('/admin/micro-apps'); close(); } },
-  { id: 'module-create', group: 'Micro-App Actions', name: 'Register New Micro-App (Admin)', icon: <FilePlus />, perform: (close, r) => { r.push('/admin/micro-apps'); close(); } },
+  // Micro-App Actions (Admin)
+  { id: 'microapp-manage', group: 'Admin Actions', name: 'Manage Micro-Apps', icon: <Package />, perform: (close, r) => { r.push('/admin/micro-apps'); close(); } },
+  { id: 'microapp-register', group: 'Admin Actions', name: 'Register New Micro-App', icon: <FilePlus />, perform: (close, r) => { r.push('/admin/micro-apps'); close(); } },
   
   // Item Actions
   { id: 'item-create', group: 'Item Actions', name: 'Create New Item', icon: <FilePlus />, keywords: ['new project', 'new app'], perform: (close, r) => { r.push('/home/items/new'); close(); } },

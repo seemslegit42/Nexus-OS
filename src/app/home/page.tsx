@@ -4,7 +4,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Activity, LayoutGrid, PlusCircle, Settings } from "lucide-react";
+import { Activity, LayoutGrid, PlusCircle, Settings, Search } from "lucide-react"; // Added Search
 
 export default function HomePage() {
   return (
@@ -33,7 +33,7 @@ export default function HomePage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Modules</CardTitle>
+            <CardTitle className="text-sm font-medium">Active Micro-Apps</CardTitle> {/* Changed from Modules */}
             <Settings className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -64,7 +64,7 @@ export default function HomePage() {
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2 md:gap-4">
             <Link href="/home/items" legacyBehavior><Button asChild variant="outline"><a>View All Items</a></Button></Link>
-            <Link href="/explore" legacyBehavior><Button asChild variant="outline"><a>Explore Modules</a></Button></Link>
+            <Link href="/explore" legacyBehavior><Button asChild variant="outline"><a><Search className="mr-2 h-4 w-4"/>Explore Marketplace</a></Button></Link> {/* Updated to Explore Marketplace */}
             <Link href="/account/profile" legacyBehavior><Button asChild variant="outline"><a>Account Settings</a></Button></Link>
           </CardContent>
         </Card>
