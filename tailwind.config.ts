@@ -63,6 +63,11 @@ export default {
           '4': 'hsl(var(--chart-4))',
           '5': 'hsl(var(--chart-5))',
         },
+        'observatory-bg': 'var(--observatory-bg)',
+        'observatory-border': 'var(--observatory-border)',
+      },
+      boxShadow: {
+        'observatory-inner': 'var(--observatory-shadow)',
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -95,3 +100,4 @@ export default {
   },
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
+

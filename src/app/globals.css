@@ -81,6 +81,11 @@ html, body {
   --scrollbar-thumb-bg: hsl(var(--muted-foreground) / 0.3);
   --scrollbar-thumb-hover-bg: hsl(var(--muted-foreground) / 0.5);
   --scrollbar-thumb-border-color: hsl(var(--background) / 0.6);
+
+  /* Command Observatory Specific Styles */
+  --observatory-bg: rgba(12, 22, 26, 0.85);
+  --observatory-border: rgba(142, 255, 215, 0.12);
+  --observatory-shadow: inset 0 0 0.5px rgba(255, 255, 255, 0.05);
 }
 
 /* Ensure Tailwind base styles use our custom properties for background and text */

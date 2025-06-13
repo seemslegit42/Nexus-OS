@@ -131,9 +131,9 @@ export default function CommandObservatory() {
                 <p className="text-xs text-muted-foreground mb-0.5"><strong>Description:</strong> {launchedApp.description || "No description available."}</p>
                 <p className="text-xs text-muted-foreground"><strong>Entry Point:</strong> <code className="text-primary/80 bg-black/30 px-1 py-0.5 rounded-sm text-[11px]">{launchedApp.entryPoint || 'Not configured'}</code></p>
             </div>
-            {/* Actual app UI would be embedded here */}
+            {/* Actual app UI would be embedded here, this text is just to confirm dynamic data is used for description etc. */}
             <div className="mt-4 text-center text-muted-foreground">
-                Placeholder for actual UI of "{launchedApp.displayName}".
+                Content for "{launchedApp.displayName}" would be rendered here.
             </div>
             </CardContent>
         </Card>
@@ -176,11 +176,10 @@ export default function CommandObservatory() {
       icon: launchedApp ? getLucideIconSmall(launchedApp.icon) : <Package className="h-4 w-4 mr-2" />,
       content: <LaunchedAppDisplayContent />,
       defaultLayout: { lg: { x: 4, y: 12, w: 8, h: 12, minW: 4, minH: 6 } },
-      // Controls specific to this zone
-      canClose: !!launchedApp, // Only allow closing if an app is launched
+      canClose: !!launchedApp, 
       onClose: launchedApp ? handleCloseApp : undefined,
-      canPin: false, // Example: maybe this zone shouldn't be pinnable
-      canMinimize: !!launchedApp, // Can minimize if app is launched
+      canPin: false, 
+      canMinimize: !!launchedApp, 
     }
   ], [launchedApp, dashboardMicroApps, handleLaunchApp, handleCloseApp]);
 
@@ -188,23 +187,18 @@ export default function CommandObservatory() {
   return (
     <div
       className={cn(
-        "w-full h-full flex flex-col max-w-none mx-auto overflow-hidden backdrop-blur-md p-0" // Removed padding, WorkspaceGrid handles it
+        "w-full h-full flex flex-col max-w-none mx-auto overflow-hidden backdrop-blur-md p-0",
+        "bg-observatory-bg border border-observatory-border shadow-observatory-inner"
       )}
-      style={{
-        backgroundColor: 'rgba(12,22,26,0.85)', // Observatory background
-        borderColor: 'rgba(142,255,215,0.12)',
-        boxShadow: 'inset 0 0 0.5px rgba(255,255,255,0.05)',
-        borderWidth: '1px',
-        borderStyle: 'solid',
-      }}
     >
       <WorkspaceGrid
         zoneConfigs={zoneConfigs}
-        className="flex-grow p-2 md:p-3" // Padding for the grid itself
+        className="flex-grow p-2 md:p-3" 
         storageKey="commandObservatoryLayout_v2"
-        cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }} // Adjusted cols for more flexibility
-        rowHeight={20} // Fine-tune row height
+        cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }}
+        rowHeight={20} 
       />
     </div>
   );
 }
+
