@@ -7,6 +7,8 @@
 html, body {
   @apply bg-black text-white antialiased overflow-x-hidden;
   background-color: #050d0a; /* Deep obsidian with green/blue undertones */
+  background-image: radial-gradient(circle at 25% 20%, rgba(0,255,162,0.04), transparent 60%), 
+                  radial-gradient(circle at 80% 80%, rgba(0,255,162,0.03), transparent 70%);
   font-family: 'Lexend', 'Comfortaa', sans-serif;
   scroll-behavior: smooth;
 }
@@ -25,7 +27,7 @@ html, body {
 
   /* ShadCN Compatibility - Mapped to new theme */
   /* Backgrounds */
-  --background: 160 43% 4%; /* #050d0a Deep obsidian */
+  --background: 160 43% 4%; /* HSL for #050d0a Deep obsidian */
   --foreground: 0 0% 100%; /* white */
   
   /* Cards & Popovers - Using --glass-bg as base */
