@@ -1,4 +1,3 @@
-
 // src/components/dashboard/CommandObservatory.tsx
 'use client';
 
@@ -7,9 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Activity, ListChecks, Cpu, LayoutDashboard, Workflow, ShieldCheck, RadioTower, X as CloseIcon, ExternalLink } from 'lucide-react';
+import { Activity, LayoutDashboard, Workflow, ShieldCheck, RadioTower, X as CloseIcon, ExternalLink, Package, TerminalSquare } from 'lucide-react';
 import LiveOrchestrationsFeed from './LiveOrchestrationsFeed';
 import AgentPresenceGrid from './AgentPresenceGrid';
+import type { MicroApp } from '@/types/micro-app';
+import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
 
 const SystemSnapshotPlaceholder: React.FC = () => {
   return (
@@ -30,22 +31,51 @@ const SystemSnapshotPlaceholder: React.FC = () => {
   );
 };
 
-interface MicroApp {
-  id: string;
-  displayName: string;
-  icon?: React.FC<React.SVGProps<SVGSVGElement>>;
-  description?: string;
-}
+// Helper function to get Lucide icon component from string name
+const getLucideIcon = (iconName: string | undefined): React.ReactNode => {
+  if (!iconName) return <Package className="h-6 w-6 mb-1 text-primary opacity-80" />;
+  switch (iconName.toLowerCase()) {
+    case 'workflow':
+      return <Workflow className="h-6 w-6 mb-1 text-primary opacity-80" />;
+    case 'shieldcheck':
+      return <ShieldCheck className="h-6 w-6 mb-1 text-primary opacity-80" />;
+    case 'radiotower':
+      return <RadioTower className="h-6 w-6 mb-1 text-primary opacity-80" />;
+    case 'terminalsquare':
+      return <TerminalSquare className="h-6 w-6 mb-1 text-primary opacity-80" />;
+    case 'layoutdashboard':
+        return <LayoutDashboard className="h-6 w-6 mb-1 text-primary opacity-80" />;
+    default:
+      return <Package className="h-6 w-6 mb-1 text-primary opacity-80" />; // Default icon
+  }
+};
+const getLucideIconSmall = (iconName: string | undefined): React.ReactNode => {
+  if (!iconName) return <Package className="h-4 w-4 mr-2" />;
+  switch (iconName.toLowerCase()) {
+    case 'workflow':
+      return <Workflow className="h-4 w-4 mr-2" />;
+    case 'shieldcheck':
+      return <ShieldCheck className="h-4 w-4 mr-2" />;
+    case 'radiotower':
+      return <RadioTower className="h-4 w-4 mr-2" />;
+    case 'terminalsquare':
+      return <TerminalSquare className="h-4 w-4 mr-2" />;
+    case 'layoutdashboard':
+        return <LayoutDashboard className="h-4 w-4 mr-2" />;
+    default:
+      return <Package className="h-4 w-4 mr-2" />; // Default icon
+  }
+};
 
-const mockMicroApps: MicroApp[] = [
-  { id: 'autopilot_v1', displayName: 'Autopilot Builder', icon: Workflow, description: "Visual workflow design." },
-  { id: 'guardian_sec_v2.3', displayName: 'Guardian Security', icon: ShieldCheck, description: "System threat monitoring." },
-  { id: 'pulse_monitor_v0.9b', displayName: 'System Pulse', icon: RadioTower, description: "Live system health overview." },
-  { id: 'some_other_app', displayName: 'Data Analytics Suite', icon: LayoutDashboard, description: "Deep dive into metrics." },
-];
 
 export default function CommandObservatory() {
   const [launchedApp, setLaunchedApp] = useState<MicroApp | null>(null);
+  const allApps = useMicroAppRegistryStore(state => state.apps);
+
+  // Filter apps that are visible and deployable to the dashboard
+  const dashboardMicroApps = allApps.filter(
+    app => app.isVisible && app.deployableTo.includes('dashboard')
+  );
 
   const handleLaunchApp = (app: MicroApp) => {
     setLaunchedApp(app);
@@ -76,7 +106,6 @@ export default function CommandObservatory() {
               <AgentPresenceGrid />
               <SystemSnapshotPlaceholder />
               
-              {/* Micro-Apps Grid */}
               <Card className="h-auto bg-[rgba(15,25,20,0.25)] border border-[rgba(0,255,162,0.15)] backdrop-blur-sm shadow-[0_4px_20px_rgba(0,255,162,0.1)] rounded-2xl">
                 <CardHeader className="pb-2 pt-3 px-3">
                   <CardTitle className="text-base font-medium text-foreground flex items-center">
@@ -84,25 +113,29 @@ export default function CommandObservatory() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="px-3 pb-3">
-                  <div className="grid grid-cols-2 gap-2">
-                    {mockMicroApps.map((app) => (
-                      <Card 
-                        key={app.id} 
-                        className="bg-[rgba(16,42,32,0.65)] border border-[rgba(142,255,215,0.25)] text-[rgba(220,255,240,0.9)] rounded-lg p-3 flex flex-col items-center justify-center text-center"
-                      >
-                        {app.icon && <app.icon className="h-6 w-6 mb-1 text-primary opacity-80" />}
-                        <p className="text-xs font-semibold truncate w-full" title={app.displayName}>{app.displayName}</p>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="mt-2 text-xs h-7 bg-primary/10 border-primary/30 hover:bg-primary/20 text-primary hover:text-primary/90 w-full"
-                          onClick={() => handleLaunchApp(app)}
+                  {dashboardMicroApps.length > 0 ? (
+                    <div className="grid grid-cols-2 gap-2">
+                      {dashboardMicroApps.map((app) => (
+                        <Card 
+                          key={app.id} 
+                          className="bg-[rgba(16,42,32,0.65)] border border-[rgba(142,255,215,0.25)] text-[rgba(220,255,240,0.9)] rounded-lg p-3 flex flex-col items-center justify-center text-center"
                         >
-                          Launch
-                        </Button>
-                      </Card>
-                    ))}
-                  </div>
+                          {getLucideIcon(app.icon)}
+                          <p className="text-xs font-semibold truncate w-full" title={app.displayName}>{app.displayName}</p>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="mt-2 text-xs h-7 bg-primary/10 border-primary/30 hover:bg-primary/20 text-primary hover:text-primary/90 w-full"
+                            onClick={() => handleLaunchApp(app)}
+                          >
+                            Launch
+                          </Button>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground text-center py-4">No micro-apps available for launch.</p>
+                  )}
                 </CardContent>
               </Card>
 
@@ -112,7 +145,7 @@ export default function CommandObservatory() {
 
         {/* Right Column (2/3 width on md+) */}
         <div className="md:col-span-2 h-full flex flex-col overflow-hidden">
-          <div className="flex-shrink-0"> {/* Adjust this div if feed needs to shrink */}
+          <div className="flex-shrink-0">
             <LiveOrchestrationsFeed />
           </div>
           
@@ -123,7 +156,7 @@ export default function CommandObservatory() {
               >
                 <CardHeader className="flex-row items-center justify-between p-2 border-b border-[rgba(142,255,215,0.2)]">
                   <CardTitle className="text-sm font-medium text-primary flex items-center">
-                    {launchedApp.icon && <launchedApp.icon className="h-4 w-4 mr-2" />}
+                    {getLucideIconSmall(launchedApp.icon)}
                     {launchedApp.displayName}
                   </CardTitle>
                   <Button variant="ghost" size="icon" onClick={handleCloseApp} className="h-7 w-7 text-muted-foreground hover:text-destructive">
@@ -135,8 +168,8 @@ export default function CommandObservatory() {
                     Placeholder content for <span className="font-semibold">{launchedApp.displayName}</span>.
                   </p>
                   <p className="text-xs text-[rgba(220,255,240,0.7)] mt-1">
-                    This area will display the actual micro-application's interface. For now, it's just a placeholder.
-                    You can add more specific content or even an iframe here later.
+                    This area will display the actual micro-application's interface.
+                    The entry point for this app is: <code className="text-primary/80 bg-black/30 px-1 rounded-sm">{launchedApp.entryPoint || 'Not configured'}</code>
                   </p>
                    <div className="mt-4 p-4 bg-black/20 rounded-md border border-primary/20">
                       <h4 className="text-xs font-semibold text-primary mb-1">Micro-App View Details:</h4>
@@ -152,4 +185,3 @@ export default function CommandObservatory() {
     </div>
   );
 }
-
