@@ -1,7 +1,7 @@
 // src/app/page.tsx (Dashboard / App Launcher)
 'use client';
 
-import React from 'react'; // Added missing React import
+import React from 'react';
 import Link from 'next/link';
 import {
   Card,
@@ -16,37 +16,24 @@ import { Badge } from '@/components/ui/badge';
 import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
 import type { MicroApp } from '@/types/micro-app';
 import {
-  Settings,
-  Info,
-  Rocket,
-  Activity,
-  Cpu,
-  LayoutGrid,
-  PackageSearch,
+  PackageSearch, // Default fallback icon
   Workflow as WorkflowIcon,
-  ShieldCheck as ShieldCheckIcon,
+  ShieldCheck as ShieldCheckIcon, // For 'guardian_sec_v2.3', kept for map robustness
   RadioTower as RadioTowerIcon,
   TerminalSquare as TerminalSquareIcon,
-  AlertTriangle,
+  // Removed: Settings, Info, Rocket, Activity, Cpu, LayoutGrid, AlertTriangle as they are not used by current micro-apps
 } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react'; // For typing the iconMap values more precisely
 import { cn } from '@/lib/utils';
 
 // Define the icon map
 // Using React.ReactElement for iconMap values
 const iconMap: Record<string, React.ReactElement> = {
-  Workflow: <WorkflowIcon className="h-6 w-6" />,
-  ShieldCheck: <ShieldCheckIcon className="h-6 w-6" />,
-  RadioTower: <RadioTowerIcon className="h-6 w-6" />,
-  TerminalSquare: <TerminalSquareIcon className="h-6 w-6" />,
-  Settings: <Settings className="h-6 w-6" />,
-  Info: <Info className="h-6 w-6" />,
-  Rocket: <Rocket className="h-6 w-6" />,
-  Activity: <Activity className="h-6 w-6" />,
-  Cpu: <Cpu className="h-6 w-6" />,
-  LayoutGrid: <LayoutGrid className="h-6 w-6" />,
-  Package: <PackageSearch className="h-6 w-6" />,
-  AlertTriangle: <AlertTriangle className="h-6 w-6" />,
+  Workflow: <WorkflowIcon className="h-5 w-5" />,
+  ShieldCheck: <ShieldCheckIcon className="h-5 w-5" />,
+  RadioTower: <RadioTowerIcon className="h-5 w-5" />,
+  TerminalSquare: <TerminalSquareIcon className="h-5 w-5" />,
+  Package: <PackageSearch className="h-5 w-5" />, // Fallback
+  // Removed entries for Rocket, Activity, Cpu, LayoutGrid, etc.
 };
 
 interface MicroAppCardProps {
