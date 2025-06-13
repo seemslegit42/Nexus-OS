@@ -101,5 +101,27 @@ export const mockMicroApps: MicroApp[] = [
     createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date().toISOString(),
   },
+  {
+    id: 'smart_lead_tracker_v1',
+    internalName: 'smart-lead-tracker',
+    displayName: 'Smart Lead Tracker',
+    icon: 'Users',
+    description: 'A micro-app to manage and track sales leads.',
+    category: 'Productivity',
+    status: 'enabled',
+    tags: ['leads', 'crm', 'sales', 'contacts'],
+    agentDependencies: [],
+    authRequired: true,
+    isVisible: true,
+    requiresSubscription: false,
+    monetization: null,
+    flags: { isFeatured: false },
+    version: '1.0.0',
+    entryPoint: '/micro-apps/smart-lead-tracker', // Hypothetical entry point
+    deployableTo: ['dashboard'],
+    defaultLayout: { lg: { x: 0, y: 8, w: 4, h: 8, minW: 3, minH: 6 } }, // Example layout
+    permissionsRequired: ['data:read', 'data:write'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
 ];
-    
