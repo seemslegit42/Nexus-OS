@@ -5,20 +5,20 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Rocket, Settings } from 'lucide-react'; // Added Settings icon
+import { Rocket, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { MicroAppStatus } from '@/stores/micro-app-registry.store'; // Assuming status type is exported
+import type { MicroAppStatus } from '@/stores/micro-app-registry.store';
 
 interface MicroAppCardProps {
   id: string;
   name: string;
   description: string;
   onLaunch: (id: string) => void;
-  onConfigure?: (id: string) => void; // Optional configure callback
+  onConfigure?: (id: string) => void;
   tags?: string[];
-  metricPreview?: string;
+  metricPreview?: string; // For a single line metric, multi-line would require more specific props
   icon?: React.ReactNode;
-  status?: MicroAppStatus; // Optional status prop
+  status?: MicroAppStatus;
   className?: string;
 }
 
@@ -30,7 +30,7 @@ const getStatusBadgeStyling = (status?: MicroAppStatus): { variant: 'default' | 
     case 'dev-only': return { variant: 'outline', className: 'border-yellow-500/80 text-yellow-600 dark:border-yellow-500/60 dark:text-yellow-400' };
     case 'archived': return { variant: 'destructive', className: 'bg-red-700/80 text-white dark:bg-red-800/80' };
     case 'beta': return { variant: 'default', className: 'bg-blue-500/80 text-white dark:bg-blue-600/80' };
-    default: return { variant: 'outline', className: 'border-border' };
+    default: return { variant: 'outline', className: 'border-border text-muted-foreground' }; // Default for undefined status
   }
 };
 
@@ -56,7 +56,7 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
             className
         )}
     >
-      <CardHeader className="p-0 mb-2 relative"> {/* Added relative for status badge positioning */}
+      <CardHeader className="p-0 mb-2 relative">
         <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
                 {icon ? (
@@ -97,7 +97,7 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
           </div>
         )}
       </CardContent>
-      <CardFooter className="mt-auto pt-2 p-0 flex gap-2"> {/* Use CardFooter for actions */}
+      <CardFooter className="mt-auto pt-2 p-0 flex gap-2">
         <Button
           onClick={() => onLaunch(id)}
           className="flex-1 h-8 text-xs bg-primary/15 hover:bg-primary/25 text-primary border border-primary/30 hover:border-primary/50 group-hover:shadow-[0_0_12px_hsl(var(--primary)/0.3)] transition-all"
@@ -110,7 +110,7 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
           <Button
             onClick={() => onConfigure(id)}
             variant="outline"
-            size="sm" // Ensure consistent size
+            size="sm"
             className="h-8 text-xs bg-card/50 border-border/50 hover:bg-muted/70 text-muted-foreground hover:text-foreground"
             aria-label={`Configure ${name}`}
           >
