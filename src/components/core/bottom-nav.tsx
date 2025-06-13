@@ -75,20 +75,32 @@ export function BottomNav() {
       </Link>
 
       <nav className="absolute bottom-0 left-0 right-0 flex justify-around items-center bg-background/50 backdrop-blur-lg p-1 h-[60px] rounded-t-2xl shadow-[0_-8px_30px_hsl(var(--primary)/0.15)] border-t border-primary/20"> {/* Glassy bg, jade border & shadow */}
-        {itemsWithPlaceholder.map((item, index) =>
-          item.isPlaceholder ? (
-            <div key={`fab-spacer-${index}`} className="flex-1"></div> 
-          ) : (
+        {itemsWithPlaceholder.map((item, index) => {
+          if (item.isPlaceholder) {
+            return <div key={`fab-spacer-${index}`} className="flex-1"></div>;
+          }
+
+          let isActiveCalc = false;
+          if (item.href === '/') {
+            isActiveCalc = pathname === '/';
+          } else {
+            // Ensures an exact match or a true sub-path (e.g., /agents/details for /agents)
+            // and not a sibling path with a similar prefix (e.g., /agents-profile for /agents).
+            isActiveCalc = pathname === item.href || pathname.startsWith(item.href + '/');
+          }
+
+          return (
             <NavItem
               key={item.href}
               href={item.href}
               icon={item.icon}
               label={item.label}
-              isActive={pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))}
+              isActive={isActiveCalc}
             />
-          )
-        )}
+          );
+        })}
       </nav>
     </div>
   );
 }
+
