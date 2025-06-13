@@ -2,119 +2,110 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { CheckCircle, Zap, ShieldAlert, Activity, BarChart2, Settings, Eye, LayoutGrid, Command as CommandIcon } from 'lucide-react';
-import Link from 'next/link';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // Assuming CardHeader might be needed for placeholders
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 
-interface MetricProps {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  bgColorClass?: string;
-}
+// Placeholder components for the new layout
+// These would ideally be separate files but are defined inline for this refactoring step.
 
-const MetricDisplay: React.FC<MetricProps> = ({ icon, label, value, bgColorClass = 'bg-card/70' }) => (
-  <div className={`p-3 rounded-xl border border-primary/20 shadow-lg hover:shadow-primary/20 transition-all ${bgColorClass} backdrop-blur-sm`}>
-    <div className="flex items-center gap-2 mb-1">
-      {React.cloneElement(icon as React.ReactElement, { className: "h-4 w-4 text-primary" })}
-      <span className="text-xs text-muted-foreground">{label}</span>
-    </div>
-    <p className="text-xl font-semibold text-foreground">{value}</p>
-  </div>
-);
+const AgentPresenceGrid: React.FC = () => {
+  return (
+    <Card className="h-64 border-primary/20 bg-card/60 backdrop-blur-sm">
+      <CardHeader>
+        <CardTitle className="text-base font-medium text-foreground">Agent Presence</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-muted-foreground">Placeholder for agent presence grid.</p>
+        {/* Mock agent status items */}
+        <div className="mt-2 space-y-1 text-xs">
+          <p>Agent Orion: <span className="text-green-400">Active</span></p>
+          <p>Agent Scribe: <span className="text-yellow-400">Idle</span></p>
+          <p>Agent Guardian: <span className="text-red-400">Error</span></p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 
-interface AchievementProps {
-  icon: React.ReactNode;
-  text: string;
-  time: string;
-}
+const SystemSnapshot: React.FC = () => {
+  return (
+    <Card className="h-64 border-primary/20 bg-card/60 backdrop-blur-sm">
+      <CardHeader>
+        <CardTitle className="text-base font-medium text-foreground">System Snapshot</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-muted-foreground">Placeholder for system health snapshot.</p>
+         {/* Mock system metrics */}
+        <div className="mt-2 space-y-1 text-xs">
+            <p>CPU Load: <span className="text-foreground">35%</span></p>
+            <p>Memory Usage: <span className="text-foreground">60%</span></p>
+            <p>Network I/O: <span className="text-foreground">Normal</span></p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 
-const AchievementItem: React.FC<AchievementProps> = ({ icon, text, time }) => (
-  <div className="flex items-start gap-3 p-2.5 rounded-lg border border-primary/15 bg-card/50 hover:bg-muted/20 transition-colors">
-    {React.cloneElement(icon as React.ReactElement, { className: "h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" })}
-    <div>
-      <p className="text-sm text-foreground">{text}</p>
-      <p className="text-xs text-muted-foreground">{time}</p>
-    </div>
-  </div>
-);
+const LiveOrchestrationsFeed: React.FC = () => {
+  return (
+    <Card className="h-full border-primary/20 bg-card/60 backdrop-blur-sm">
+      <CardHeader>
+        <CardTitle className="text-base font-medium text-foreground">Live Orchestrations Feed</CardTitle>
+      </CardHeader>
+      <CardContent className="h-[calc(100%_-_4rem)]"> {/* Adjust height based on header */}
+        <ScrollArea className="h-full">
+            <p className="text-sm text-muted-foreground">Placeholder for live agent orchestration feed.</p>
+            {/* Mock feed items */}
+            <div className="mt-2 space-y-2 text-xs">
+                <p>[10:35:12] Agent Task Started: 'ProcessInvoices' by Agent Scribe</p>
+                <p>[10:35:45] Agent Task Completed: 'ProcessInvoices' - 50 invoices processed</p>
+                <p>[10:36:02] Agent Communication: Orion to Guardian - 'Security scan requested'</p>
+            </div>
+        </ScrollArea>
+      </CardContent>
+    </Card>
+  );
+};
 
 export default function CommandObservatory() {
-  const automatedTasksToday = "1,842";
-  const proactiveAlertsHandled = "23";
-  const efficiencyGain = "+18%";
-
-  const recentAchievements = [
-    { icon: <Zap />, text: "Customer data synchronization across 5 platforms completed seamlessly.", time: "27 minutes ago" },
-    { icon: <ShieldAlert />, text: "Automated security protocol update deployed successfully to all agents.", time: "2 hours ago" },
-    { icon: <BarChart2 />, text: "Quarterly sales report generated and distributed ahead of schedule.", time: "5 hours ago" },
-    { icon: <Settings />, text: "System performance self-optimization cycle completed with zero downtime.", time: "8 hours ago"},
-  ];
-
   return (
-    <Card className="w-full h-full flex flex-col max-w-4xl mx-auto overflow-hidden">
-      <CardHeader className="pb-4">
-        <div className="flex items-center gap-3 mb-1">
-          <Eye className="h-8 w-8 text-primary" />
-          <div>
-            <CardTitle className="text-2xl md:text-3xl font-headline text-foreground">
-              Automation Overwatch
-            </CardTitle>
-            <CardDescription className="text-sm text-muted-foreground">
-              Observe the silent efficiency of your NexOS automated ecosystem.
-            </CardDescription>
-          </div>
-        </div>
-         <div className="flex items-center gap-2 text-sm text-green-400 pt-2">
-            <CheckCircle className="h-5 w-5" />
-            <span>System Status: All Operations Nominal & Efficient</span>
-        </div>
+    <Card 
+      className={cn(
+        "w-full h-full flex flex-col max-w-7xl mx-auto overflow-hidden backdrop-blur-md", // Increased max-width
+        "border" // Ensure border width is applied, color comes from style
+      )}
+      style={{
+        backgroundColor: 'rgba(12,22,26,0.85)', 
+        borderColor: 'rgba(142,255,215,0.12)', 
+        boxShadow: 'inset 0 0 0.5px rgba(255,255,255,0.05)',
+        // borderWidth: '1px', // This is handled by the "border" class from Tailwind/ShadCN Card default
+      }}
+    >
+      {/* Optional global header for the observatory - can be uncommented if needed
+      <CardHeader className="pb-4 border-b" style={{borderColor: 'rgba(142,255,215,0.08)'}}>
+        <CardTitle className="text-xl md:text-2xl font-headline text-foreground">
+          Command Observatory
+        </CardTitle>
       </CardHeader>
-
-      <ScrollArea className="flex-grow">
-        <CardContent className="pt-0 pb-4 space-y-6">
-          <section>
-            <h3 className="text-sm font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Key Automation Metrics (Last 24h)</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <MetricDisplay icon={<Zap />} label="Tasks Automated" value={automatedTasksToday} />
-              <MetricDisplay icon={<ShieldAlert />} label="Proactive Alerts Handled" value={proactiveAlertsHandled} />
-              <MetricDisplay icon={<Activity />} label="Productivity Boost" value={efficiencyGain} />
+      */}
+      <CardContent className="flex-grow grid md:grid-cols-3 gap-4 p-3 md:p-4 overflow-hidden">
+        {/* Left Column */}
+        <div className="md:col-span-1 flex flex-col gap-4 h-full overflow-hidden">
+          <ScrollArea className="flex-grow"> {/* Scroll for the column itself if content overflows */}
+            <div className="space-y-4">
+                <AgentPresenceGrid />
+                <SystemSnapshot />
             </div>
-          </section>
-
-          <Separator className="my-4 border-primary/20" />
-
-          <section>
-            <h3 className="text-sm font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Recent Silent Achievements</h3>
-            <div className="space-y-2.5">
-              {recentAchievements.map((ach, index) => (
-                <AchievementItem key={index} icon={ach.icon} text={ach.text} time={ach.time} />
-              ))}
-            </div>
-          </section>
-        </CardContent>
-      </ScrollArea>
-
-      <CardFooter className="pt-4 border-t border-primary/20 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <p className="text-xs text-muted-foreground text-center sm:text-left">
-          NexOS is autonomously managing your workflows.
-        </p>
-        <div className="flex gap-2 flex-wrap justify-center">
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/loom-studio">
-              <LayoutGrid className="mr-2 h-3.5 w-3.5" /> Design Workflows
-            </Link>
-          </Button>
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/command">
-              <CommandIcon className="mr-2 h-3.5 w-3.5" /> Issue Directives
-            </Link>
-          </Button>
+          </ScrollArea>
         </div>
-      </CardFooter>
+        {/* Right Column */}
+        <div className="md:col-span-2 h-full overflow-hidden">
+          <LiveOrchestrationsFeed /> {/* This component handles its own internal scrolling if needed */}
+        </div>
+      </CardContent>
     </Card>
   );
 }
+
+    
