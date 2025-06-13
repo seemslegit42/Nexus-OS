@@ -16,12 +16,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuGroup,
 } from '@/components/ui/dropdown-menu';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import {
   Bell,
   Search,
@@ -45,11 +48,11 @@ import {
   ChevronsUpDown,
   Zap as LightningIcon,
   RadioTower,
-  Clock, // Added Clock for session
+  Clock,
+  Power,
 } from 'lucide-react';
 import { CommandLauncherDialog } from './command-launcher';
-// import { ActiveAgentsPopoverContent } from './ActiveAgentsPopoverContent'; // Replaced
-import { AgentWorkloadPreview } from './AgentWorkloadPreview'; // Added
+import { AgentWorkloadPreview } from './AgentWorkloadPreview';
 import { RecentNotificationsPopoverContent } from './RecentNotificationsPopoverContent';
 import { ModuleSwitcherDropdownContent } from './ModuleSwitcherDropdownContent';
 import { cn } from '@/lib/utils';
@@ -73,12 +76,25 @@ const navModules = [
 export function TopBar() {
   const [isCommandLauncherOpen, setIsCommandLauncherOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [previousHour, setPreviousHour] = useState(new Date().getHours());
+  const [pulseClock, setPulseClock] = useState(false);
+  const [isPersistentSession, setIsPersistentSession] = useState(false);
+
   const pathname = usePathname();
 
   useEffect(() => {
-    const timerId = setInterval(() => setCurrentTime(new Date()), 1000);
+    const timerId = setInterval(() => {
+      const now = new Date();
+      setCurrentTime(now);
+      const currentHour = now.getHours();
+      if (currentHour !== previousHour) {
+        setPreviousHour(currentHour);
+        setPulseClock(true);
+        setTimeout(() => setPulseClock(false), 1000); // Pulse duration
+      }
+    }, 1000);
     return () => clearInterval(timerId);
-  }, []);
+  }, [previousHour]);
   
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -123,9 +139,8 @@ export function TopBar() {
 
   const iconButtonClass = "relative h-9 w-9 md:h-10 md:w-10 text-foreground/70 hover:text-primary hover:bg-primary/10 transition-colors duration-150 ease-in-out focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background hover:shadow-[0_0_10px_1px_hsl(var(--primary)/0.3)] active:shadow-[0_0_15px_2px_hsl(var(--primary)/0.4)] rounded-full";
 
-  // Mock user session data
   const userRole = "Admin";
-  const sessionTimeLeft = "28m left"; // This would be dynamic in a real app
+  const sessionTimeLeft = "28m left"; 
 
   return (
     <>
@@ -228,9 +243,12 @@ export function TopBar() {
               </PopoverContent>
             </Popover>
             
-            <div className="hidden lg:flex items-center gap-1.5 p-1.5 pr-2.5 rounded-lg bg-input/30 backdrop-blur-sm border border-primary/20 h-10 shadow-sm">
+            <div className={cn(
+              "hidden lg:flex items-center gap-1.5 p-1.5 pr-2.5 rounded-lg bg-input/30 backdrop-blur-sm border border-primary/20 h-10 shadow-sm transition-all duration-300",
+              pulseClock && "bg-primary/20 shadow-primary/20"
+            )}>
                 <Clock className="h-3.5 w-3.5 text-muted-foreground"/>
-                <span className="text-xs text-muted-foreground tabular-nums">
+                <span className={cn("text-xs text-muted-foreground tabular-nums transition-colors duration-300", pulseClock && "text-primary font-medium")}>
                     {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })} UTC
                 </span>
             </div>
@@ -239,7 +257,7 @@ export function TopBar() {
               <ShieldCheck className="h-4 w-4 text-primary" /> 
               <div className="text-xs">
                 <span className="text-foreground font-medium">Role: {userRole}</span>
-                <span className="text-muted-foreground"> | Session: {sessionTimeLeft}</span>
+                <span className="text-muted-foreground"> | Session: {isPersistentSession ? 'Persistent' : sessionTimeLeft}</span>
               </div>
             </div>
 
@@ -252,7 +270,7 @@ export function TopBar() {
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuContent className="w-60" align="end" forceMount> {/* Increased width for new item */}
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none font-headline text-foreground">Alex Ryder</p>
@@ -262,10 +280,10 @@ export function TopBar() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                 <DropdownMenuItem className="lg:hidden"> {/* Show only on smaller screens */}
+                 <DropdownMenuItem className="lg:hidden"> 
                     <div className="text-xs w-full">
                         <p><span className="font-medium text-foreground">Role:</span> {userRole}</p>
-                        <p><span className="font-medium text-foreground">Session:</span> {sessionTimeLeft}</p>
+                        <p><span className="font-medium text-foreground">Session:</span> {isPersistentSession ? 'Persistent' : sessionTimeLeft}</p>
                     </div>
                  </DropdownMenuItem>
                  <DropdownMenuSeparator className="lg:hidden"/>
@@ -281,6 +299,20 @@ export function TopBar() {
                     <span>Settings</span>
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="flex items-center justify-between p-2 focus:bg-transparent">
+                    <Label htmlFor="persistent-session-toggle" className="text-sm font-normal flex items-center gap-2 cursor-pointer">
+                      <Power className="h-4 w-4 text-muted-foreground" /> Persistent Session
+                    </Label>
+                    <Switch
+                      id="persistent-session-toggle"
+                      checked={isPersistentSession}
+                      onCheckedChange={setIsPersistentSession}
+                      aria-label="Toggle persistent session"
+                    />
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => console.log('Log out action')} className="text-destructive focus:text-destructive-foreground">
                   <LogOut className="mr-2 h-4 w-4" />
