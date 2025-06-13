@@ -2,7 +2,7 @@
 // src/app/(public)/explore/agents/[id]/page.tsx
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -12,9 +12,22 @@ import type { MarketplaceAgent } from '@/types/marketplace-agent';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Brain, CheckCircle, Cpu, DollarSign, DownloadCloud, FileText, GitBranch, MessageSquare, ShieldCheck, Sparkles, Tag, UserCircle, Users, Workflow, PlusCircle } from 'lucide-react';
+import { ArrowLeft, Brain, CheckCircle, Cpu, DollarSign, FileText, GitBranch, MessageSquare, ShieldCheck, Sparkles, Tag, UserCircle, Users, Workflow, PlusCircle, Settings2, Edit } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 const getLucideIcon = (iconName: string | undefined, props?: any): React.ReactNode => {
   const iconProps = { className: "h-5 w-5", ...props };
@@ -73,20 +86,53 @@ export default function AgentDetailPage() {
   const { addAgentId, isAcquired } = useUserAgentsStore();
   const agentIsAcquired = isAcquired(agentId);
 
-  const handleAddAgent = () => {
+  const [isDeployDialogOpen, setIsDeployDialogOpen] = useState(false);
+  const [instanceName, setInstanceName] = useState('');
+  const [instanceDescription, setInstanceDescription] = useState('');
+  // const [instanceConfig, setInstanceConfig] = useState('{}'); // Placeholder for JSON config
+
+  useEffect(() => {
+    if (agent) {
+      setInstanceName(agent.name); // Default instance name to agent name
+    }
+  }, [agent]);
+
+  const handleInitiateDeployment = () => {
     if (!agent) return;
-    addAgentId(agent.id);
-    toast({
-      title: "Agent Added",
-      description: `${agent.name} has been added to your NexOS environment. You can manage it from the 'Agents' page.`,
-      variant: "default",
-    });
+    // Reset form fields for the dialog
+    setInstanceName(agent.name);
+    setInstanceDescription('');
+    // setInstanceConfig('{}');
+    setIsDeployDialogOpen(true);
   };
 
+  const handleConfirmDeployment = () => {
+    if (!agent) return;
+
+    console.log('Deploying Agent Instance:', {
+      agentId: agent.id,
+      agentName: agent.name,
+      instanceName,
+      instanceDescription,
+      // instanceConfig: JSON.parse(instanceConfig || '{}'),
+    });
+
+    addAgentId(agent.id); // Mark as acquired if deploying
+    
+    toast({
+      title: "Agent Deployment Initiated",
+      description: `Deployment of "${instanceName}" (based on ${agent.name}) has started.`,
+      variant: "default",
+    });
+    setIsDeployDialogOpen(false);
+    // In a real app, this would trigger an API call to create the deployed_agent_instances record
+  };
+  
   const handleManageAgent = () => {
     if (!agent) return;
-    router.push('/agents');
+    router.push('/agents'); 
   };
+
 
   if (!agent) {
     return (
@@ -100,6 +146,11 @@ export default function AgentDetailPage() {
       </div>
     );
   }
+
+  const primaryButtonAction = agentIsAcquired ? handleManageAgent : handleInitiateDeployment;
+  const primaryButtonText = agentIsAcquired ? "Manage Agent" : "Deploy Agent";
+  const primaryButtonIcon = agentIsAcquired ? <Settings2 className="mr-2 h-5 w-5" /> : <PlusCircle className="mr-2 h-5 w-5" />;
+
 
   return (
     <div className="py-8 md:py-12">
@@ -221,15 +272,16 @@ export default function AgentDetailPage() {
                 {agent.pricing?.detailsUrl && <Button variant="link" asChild className="p-0 h-auto text-primary"><Link href={agent.pricing.detailsUrl}>View full pricing details</Link></Button>}
               </CardContent>
               <CardFooter>
-                {agentIsAcquired ? (
-                    <Button size="lg" className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground" onClick={handleManageAgent}>
-                        <CheckCircle className="mr-2 h-5 w-5" /> Manage Agent
-                    </Button>
-                ) : (
-                    <Button size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handleAddAgent}>
-                        <PlusCircle className="mr-2 h-5 w-5" /> Add to My Agents
-                    </Button>
-                )}
+                <Button 
+                    size="lg" 
+                    className={cn(
+                        "w-full",
+                        agentIsAcquired ? "bg-secondary hover:bg-secondary/90 text-secondary-foreground" : "bg-primary hover:bg-primary/90 text-primary-foreground"
+                    )} 
+                    onClick={primaryButtonAction}
+                >
+                    {primaryButtonIcon} {primaryButtonText}
+                </Button>
               </CardFooter>
             </Card>
 
@@ -289,6 +341,64 @@ export default function AgentDetailPage() {
           </div>
         </div>
       </div>
+      <Dialog open={isDeployDialogOpen} onOpenChange={setIsDeployDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-headline flex items-center">
+              <Edit className="h-6 w-6 mr-3 text-primary"/> Configure & Deploy: <span className="text-primary ml-1">{agent?.name}</span>
+            </DialogTitle>
+            <DialogDescription>
+              Set up your new agent instance. This will be added to your "My Agents" list.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="instance-name">Instance Name</Label>
+              <Input
+                id="instance-name"
+                value={instanceName}
+                onChange={(e) => setInstanceName(e.target.value)}
+                placeholder="e.g., My Marketing Optimizer"
+                className="bg-input border-input focus:ring-primary"
+              />
+              <p className="text-xs text-muted-foreground">A unique name for this specific deployment of {agent?.name}.</p>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="instance-description">Instance Description (Optional)</Label>
+              <Textarea
+                id="instance-description"
+                value={instanceDescription}
+                onChange={(e) => setInstanceDescription(e.target.value)}
+                placeholder="Describe the purpose or specific configuration of this instance..."
+                className="min-h-[80px] bg-input border-input focus:ring-primary"
+              />
+            </div>
+            <Card className="bg-muted/30 border-border/50">
+                <CardHeader className="p-3"><CardTitle className="text-sm font-semibold">Agent Configuration (Placeholder)</CardTitle></CardHeader>
+                <CardContent className="p-3 pt-0 text-xs text-muted-foreground">
+                    <p>Agent-specific configuration options will appear here.</p>
+                    <p>For now, default settings for <strong>{agent?.name}</strong> will be used.</p>
+                    {/* Example: 
+                    <Label htmlFor="config-json" className="mt-2 block">Raw JSON Config (Advanced)</Label>
+                    <Textarea id="config-json" value={instanceConfig} onChange={(e) => setInstanceConfig(e.target.value)} className="font-code mt-1 h-24 bg-input border-input focus:ring-primary" /> 
+                    */}
+                </CardContent>
+            </Card>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="outline">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button type="button" onClick={handleConfirmDeployment} className="bg-primary hover:bg-primary/90 text-primary-foreground">
+              Confirm & Deploy Agent
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
+
