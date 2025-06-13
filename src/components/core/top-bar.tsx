@@ -75,26 +75,31 @@ const navModules = [
 
 export function TopBar() {
   const [isCommandLauncherOpen, setIsCommandLauncherOpen] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [previousHour, setPreviousHour] = useState(new Date().getHours());
+  const [currentTime, setCurrentTime] = useState<Date | null>(null); // Initialize to null
+  const [previousHour, setPreviousHour] = useState<number | null>(null); // Initialize to null
   const [pulseClock, setPulseClock] = useState(false);
   const [isPersistentSession, setIsPersistentSession] = useState(false);
 
   const pathname = usePathname();
 
   useEffect(() => {
+    // Set initial time and previousHour on mount (client-side)
+    const now = new Date();
+    setCurrentTime(now);
+    setPreviousHour(now.getHours());
+
     const timerId = setInterval(() => {
-      const now = new Date();
-      setCurrentTime(now);
-      const currentHour = now.getHours();
-      if (currentHour !== previousHour) {
+      const newTime = new Date();
+      setCurrentTime(newTime);
+      const currentHour = newTime.getHours();
+      if (previousHour !== null && currentHour !== previousHour) {
         setPreviousHour(currentHour);
         setPulseClock(true);
         setTimeout(() => setPulseClock(false), 1000); // Pulse duration
       }
     }, 1000);
     return () => clearInterval(timerId);
-  }, [previousHour]);
+  }, [previousHour]); // Rerun effect if previousHour changes (though it's set inside)
   
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -254,7 +259,7 @@ export function TopBar() {
             )}>
                 <Clock className="h-3.5 w-3.5 text-muted-foreground"/>
                 <span className={cn("text-xs text-muted-foreground tabular-nums transition-colors duration-300", pulseClock && "text-primary font-medium")}>
-                    {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'UTC' })} UTC
+                    {currentTime ? currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'UTC' }) : '--:--:--'} UTC
                 </span>
             </div>
 
