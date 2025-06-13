@@ -129,16 +129,14 @@ export function TopBar() {
     return foundModule || { name: 'NexOS Context', href: pathname, icon: <NexosLogo className="h-4 w-4 text-primary" /> };
   }, [pathname]);
 
-  useEffect(() => {
-    console.log(`TopBar Context Update: Active Module - ${currentModule.name}, Path: ${pathname}, CommandLauncher: ${isCommandLauncherOpen}`);
-  }, [currentModule, pathname, isCommandLauncherOpen]);
-
   const handleMarkAllNotificationsRead = () => {
+    // Placeholder: Implement actual logic
     console.log("Marking all notifications as read...");
   };
 
   const iconButtonClass = "relative h-9 w-9 md:h-10 md:w-10 text-foreground/70 hover:text-primary hover:bg-primary/10 transition-colors duration-150 ease-in-out focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background hover:shadow-[0_0_10px_1px_hsl(var(--primary)/0.3)] active:shadow-[0_0_15px_2px_hsl(var(--primary)/0.4)] rounded-full";
 
+  // Mock data, replace with actual data from auth/session context
   const userRole = "Admin";
   const sessionTimeLeft = "28m left"; 
 
@@ -227,7 +225,7 @@ export function TopBar() {
               <PopoverTrigger asChild>
                 <Button variant="ghost" size="icon" className={cn(iconButtonClass, "relative")} title="Notifications">
                   <Bell className="h-5 w-5" />
-                  {true && ( 
+                  {true && ( // Placeholder for unread notifications indicator
                     <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 flex h-2.5 w-2.5">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
@@ -280,7 +278,7 @@ export function TopBar() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                 <DropdownMenuItem className="lg:hidden"> 
+                 <DropdownMenuItem className="lg:hidden"> {/* Shown only on smaller than LG screens */}
                     <div className="text-xs w-full">
                         <p><span className="font-medium text-foreground">Role:</span> {userRole}</p>
                         <p><span className="font-medium text-foreground">Session:</span> {isPersistentSession ? 'Persistent' : sessionTimeLeft}</p>
