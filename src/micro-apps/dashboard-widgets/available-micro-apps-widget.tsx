@@ -1,6 +1,2 @@
-
-// This file is no longer needed as the widget concept has been removed.
-// The functionality of discovering and launching available micro-apps
-// is now primarily handled by the refactored src/app/page.tsx, which acts
-// as an app launcher dashboard. The "App Discovery" micro-app entry also
-// points to a relevant page (e.g., /explore).
+// This file is obsolete and has been removed as part of the widget-to-micro-app refactor.
+// App discovery functionality is now handled by the main dashboard page (src/app/page.tsx).

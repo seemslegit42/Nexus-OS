@@ -9,6 +9,7 @@ import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
 import type { MicroApp } from '@/types/micro-app';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
+import { Badge } from "@/components/ui/badge"; // Added this import
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -20,9 +21,9 @@ const iconMap: Record<string, ReactNode> = {
   LayoutGrid: <LayoutGrid className="h-5 w-5" />,
   Package: <PackageIconLucide className="h-5 w-5" />,
   Workflow: <LayoutGrid className="h-5 w-5" />, // Assuming Workflow maps to LayoutGrid or similar
-  ShieldCheck: <ShieldCheck className="h-5 w-5" />, // Added
-  RadioTower: <RadioTower className="h-5 w-5" />,   // Added
-  TerminalSquare: <TerminalSquare className="h-5 w-5" />, // Added
+  ShieldCheck: <ShieldCheck className="h-5 w-5" />,
+  RadioTower: <RadioTower className="h-5 w-5" />,
+  TerminalSquare: <TerminalSquare className="h-5 w-5" />,
   // Add other icons as needed
 };
 
