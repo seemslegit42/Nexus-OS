@@ -14,7 +14,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <Comp
         ref={ref}
         className={cn(
-          "rounded-2xl border border-primary/25 bg-card backdrop-blur-md text-card-foreground shadow-[0_4px_30px_hsl(var(--primary)/0.12)]", // Updated border opacity
+          "rounded-2xl border border-primary/25 bg-card/60 backdrop-blur-sm text-card-foreground shadow-[0_4px_20px_rgba(0,255,162,0.1)]", // Consistent glassy theme: bg-card/60, backdrop-blur-sm, shadow from globals
           className
         )}
         {...props}
