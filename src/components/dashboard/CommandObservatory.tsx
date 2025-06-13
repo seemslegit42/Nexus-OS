@@ -74,9 +74,9 @@ const getLucideIconSmall = (iconName: string | undefined): React.ReactNode => {
 
 export default function CommandObservatory() {
   const [launchedApp, setLaunchedApp] = useState<MicroApp | null>(null);
-  const allApps = useMicroAppRegistryStore(state => state.apps);
+  const allRegisteredApps = useMicroAppRegistryStore(state => state.apps);
 
-  const dashboardMicroApps = allApps.filter(
+  const dashboardMicroApps = allRegisteredApps.filter(
     app => app.isVisible && app.deployableTo.includes('dashboard')
   );
 
