@@ -7,10 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Users, PlusCircle, Trash2, Search, Sparkles, Loader2, AlertCircle } from 'lucide-react';
+import { Users, PlusCircle, Trash2, Search, Sparkles, Loader2, AlertCircle, Download } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { generateLeadInsight, type GenerateLeadInsightInput, type GenerateLeadInsightOutput } from '@/ai/flows/generate-lead-insight';
+import { useToast } from "@/hooks/use-toast";
 
 interface Lead {
   id: string;
@@ -28,6 +29,7 @@ const SmartLeadTracker: React.FC = () => {
   const [leadName, setLeadName] = useState('');
   const [leadEmail, setLeadEmail] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const { toast } = useToast();
 
   // Load leads from localStorage on initial component mount
   useEffect(() => {
@@ -36,7 +38,6 @@ const SmartLeadTracker: React.FC = () => {
       if (storedLeads) {
         const parsedLeads: Omit<Lead, 'isLoadingInsight' | 'insightError' | 'insight'>[] = JSON.parse(storedLeads);
         if (Array.isArray(parsedLeads)) {
-          // Initialize new fields if loading from older storage format
           setLeads(parsedLeads.map(lead => ({ ...lead, isLoadingInsight: false, insightError: undefined, insight: undefined })));
         } else {
           console.warn('Invalid data found in localStorage for leads, resetting.');
@@ -52,7 +53,6 @@ const SmartLeadTracker: React.FC = () => {
   // Save leads to localStorage whenever the leads state changes
   useEffect(() => {
     try {
-      // Only store core lead data, not transient UI state like isLoadingInsight
       const leadsToStore = leads.map(({ id, name, email }) => ({ id, name, email }));
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(leadsToStore));
     } catch (error) {
@@ -78,12 +78,12 @@ const SmartLeadTracker: React.FC = () => {
     const trimmedEmail = leadEmail.trim();
 
     if (!trimmedName || !trimmedEmail) {
-      alert('Please enter both name and email for the lead.');
+      toast({ title: "Validation Error", description: "Please enter both name and email for the lead.", variant: "destructive" });
       return;
     }
     if (!trimmedEmail.includes('@')) {
-        alert('Please enter a valid email address.');
-        return;
+      toast({ title: "Validation Error", description: "Please enter a valid email address.", variant: "destructive" });
+      return;
     }
 
     const newLead: Lead = {
@@ -95,10 +95,15 @@ const SmartLeadTracker: React.FC = () => {
     setLeads(prevLeads => [newLead, ...prevLeads]);
     setLeadName('');
     setLeadEmail('');
+    toast({ title: "Lead Added", description: `${trimmedName} has been successfully added.`, variant: "default" });
   };
 
   const handleDeleteLead = (leadId: string) => {
+    const leadToDelete = leads.find(lead => lead.id === leadId);
     setLeads(prevLeads => prevLeads.filter(lead => lead.id !== leadId));
+    if (leadToDelete) {
+      toast({ title: "Lead Deleted", description: `${leadToDelete.name} has been removed.`, variant: "default" });
+    }
   };
 
   const handleGetInsight = async (leadId: string) => {
@@ -127,6 +132,54 @@ const SmartLeadTracker: React.FC = () => {
         )
       );
       console.error(`Error getting insight for lead ${leadId}:`, err);
+    }
+  };
+
+  const escapeCSVField = (field: string): string => {
+    if (field.includes(',') || field.includes('"') || field.includes('\n')) {
+      return `"${field.replace(/"/g, '""')}"`;
+    }
+    return field;
+  };
+
+  const exportLeadsToCSV = () => {
+    if (filteredLeads.length === 0) {
+      toast({
+        title: "Export Failed",
+        description: "No leads to export. Add some leads or adjust your filters.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const headers = "Name,Email";
+    const rows = filteredLeads.map(lead => 
+      `${escapeCSVField(lead.name)},${escapeCSVField(lead.email)}`
+    );
+    const csvContent = `${headers}\n${rows.join('\n')}`;
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    if (link.download !== undefined) { // Feature detection
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", "nexos_leads_export.csv");
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast({
+        title: "Export Successful",
+        description: `${filteredLeads.length} leads exported to nexos_leads_export.csv.`,
+        variant: "default",
+      });
+    } else {
+       toast({
+        title: "Export Failed",
+        description: "CSV export is not supported in this browser.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -180,17 +233,28 @@ const SmartLeadTracker: React.FC = () => {
         <Separator className="my-1 md:my-2 bg-primary/20" />
 
         <div className="flex-grow flex flex-col min-h-0">
-          <div className="flex justify-between items-center mb-1.5 md:mb-2">
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-1.5 md:mb-2 gap-2">
             <h3 className="text-sm font-medium text-foreground">Current Leads ({filteredLeads.length})</h3>
-            <div className="relative w-full max-w-[200px] sm:max-w-xs">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground"/>
-                <Input
-                    type="search"
-                    placeholder="Filter leads..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="h-8 text-xs pl-8 bg-input border-input focus:ring-primary"
-                />
+            <div className="flex gap-2 w-full sm:w-auto">
+                <div className="relative flex-grow sm:flex-grow-0 w-full sm:max-w-[200px]">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground"/>
+                    <Input
+                        type="search"
+                        placeholder="Filter leads..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="h-8 text-xs pl-8 bg-input border-input focus:ring-primary w-full"
+                    />
+                </div>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={exportLeadsToCSV}
+                    className="h-8 text-xs bg-card hover:bg-muted/70 border-primary/30"
+                    title="Export filtered leads to CSV"
+                >
+                    <Download className="mr-2 h-3.5 w-3.5" /> Export ({filteredLeads.length})
+                </Button>
             </div>
           </div>
 
@@ -267,3 +331,4 @@ const SmartLeadTracker: React.FC = () => {
 };
 
 export default SmartLeadTracker;
+
