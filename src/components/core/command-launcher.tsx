@@ -32,12 +32,11 @@ interface CommandLauncherDialogProps {
 
 const allAvailableActions: CommandAction[] = [
   // Navigation
-  { id: 'nav-dashboard', group: 'Navigation', name: 'Go to Dashboard', icon: <Home />, keywords: ['home', 'main'], perform: (close, r) => { r.push('/'); close(); } },
+  { id: 'nav-dashboard', group: 'Navigation', name: 'Go to Home Dashboard', icon: <Home />, keywords: ['home', 'main'], perform: (close, r) => { r.push('/'); close(); } },
   { id: 'nav-loom-studio', group: 'Navigation', name: 'Go to Loom Studio', icon: <LayoutGrid />, keywords: ['workflow', 'visual', 'editor', 'autopilot'], perform: (close, r) => { r.push('/loom-studio'); close(); } },
   { id: 'nav-pulse', group: 'Navigation', name: 'Go to Pulse', icon: <RadioTower />, keywords: ['system status', 'live events', 'monitoring'], perform: (close, r) => { r.push('/pulse'); close(); } },
   { id: 'nav-agent-console', group: 'Navigation', name: 'Go to Agent Console', icon: <Cpu />, keywords: ['agents', 'manage', 'fleet'], perform: (close, r) => { r.push('/agents'); close(); } },
   { id: 'nav-command-cauldron', group: 'Navigation', name: 'Go to Command & Cauldron', icon: <CommandIconCmdk />, keywords: ['terminal', 'cli', 'prompt'], perform: (close, r) => { r.push('/command'); close(); } },
-  { id: 'nav-modules', group: 'Navigation', name: 'Go to Modules', icon: <Package />, keywords: ['extensions', 'plugins', 'features'], perform: (close, r) => { r.push('/modules'); close(); } },
   { id: 'nav-logs', group: 'Navigation', name: 'Go to Logs & Audit', icon: <ListChecks />, keywords: ['activity', 'history', 'events'], perform: (close, r) => { r.push('/logs'); close(); } },
   { id: 'nav-security', group: 'Navigation', name: 'Go to Security Center', icon: <ShieldCheck />, keywords: ['threats', 'firewall', 'rbac'], perform: (close, r) => { r.push('/security'); close(); } },
   { id: 'nav-permissions', group: 'Navigation', name: 'Go to Permissions', icon: <Users />, keywords: ['access', 'roles', 'authz'], perform: (close, r) => { r.push('/permissions'); close(); } },
@@ -55,9 +54,9 @@ const allAvailableActions: CommandAction[] = [
   { id: 'agent-spawn', group: 'Agent Actions', name: 'Spawn New Agent', icon: <Zap />, keywords: ['create agent', 'new bot'], perform: (close, r) => { r.push('/onboarding'); close(); } }, // Or a dedicated agent creation page
   { id: 'agent-manage', group: 'Agent Actions', name: 'Manage Agents', icon: <Cpu />, perform: (close, r) => { r.push('/agents'); close(); } },
 
-  // Module Actions
-  { id: 'module-manage', group: 'Module Actions', name: 'Manage Modules', icon: <Package />, perform: (close, r) => { r.push('/modules'); close(); } },
-  { id: 'module-create', group: 'Module Actions', name: 'Create New Module', icon: <FilePlus />, perform: (close, r) => { r.push('/modules'); close(); } },
+  // Module Actions (Assuming 'modules' are now handled by micro-apps or item modules)
+  { id: 'module-manage', group: 'Micro-App Actions', name: 'Manage Micro-Apps (Admin)', icon: <Package />, perform: (close, r) => { r.push('/admin/micro-apps'); close(); } },
+  { id: 'module-create', group: 'Micro-App Actions', name: 'Register New Micro-App (Admin)', icon: <FilePlus />, perform: (close, r) => { r.push('/admin/micro-apps'); close(); } },
   
   // Item Actions
   { id: 'item-create', group: 'Item Actions', name: 'Create New Item', icon: <FilePlus />, keywords: ['new project', 'new app'], perform: (close, r) => { r.push('/home/items/new'); close(); } },

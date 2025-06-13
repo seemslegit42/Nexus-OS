@@ -53,12 +53,11 @@ import { ModuleSwitcherDropdownContent } from './ModuleSwitcherDropdownContent';
 import { cn } from '@/lib/utils';
 
 const navModules = [
-  { name: 'Dashboard', href: '/', icon: <Home className="mr-2 h-4 w-4" /> },
+  { name: 'Home Dashboard', href: '/', icon: <Home className="mr-2 h-4 w-4" /> },
   { name: 'Loom Studio', href: '/loom-studio', icon: <LayoutGrid className="mr-2 h-4 w-4" /> },
   { name: 'Pulse', href: '/pulse', icon: <RadioTower className="mr-2 h-4 w-4" /> },
   { name: 'Agent Console', href: '/agents', icon: <Cpu className="mr-2 h-4 w-4" /> },
   { name: 'Command & Cauldron', href: '/command', icon: <CommandIcon className="mr-2 h-4 w-4" /> },
-  { name: 'Modules', href: '/modules', icon: <Package className="mr-2 h-4 w-4" /> },
   { name: 'Logs & Audit', href: '/logs', icon: <ListChecks className="mr-2 h-4 w-4" /> },
   { name: 'Security Center', href: '/security', icon: <ShieldCheck className="mr-2 h-4 w-4" /> },
   { name: 'Permissions', href: '/permissions', icon: <Users className="mr-2 h-4 w-4" /> },
@@ -67,8 +66,6 @@ const navModules = [
   { name: 'Billing', href: '/billing', icon: <BarChart3 className="mr-2 h-4 w-4" /> },
   { name: 'File Vault', href: '/files', icon: <FileArchive className="mr-2 h-4 w-4" /> },
   { name: 'OS Updates', href: '/updates', icon: <GitMerge className="mr-2 h-4 w-4" /> },
-  { name: 'Onboarding', href: '/onboarding', icon: <Rocket className="mr-2 h-4 w-4" /> },
-  { name: 'Item Details', href: '/home/items', icon: <Package className="mr-2 h-4 w-4" />}, 
 ];
 
 export function TopBar() {
@@ -79,12 +76,24 @@ export function TopBar() {
     const sortedModules = [...navModules].sort((a, b) => {
       if (pathname === a.href) return -1;
       if (pathname === b.href) return 1;
-      return b.href.length - a.href.length;
+      // Sort by length of href to match more specific paths first
+      // e.g., /home/items before /home
+      if (pathname.startsWith(a.href) && pathname.startsWith(b.href)) {
+        return b.href.length - a.href.length;
+      }
+      return b.href.length - a.href.length; // Fallback for non-matching or partially matching
     });
     let foundModule = sortedModules.find(mod => pathname.startsWith(mod.href));
+    
+    // Special handling for root path to ensure "Home Dashboard" is selected
     if (pathname === '/') {
       foundModule = navModules.find(mod => mod.href === '/');
+    } else if (!foundModule && pathname.startsWith('/home/items')) {
+        // If on a specific item page, still show "Home Dashboard" as the context, or create a "My Items" context
+        foundModule = navModules.find(mod => mod.href === '/'); // Default to Home Dashboard
     }
+
+
     return foundModule || { name: 'NexOS Context', href: pathname, icon: <NexosLogo className="h-4 w-4 text-primary" /> };
   }, [pathname]);
 
