@@ -7,11 +7,11 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 
 // Placeholder components for the new layout
-const AgentGridPlaceholder: React.FC = () => {
+const AgentPresenceGridPlaceholder: React.FC = () => {
   return (
     <Card className="h-64 border-primary/20 bg-card/60 backdrop-blur-sm">
       <CardHeader>
-        <CardTitle className="text-base font-medium text-foreground">Agent Grid</CardTitle>
+        <CardTitle className="text-base font-medium text-foreground">Agent Presence Grid</CardTitle>
       </CardHeader>
       <CardContent>
         <p className="text-sm text-muted-foreground">Placeholder for agent status and activity grid.</p>
@@ -20,11 +20,11 @@ const AgentGridPlaceholder: React.FC = () => {
   );
 };
 
-const SystemMetricsPlaceholder: React.FC = () => {
+const SystemSnapshotPlaceholder: React.FC = () => {
   return (
     <Card className="h-64 border-primary/20 bg-card/60 backdrop-blur-sm">
       <CardHeader>
-        <CardTitle className="text-base font-medium text-foreground">System Metrics</CardTitle>
+        <CardTitle className="text-base font-medium text-foreground">System Snapshot</CardTitle>
       </CardHeader>
       <CardContent>
         <p className="text-sm text-muted-foreground">Placeholder for key system health metrics and performance indicators.</p>
@@ -67,18 +67,13 @@ export default function CommandObservatory() {
         boxShadow: 'inset 0 0 0.5px rgba(255,255,255,0.05)',
       }}
     >
-      {/* Optional: Add a header for the observatory itself if needed, e.g.,
-      <div className="p-3 border-b" style={{borderColor: 'rgba(142,255,215,0.08)'}}>
-        <h1 className="text-lg font-headline text-foreground">Command Observatory</h1>
-      </div>
-      */}
       <div className="flex-grow grid md:grid-cols-3 gap-3 md:gap-4 p-3 md:p-4 overflow-hidden">
         {/* Left Column (1/3 width on md+) */}
         <div className="md:col-span-1 flex flex-col gap-3 md:gap-4 h-full overflow-hidden">
           <ScrollArea className="flex-grow"> {/* Scroll for the column itself */}
             <div className="space-y-3 md:space-y-4">
-              <AgentGridPlaceholder />
-              <SystemMetricsPlaceholder />
+              <AgentPresenceGridPlaceholder />
+              <SystemSnapshotPlaceholder />
             </div>
           </ScrollArea>
         </div>
