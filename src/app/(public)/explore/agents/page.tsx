@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Search, Filter as FilterIcon, Cpu, Sparkles, ShieldCheck, Workflow, CheckCircle, Info, AlertTriangle } from "lucide-react";
 import Image from "next/image";
 import { useAgentMarketplaceStore } from '@/stores/agent-marketplace.store';
+import { useUserAgentsStore } from '@/stores/user-agents.store'; // Added
 import type { MarketplaceAgent } from '@/types/marketplace-agent';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -64,6 +65,7 @@ const getPricingDisplay = (pricing: MarketplaceAgent['pricing']) => {
 export default function AgentMarketplacePage() {
   const agents = useAgentMarketplaceStore(state => state.agents);
   const searchAgents = useAgentMarketplaceStore(state => state.searchAgents);
+  const { isAcquired } = useUserAgentsStore(); // Added
   const [searchTerm, setSearchTerm] = React.useState('');
 
   const displayedAgents = React.useMemo(() => {
@@ -108,40 +110,52 @@ export default function AgentMarketplacePage() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {displayedAgents.map(agent => (
-            <Card 
-                key={agent.id} 
-                className={cn(
-                "group flex flex-col overflow-hidden rounded-2xl border border-primary/25 bg-card/60 backdrop-blur-sm text-card-foreground shadow-[0_4px_30px_rgba(0,255,162,0.1)] hover:shadow-[0_8px_40px_rgba(0,255,162,0.2)] hover:border-primary/40 transition-all duration-300 ease-in-out transform hover:-translate-y-1"
-                )}
-            >
-                <CardHeader className="p-4 text-center items-center">
-                    {getLucideIcon(agent.icon)}
-                    <Link href={agent.entryPoint || `/explore/agents/${agent.id}`} className="hover:underline focus:outline-none focus:ring-1 focus:ring-ring rounded-sm">
-                        <CardTitle className="font-headline text-lg text-primary line-clamp-1 group-hover:text-accent transition-colors" title={agent.name}>{agent.name}</CardTitle>
-                    </Link>
-                    <CardDescription className="text-xs text-muted-foreground line-clamp-2 h-8" title={agent.tagline}>{agent.tagline}</CardDescription>
-                    <div className="mt-2 flex flex-wrap justify-center gap-1.5 items-center">
-                        {getStatusBadge(agent.status)}
-                        <Badge variant="secondary" className="text-xs bg-muted/70 text-muted-foreground">{agent.category}</Badge>
-                    </div>
-                </CardHeader>
-                <CardContent className="p-4 pt-0 flex-grow">
-                    <p className="text-sm text-muted-foreground line-clamp-3 h-[60px]">{agent.description}</p>
-                    <div className="mt-3 pt-3 border-t border-primary/15">
-                        <div className="text-xs text-muted-foreground">Pricing: {getPricingDisplay(agent.pricing)}</div>
-                        <div className="text-xs text-muted-foreground mt-0.5">Author: <span className="text-foreground">{agent.author}</span></div>
-                    </div>
-                </CardContent>
-                <CardFooter className="p-3 bg-primary/5 border-t border-primary/15">
-                    <Link href={agent.entryPoint || `/explore/agents/${agent.id}`} className="w-full" legacyBehavior>
-                    <Button asChild variant="outline" size="sm" className="w-full border-primary/40 text-primary hover:bg-primary/15 hover:border-primary/60 hover:text-accent-foreground">
-                        <a>View Details & Deploy</a>
-                    </Button>
-                    </Link>
-                </CardFooter>
-            </Card>
-            ))}
+            {displayedAgents.map(agent => {
+              const acquired = isAcquired(agent.id);
+              return (
+                <Card 
+                    key={agent.id} 
+                    className={cn(
+                    "group flex flex-col overflow-hidden rounded-2xl border border-primary/25 bg-card/60 backdrop-blur-sm text-card-foreground shadow-[0_4px_30px_rgba(0,255,162,0.1)] hover:shadow-[0_8px_40px_rgba(0,255,162,0.2)] hover:border-primary/40 transition-all duration-300 ease-in-out transform hover:-translate-y-1",
+                    acquired && "border-primary/50 ring-1 ring-primary/30"
+                    )}
+                >
+                    <CardHeader className="p-4 text-center items-center relative"> {/* Added relative */}
+                        {acquired && (
+                            <Badge className="absolute top-2 right-2 bg-primary/80 text-primary-foreground text-xs py-0.5 px-2">
+                                <CheckCircle className="mr-1 h-3 w-3" /> Added
+                            </Badge>
+                        )}
+                        {getLucideIcon(agent.icon)}
+                        <Link href={agent.entryPoint || `/explore/agents/${agent.id}`} className="hover:underline focus:outline-none focus:ring-1 focus:ring-ring rounded-sm">
+                            <CardTitle className="font-headline text-lg text-primary line-clamp-1 group-hover:text-accent transition-colors" title={agent.name}>{agent.name}</CardTitle>
+                        </Link>
+                        <CardDescription className="text-xs text-muted-foreground line-clamp-2 h-8" title={agent.tagline}>{agent.tagline}</CardDescription>
+                        <div className="mt-2 flex flex-wrap justify-center gap-1.5 items-center">
+                            {getStatusBadge(agent.status)}
+                            <Badge variant="secondary" className="text-xs bg-muted/70 text-muted-foreground">{agent.category}</Badge>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-0 flex-grow">
+                        <p className="text-sm text-muted-foreground line-clamp-3 h-[60px]">{agent.description}</p>
+                        <div className="mt-3 pt-3 border-t border-primary/15">
+                            <div className="text-xs text-muted-foreground">Pricing: {getPricingDisplay(agent.pricing)}</div>
+                            <div className="text-xs text-muted-foreground mt-0.5">Author: <span className="text-foreground">{agent.author}</span></div>
+                        </div>
+                    </CardContent>
+                    <CardFooter className="p-3 bg-primary/5 border-t border-primary/15">
+                        <Link href={agent.entryPoint || `/explore/agents/${agent.id}`} className="w-full" legacyBehavior>
+                        <Button asChild variant={acquired ? "secondary" : "outline"} size="sm" className={cn(
+                            "w-full", 
+                            acquired ? "border-secondary/40 text-secondary-foreground hover:bg-secondary/80" : "border-primary/40 text-primary hover:bg-primary/15 hover:border-primary/60 hover:text-accent-foreground"
+                        )}>
+                            <a>{acquired ? 'Manage Agent' : 'View Details & Add'}</a>
+                        </Button>
+                        </Link>
+                    </CardFooter>
+                </Card>
+              );
+            })}
         </div>
       )}
     </div>
