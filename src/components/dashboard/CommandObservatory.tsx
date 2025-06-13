@@ -1,3 +1,4 @@
+
 // src/components/dashboard/CommandObservatory.tsx
 'use client';
 
@@ -9,7 +10,7 @@ import { cn } from '@/lib/utils';
 // Placeholder components for the new layout
 const AgentPresenceGridPlaceholder: React.FC = () => {
   return (
-    <Card className="h-64 border-primary/20 bg-card/60 backdrop-blur-sm">
+    <Card className="h-64 bg-[rgba(15,25,20,0.25)] border border-[rgba(0,255,162,0.15)] backdrop-blur-sm shadow-[0_4px_20px_rgba(0,255,162,0.1)]">
       <CardHeader>
         <CardTitle className="text-base font-medium text-foreground">Agent Presence Grid</CardTitle>
       </CardHeader>
@@ -22,7 +23,7 @@ const AgentPresenceGridPlaceholder: React.FC = () => {
 
 const SystemSnapshotPlaceholder: React.FC = () => {
   return (
-    <Card className="h-64 border-primary/20 bg-card/60 backdrop-blur-sm">
+    <Card className="h-64 bg-[rgba(15,25,20,0.25)] border border-[rgba(0,255,162,0.15)] backdrop-blur-sm shadow-[0_4px_20px_rgba(0,255,162,0.1)]">
       <CardHeader>
         <CardTitle className="text-base font-medium text-foreground">System Snapshot</CardTitle>
       </CardHeader>
@@ -35,7 +36,7 @@ const SystemSnapshotPlaceholder: React.FC = () => {
 
 const LiveOrchestrationFeedPlaceholder: React.FC = () => {
   return (
-    <Card className="h-full border-primary/20 bg-card/60 backdrop-blur-sm">
+    <Card className="h-full bg-[rgba(15,25,20,0.25)] border border-[rgba(0,255,162,0.15)] backdrop-blur-sm shadow-[0_4px_20px_rgba(0,255,162,0.1)]">
       <CardHeader>
         <CardTitle className="text-base font-medium text-foreground">Live Orchestration Feed</CardTitle>
       </CardHeader>
@@ -58,13 +59,14 @@ export default function CommandObservatory() {
   return (
     <div
       className={cn(
-        "w-full h-full flex flex-col max-w-none mx-auto overflow-hidden backdrop-blur-md", // No rounded corners here
-        "border" // Base border, specific color via style
+        "w-full h-full flex flex-col max-w-none mx-auto overflow-hidden backdrop-blur-md"
       )}
       style={{
         backgroundColor: 'rgba(12,22,26,0.85)',
         borderColor: 'rgba(142,255,215,0.12)',
         boxShadow: 'inset 0 0 0.5px rgba(255,255,255,0.05)',
+        borderWidth: '1px', // Ensure the border is actually visible
+        borderStyle: 'solid',
       }}
     >
       <div className="flex-grow grid md:grid-cols-3 gap-3 md:gap-4 p-3 md:p-4 overflow-hidden">
