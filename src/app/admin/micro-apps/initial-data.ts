@@ -102,14 +102,14 @@ export const mockMicroApps: MicroApp[] = [
     updatedAt: new Date().toISOString(),
   },
   {
-    id: 'smart_lead_tracker_v1',
+    id: 'smart_lead_tracker_v1', // Keeping ID consistent for now
     internalName: 'smart-lead-tracker',
     displayName: 'Smart Lead Tracker',
-    icon: 'Users',
-    description: 'A micro-app to manage and track sales leads.',
+    icon: 'Users', // Updated icon
+    description: 'Capture, tag, and track leads with actionable insights. Auto-suggest follow-ups, import/export, and segment contacts.', // Updated description
     category: 'Productivity',
     status: 'enabled',
-    tags: ['leads', 'crm', 'sales', 'contacts'],
+    tags: ['CRM', 'Sales', 'Lightweight'], // Updated tags
     agentDependencies: [],
     authRequired: true,
     isVisible: true,
@@ -117,11 +117,12 @@ export const mockMicroApps: MicroApp[] = [
     monetization: null,
     flags: { isFeatured: false },
     version: '1.0.0',
-    entryPoint: '/micro-apps/smart-lead-tracker', // Hypothetical entry point
+    entryPoint: '/micro-apps/smart-lead-tracker', 
     deployableTo: ['dashboard'],
-    defaultLayout: { lg: { x: 0, y: 8, w: 4, h: 8, minW: 3, minH: 6 } }, // Example layout
+    defaultLayout: { lg: { x: 0, y: 8, w: 4, h: 8, minW: 3, minH: 6 } }, 
     permissionsRequired: ['data:read', 'data:write'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
 ];
+
