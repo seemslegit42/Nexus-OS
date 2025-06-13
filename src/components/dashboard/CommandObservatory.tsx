@@ -2,22 +2,21 @@
 // src/components/dashboard/CommandObservatory.tsx
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Activity, LayoutDashboard, Workflow, ShieldCheck, RadioTower, X as CloseIcon, ExternalLink, Package, TerminalSquare, PackageSearch } from 'lucide-react';
+import { Activity, LayoutDashboard, Workflow, ShieldCheck, RadioTower, X as CloseIcon, ExternalLink, Package, TerminalSquare, PackageSearch, Cpu, ListChecks } from 'lucide-react';
 import LiveOrchestrationsFeed from './LiveOrchestrationsFeed';
 import AgentPresenceGrid from './AgentPresenceGrid';
 import type { MicroApp } from '@/types/micro-app';
 import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
+import { WorkspaceGrid, type ZoneConfig } from '@/components/core/workspace-grid';
 
 const SystemSnapshotPlaceholder: React.FC = () => {
-  // This component still uses hardcoded data for system vitals.
-  // If "100% real data" applies to this as well, it needs its own dynamic data source.
   return (
-    <Card className="h-auto bg-[rgba(15,25,20,0.25)] border border-[rgba(0,255,162,0.15)] backdrop-blur-sm shadow-[0_4px_20px_rgba(0,255,162,0.1)] rounded-2xl">
+    <Card className="h-full bg-[rgba(15,25,20,0.25)] border border-[rgba(0,255,162,0.15)] backdrop-blur-sm shadow-[0_4px_20px_rgba(0,255,162,0.1)] rounded-2xl">
       <CardHeader className="pb-2 pt-3 px-3">
         <CardTitle className="text-base font-medium text-foreground flex items-center">
           <Activity className="h-4 w-4 mr-2 text-primary" /> System Snapshot
@@ -34,46 +33,25 @@ const SystemSnapshotPlaceholder: React.FC = () => {
   );
 };
 
-const getLucideIcon = (iconName: string | undefined): React.ReactNode => {
-  const iconProps = { className: "h-6 w-6 mb-1 text-primary opacity-80" };
+const getLucideIcon = (iconName: string | undefined, props?: any): React.ReactNode => {
+  const iconProps = { className: "h-6 w-6 mb-1 text-primary opacity-80", ...props };
   if (!iconName) return <Package {...iconProps} />;
   switch (iconName.toLowerCase()) {
-    case 'workflow':
-      return <Workflow {...iconProps} />;
-    case 'shieldcheck':
-      return <ShieldCheck {...iconProps} />;
-    case 'radiotower':
-      return <RadioTower {...iconProps} />;
-    case 'terminalsquare':
-      return <TerminalSquare {...iconProps} />;
-    case 'layoutdashboard':
-      return <LayoutDashboard {...iconProps} />;
-    // Add more cases as needed for other icons used by micro-apps
-    default:
-      return <Package {...iconProps} />; // Default icon
+    case 'workflow': return <Workflow {...iconProps} />;
+    case 'shieldcheck': return <ShieldCheck {...iconProps} />;
+    case 'radiotower': return <RadioTower {...iconProps} />;
+    case 'terminalsquare': return <TerminalSquare {...iconProps} />;
+    case 'layoutdashboard': return <LayoutDashboard {...iconProps} />;
+    case 'cpu': return <Cpu {...iconProps} />;
+    case 'listchecks': return <ListChecks {...iconProps} />;
+    case 'package': return <Package {...iconProps} />;
+    default: return <Package {...iconProps} />;
   }
 };
 
 const getLucideIconSmall = (iconName: string | undefined): React.ReactNode => {
-  const iconProps = { className: "h-4 w-4 mr-2" };
-   if (!iconName) return <Package {...iconProps} />; // Default icon if name is undefined
-  switch (iconName.toLowerCase()) {
-    case 'workflow':
-      return <Workflow {...iconProps} />;
-    case 'shieldcheck':
-      return <ShieldCheck {...iconProps} />;
-    case 'radiotower':
-      return <RadioTower {...iconProps} />;
-    case 'terminalsquare':
-      return <TerminalSquare {...iconProps} />;
-    case 'layoutdashboard':
-      return <LayoutDashboard {...iconProps} />;
-    // Add more cases as needed
-    default:
-      return <Package {...iconProps} />; // Default icon
-  }
+  return getLucideIcon(iconName, { className: "h-4 w-4 mr-2" });
 };
-
 
 export default function CommandObservatory() {
   const [launchedApp, setLaunchedApp] = useState<MicroApp | null>(null);
@@ -85,112 +63,148 @@ export default function CommandObservatory() {
     );
   }, [allRegisteredApps]);
 
-  const handleLaunchApp = (app: MicroApp) => {
+  const handleLaunchApp = useCallback((app: MicroApp) => {
     setLaunchedApp(app);
+  }, []);
+
+  const handleCloseApp = useCallback(() => {
+    setLaunchedApp(null);
+  }, []);
+
+  const MicroAppLauncherContent: React.FC = () => (
+    <Card className="h-full bg-transparent border-none shadow-none">
+      <CardContent className="p-0 h-full">
+        <ScrollArea className="h-full">
+           <div className="p-2">
+            {dashboardMicroApps.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {dashboardMicroApps.map((app) => (
+                    <Card 
+                    key={app.id} 
+                    className="bg-[rgba(16,42,32,0.65)] border border-[rgba(142,255,215,0.25)] text-[rgba(220,255,240,0.9)] rounded-lg p-3 flex flex-col items-center justify-center text-center aspect-square"
+                    >
+                    {getLucideIcon(app.icon)}
+                    <p className="text-xs font-semibold truncate w-full leading-tight" title={app.displayName}>{app.displayName}</p>
+                    <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="mt-2 text-xs h-7 bg-primary/10 border-primary/30 hover:bg-primary/20 text-primary hover:text-primary/90 w-full"
+                        onClick={() => handleLaunchApp(app)}
+                    >
+                        Launch
+                    </Button>
+                    </Card>
+                ))}
+                </div>
+            ) : (
+                <div className="text-center py-6 text-sm text-muted-foreground h-full flex flex-col items-center justify-center">
+                <PackageSearch className="mx-auto h-10 w-10 opacity-50 mb-2" />
+                No micro-apps available.
+                <p className="text-xs mt-1">(Check Admin settings)</p>
+                </div>
+            )}
+           </div>
+        </ScrollArea>
+      </CardContent>
+    </Card>
+  );
+
+  const LaunchedAppDisplayContent: React.FC = () => {
+    if (!launchedApp) {
+      return (
+        <div className="h-full flex flex-col items-center justify-center text-center p-4">
+          <LayoutDashboard className="h-12 w-12 text-muted-foreground/50 mb-3" />
+          <p className="text-sm text-muted-foreground">No micro-app launched.</p>
+          <p className="text-xs text-muted-foreground/80">Select an app from the "Micro-Apps" launcher.</p>
+        </div>
+      );
+    }
+    return (
+         <Card 
+            className="h-full flex flex-col relative bg-transparent border-none shadow-none"
+        >
+            {/* Header is part of the Zone, this is just content */}
+            <CardContent className="flex-grow p-3 overflow-y-auto">
+            <div className="mt-1 p-3 bg-black/20 rounded-md border border-primary/15">
+                <h4 className="text-xs font-semibold text-primary mb-1.5">Micro-App Details:</h4>
+                <p className="text-xs text-muted-foreground mb-0.5"><strong>ID:</strong> {launchedApp.id}</p>
+                <p className="text-xs text-muted-foreground mb-0.5"><strong>Description:</strong> {launchedApp.description || "No description available."}</p>
+                <p className="text-xs text-muted-foreground"><strong>Entry Point:</strong> <code className="text-primary/80 bg-black/30 px-1 py-0.5 rounded-sm text-[11px]">{launchedApp.entryPoint || 'Not configured'}</code></p>
+            </div>
+            {/* Actual app UI would be embedded here */}
+            <div className="mt-4 text-center text-muted-foreground">
+                Placeholder for actual UI of "{launchedApp.displayName}".
+            </div>
+            </CardContent>
+        </Card>
+    );
   };
 
-  const handleCloseApp = () => {
-    setLaunchedApp(null);
-  };
+
+  const zoneConfigs = useMemo((): ZoneConfig[] => [
+    {
+      id: "agentPresence",
+      title: "Agent Presence",
+      icon: getLucideIconSmall("cpu"),
+      content: <AgentPresenceGrid />,
+      defaultLayout: { lg: { x: 0, y: 0, w: 4, h: 9, minW: 3, minH: 6 } },
+    },
+    {
+      id: "systemSnapshot",
+      title: "System Snapshot",
+      icon: getLucideIconSmall("activity"),
+      content: <SystemSnapshotPlaceholder />,
+      defaultLayout: { lg: { x: 0, y: 9, w: 4, h: 7, minW: 3, minH: 4 } },
+    },
+    {
+      id: "microAppLauncher",
+      title: "Micro-Apps",
+      icon: getLucideIconSmall("layoutdashboard"),
+      content: <MicroAppLauncherContent />,
+      defaultLayout: { lg: { x: 0, y: 16, w: 4, h: 8, minW: 3, minH: 5 } },
+    },
+    {
+      id: "orchestrationFeed",
+      title: "Live Orchestration Feed",
+      icon: getLucideIconSmall("listchecks"),
+      content: <LiveOrchestrationsFeed />,
+      defaultLayout: { lg: { x: 4, y: 0, w: 8, h: 12, minW: 4, minH: 6 } },
+    },
+    {
+      id: "launchedAppDisplay",
+      title: launchedApp ? `Launched: ${launchedApp.displayName}` : "Application View",
+      icon: launchedApp ? getLucideIconSmall(launchedApp.icon) : <Package className="h-4 w-4 mr-2" />,
+      content: <LaunchedAppDisplayContent />,
+      defaultLayout: { lg: { x: 4, y: 12, w: 8, h: 12, minW: 4, minH: 6 } },
+      // Controls specific to this zone
+      canClose: !!launchedApp, // Only allow closing if an app is launched
+      onClose: launchedApp ? handleCloseApp : undefined,
+      canPin: false, // Example: maybe this zone shouldn't be pinnable
+      canMinimize: !!launchedApp, // Can minimize if app is launched
+    }
+  ], [launchedApp, dashboardMicroApps, handleLaunchApp, handleCloseApp]);
+
 
   return (
     <div
       className={cn(
-        "w-full h-full flex flex-col max-w-none mx-auto overflow-hidden backdrop-blur-md"
+        "w-full h-full flex flex-col max-w-none mx-auto overflow-hidden backdrop-blur-md p-0" // Removed padding, WorkspaceGrid handles it
       )}
       style={{
-        backgroundColor: 'rgba(12,22,26,0.85)',
+        backgroundColor: 'rgba(12,22,26,0.85)', // Observatory background
         borderColor: 'rgba(142,255,215,0.12)',
         boxShadow: 'inset 0 0 0.5px rgba(255,255,255,0.05)',
         borderWidth: '1px',
         borderStyle: 'solid',
       }}
     >
-      <div className="flex-grow grid md:grid-cols-3 gap-3 md:gap-4 p-3 md:p-4 overflow-hidden">
-        {/* Left Column (1/3 width on md+) */}
-        <div className="md:col-span-1 h-full flex flex-col overflow-hidden">
-          <ScrollArea className="flex-grow pr-1">
-            <div className="space-y-3 md:space-y-4">
-              <AgentPresenceGrid />
-              <SystemSnapshotPlaceholder />
-              
-              <Card className="h-auto bg-[rgba(15,25,20,0.25)] border border-[rgba(0,255,162,0.15)] backdrop-blur-sm shadow-[0_4px_20px_rgba(0,255,162,0.1)] rounded-2xl">
-                <CardHeader className="pb-2 pt-3 px-3">
-                  <CardTitle className="text-base font-medium text-foreground flex items-center">
-                    <LayoutDashboard className="h-4 w-4 mr-2 text-primary" /> Micro-Apps
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="px-3 pb-3">
-                  {dashboardMicroApps.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-2">
-                      {dashboardMicroApps.map((app) => (
-                        <Card 
-                          key={app.id} 
-                          className="bg-[rgba(16,42,32,0.65)] border border-[rgba(142,255,215,0.25)] text-[rgba(220,255,240,0.9)] rounded-lg p-3 flex flex-col items-center justify-center text-center"
-                        >
-                          {getLucideIcon(app.icon)}
-                          <p className="text-xs font-semibold truncate w-full" title={app.displayName}>{app.displayName}</p>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="mt-2 text-xs h-7 bg-primary/10 border-primary/30 hover:bg-primary/20 text-primary hover:text-primary/90 w-full"
-                            onClick={() => handleLaunchApp(app)}
-                          >
-                            Launch
-                          </Button>
-                        </Card>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-6 text-sm text-muted-foreground">
-                      <PackageSearch className="mx-auto h-10 w-10 opacity-50 mb-2" />
-                      No micro-apps available for launch.
-                      <p className="text-xs mt-1">(Check visibility and 'deployableTo' settings in Admin.)</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-            </div>
-          </ScrollArea>
-        </div>
-
-        {/* Right Column (2/3 width on md+) */}
-        <div className="md:col-span-2 h-full flex flex-col overflow-hidden">
-          <div className="flex-shrink-0 h-1/2 md:h-2/5 min-h-[250px]"> {/* Adjusted height constraints */}
-            <LiveOrchestrationsFeed />
-          </div>
-          
-          {launchedApp && (
-            <div className="mt-3 md:mt-4 flex-grow min-h-0">
-              <Card 
-                className="h-full max-h-[calc(50vh_-_2rem)] md:max-h-[calc(60vh_-_2rem)] flex flex-col relative bg-[rgba(16,42,32,0.8)] border border-[rgba(142,255,215,0.3)] backdrop-blur-md shadow-[0_6px_25px_rgba(0,255,162,0.15)] rounded-2xl"
-              >
-                <CardHeader className="flex-row items-center justify-between p-2 border-b border-[rgba(142,255,215,0.2)]">
-                  <CardTitle className="text-sm font-medium text-primary flex items-center">
-                    {getLucideIconSmall(launchedApp.icon)}
-                    {launchedApp.displayName}
-                  </CardTitle>
-                  <Button variant="ghost" size="icon" onClick={handleCloseApp} className="h-7 w-7 text-muted-foreground hover:text-destructive">
-                    <CloseIcon className="h-4 w-4" />
-                  </Button>
-                </CardHeader>
-                <CardContent className="flex-grow p-3 overflow-y-auto">
-                  {/* Removed explicit placeholder text. The section below shows actual data about the app. */}
-                  {/* The actual UI of the micro-app would be rendered here in a future implementation. */}
-                  <div className="mt-1 p-3 bg-black/20 rounded-md border border-primary/15">
-                      <h4 className="text-xs font-semibold text-primary mb-1.5">Micro-App Details:</h4>
-                      <p className="text-xs text-muted-foreground mb-0.5"><strong>ID:</strong> {launchedApp.id}</p>
-                      <p className="text-xs text-muted-foreground mb-0.5"><strong>Description:</strong> {launchedApp.description || "No description available."}</p>
-                      <p className="text-xs text-muted-foreground"><strong>Entry Point:</strong> <code className="text-primary/80 bg-black/30 px-1 py-0.5 rounded-sm text-[11px]">{launchedApp.entryPoint || 'Not configured'}</code></p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-        </div>
-      </div>
+      <WorkspaceGrid
+        zoneConfigs={zoneConfigs}
+        className="flex-grow p-2 md:p-3" // Padding for the grid itself
+        storageKey="commandObservatoryLayout_v2"
+        cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }} // Adjusted cols for more flexibility
+        rowHeight={20} // Fine-tune row height
+      />
     </div>
   );
 }
-
