@@ -1,7 +1,7 @@
 // src/components/dashboard/CommandObservatory.tsx
 'use client';
 
-import React, { useState, useMemo, useCallback, Suspense, lazy } from 'react'; // Added lazy
+import React, { useState, useMemo, useCallback, Suspense, lazy } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,8 @@ import AgentPresenceGrid from './AgentPresenceGrid';
 import type { MicroApp } from '@/types/micro-app';
 import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
 import { WorkspaceGrid, type ZoneConfig } from '@/components/core/workspace-grid';
-import { getDynamicImportFn } from '@/micro-apps/registry'; // Updated import
+import { getDynamicImportFn } from '@/micro-apps/registry';
+import { MicroAppCard } from './MicroAppCard'; // Import the new MicroAppCard
 
 const SystemSnapshotPlaceholder: React.FC = () => {
   return (
@@ -33,19 +34,22 @@ const SystemSnapshotPlaceholder: React.FC = () => {
   );
 };
 
+// Consistent icon rendering function for both dashboard card icons and zone icons
 const getLucideIcon = (iconName: string | undefined, props?: any): React.ReactNode => {
-  const iconProps = { className: "h-6 w-6 mb-1 text-primary opacity-80", ...props };
-  if (!iconName) return <Package {...iconProps} />;
+  const defaultProps = { className: "h-6 w-6 mb-1 text-primary opacity-80", ...props };
+  if (!iconName) return <Package {...defaultProps} />;
   switch (iconName.toLowerCase()) {
-    case 'workflow': return <Workflow {...iconProps} />;
-    case 'shieldcheck': return <ShieldCheck {...iconProps} />;
-    case 'radiotower': return <RadioTower {...iconProps} />;
-    case 'terminalsquare': return <TerminalSquare {...iconProps} />;
-    case 'layoutdashboard': return <LayoutDashboard {...iconProps} />;
-    case 'cpu': return <Cpu {...iconProps} />;
-    case 'listchecks': return <ListChecks {...iconProps} />;
-    case 'package': return <Package {...iconProps} />;
-    default: return <Package {...iconProps} />;
+    case 'workflow': return <Workflow {...defaultProps} />;
+    case 'shieldcheck': return <ShieldCheck {...defaultProps} />;
+    case 'radiotower': return <RadioTower {...defaultProps} />;
+    case 'terminalsquare': return <TerminalSquare {...defaultProps} />;
+    case 'layoutdashboard': return <LayoutDashboard {...defaultProps} />;
+    case 'cpu': return <Cpu {...defaultProps} />;
+    case 'listchecks': return <ListChecks {...defaultProps} />;
+    case 'package': return <Package {...defaultProps} />;
+    case 'users': return <Users {...defaultProps} />; // Added Users for SmartLeadTracker
+    // Add other cases as needed
+    default: return <Package {...defaultProps} />;
   }
 };
 
@@ -71,43 +75,42 @@ export default function CommandObservatory() {
     setLaunchedApp(null);
   }, []);
 
-  const MicroAppLauncherContent: React.FC = () => (
-    <Card className="h-full bg-transparent border-none shadow-none">
-      <CardContent className="p-0 h-full">
-        <ScrollArea className="h-full">
-           <div className="p-2">
-            {dashboardMicroApps.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {dashboardMicroApps.map((app) => (
-                    <Card
-                    key={app.id}
-                    className="bg-[rgba(16,42,32,0.65)] border border-[rgba(142,255,215,0.25)] text-[rgba(220,255,240,0.9)] rounded-lg p-3 flex flex-col items-center justify-center text-center aspect-square"
-                    >
-                    {getLucideIcon(app.icon)}
-                    <p className="text-xs font-semibold truncate w-full leading-tight" title={app.displayName}>{app.displayName}</p>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-2 text-xs h-7 bg-primary/10 border-primary/30 hover:bg-primary/20 text-primary hover:text-primary/90 w-full"
-                        onClick={() => handleLaunchApp(app)}
-                    >
-                        Launch
-                    </Button>
-                    </Card>
-                ))}
+  const MicroAppLauncherContent: React.FC = () => {
+    const appsToDisplay = dashboardMicroApps; // Already filtered
+
+    return (
+      <Card className="h-full bg-transparent border-none shadow-none">
+        <CardContent className="p-0 h-full">
+          <ScrollArea className="h-full">
+            <div className="p-2">
+              {appsToDisplay.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2">
+                  {appsToDisplay.map((app) => (
+                    <MicroAppCard
+                      key={app.id}
+                      id={app.id}
+                      name={app.displayName}
+                      description={app.description}
+                      onLaunch={() => handleLaunchApp(app)}
+                      tags={app.tags?.slice(0, 2)} // Pass first 2 tags
+                      icon={getLucideIcon(app.icon, { className: "h-5 w-5 text-primary group-hover:text-accent transition-colors" })}
+                      className="aspect-auto min-h-[150px]" // Adjust card aspect ratio if needed
+                    />
+                  ))}
                 </div>
-            ) : (
+              ) : (
                 <div className="text-center py-6 text-sm text-muted-foreground h-full flex flex-col items-center justify-center">
-                <PackageSearch className="mx-auto h-10 w-10 opacity-50 mb-2" />
-                No micro-apps available.
-                <p className="text-xs mt-1">(Check Admin settings or deploy some!)</p>
+                  <PackageSearch className="mx-auto h-10 w-10 opacity-50 mb-2" />
+                  No micro-apps available for dashboard.
+                  <p className="text-xs mt-1">(Check Admin settings or deploy some!)</p>
                 </div>
-            )}
-           </div>
-        </ScrollArea>
-      </CardContent>
-    </Card>
-  );
+              )}
+            </div>
+          </ScrollArea>
+        </CardContent>
+      </Card>
+    );
+  };
 
   const LaunchedAppDisplayContent: React.FC<{ currentApp: MicroApp | null }> = ({ currentApp }) => {
     if (!currentApp) {
@@ -152,7 +155,6 @@ export default function CommandObservatory() {
     );
   };
 
-
   const zoneConfigs = useMemo((): ZoneConfig[] => [
     {
       id: "agentPresence",
@@ -196,7 +198,6 @@ export default function CommandObservatory() {
     }
   ], [launchedApp, dashboardMicroApps, handleLaunchApp, handleCloseApp]);
 
-
   return (
     <div
       className={cn(
@@ -207,9 +208,9 @@ export default function CommandObservatory() {
       <WorkspaceGrid
         zoneConfigs={zoneConfigs}
         className="flex-grow p-2 md:p-3"
-        storageKey="commandObservatoryLayout_v3"
+        storageKey="commandObservatoryLayout_v3" // storageKey can remain or be incremented if layout changes are significant
         cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }}
-        rowHeight={20}
+        rowHeight={20} // Consider adjusting if cards need more/less space
       />
     </div>
   );
