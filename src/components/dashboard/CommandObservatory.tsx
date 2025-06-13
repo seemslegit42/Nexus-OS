@@ -1,3 +1,4 @@
+
 // src/components/dashboard/CommandObservatory.tsx
 'use client';
 
@@ -6,14 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Activity, LayoutDashboard, Workflow, ShieldCheck, RadioTower, X as CloseIcon, ExternalLink, Package, TerminalSquare, PackageSearch, Cpu, ListChecks, Loader2, Users } from 'lucide-react'; // Added Users
+import { Activity, LayoutDashboard, Workflow, ShieldCheck, RadioTower, X as CloseIcon, ExternalLink, Package, TerminalSquare, PackageSearch, Cpu, ListChecks, Loader2, Users } from 'lucide-react';
 import LiveOrchestrationsFeed from './LiveOrchestrationsFeed';
 import AgentPresenceGrid from './AgentPresenceGrid';
 import type { MicroApp } from '@/types/micro-app';
 import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
 import { WorkspaceGrid, type ZoneConfig } from '@/components/core/workspace-grid';
 import { getDynamicImportFn } from '@/micro-apps/registry';
-import { MicroAppCard } from './MicroAppCard'; // Import the new MicroAppCard
+import { MicroAppCard } from './MicroAppCard';
 
 const SystemSnapshotPlaceholder: React.FC = () => {
   return (
@@ -34,7 +35,6 @@ const SystemSnapshotPlaceholder: React.FC = () => {
   );
 };
 
-// Consistent icon rendering function for both dashboard card icons and zone icons
 const getLucideIcon = (iconName: string | undefined, props?: any): React.ReactNode => {
   const defaultProps = { className: "h-6 w-6 mb-1 text-primary opacity-80", ...props };
   if (!iconName) return <Package {...defaultProps} />;
@@ -47,8 +47,7 @@ const getLucideIcon = (iconName: string | undefined, props?: any): React.ReactNo
     case 'cpu': return <Cpu {...defaultProps} />;
     case 'listchecks': return <ListChecks {...defaultProps} />;
     case 'package': return <Package {...defaultProps} />;
-    case 'users': return <Users {...defaultProps} />; // Added Users for SmartLeadTracker
-    // Add other cases as needed
+    case 'users': return <Users {...defaultProps} />;
     default: return <Package {...defaultProps} />;
   }
 };
@@ -76,7 +75,7 @@ export default function CommandObservatory() {
   }, []);
 
   const MicroAppLauncherContent: React.FC = () => {
-    const appsToDisplay = dashboardMicroApps; // Already filtered
+    const appsToDisplay = dashboardMicroApps;
 
     return (
       <Card className="h-full bg-transparent border-none shadow-none">
@@ -92,9 +91,9 @@ export default function CommandObservatory() {
                       name={app.displayName}
                       description={app.description}
                       onLaunch={() => handleLaunchApp(app)}
-                      tags={app.tags?.slice(0, 2)} // Pass first 2 tags
+                      tags={app.tags?.slice(0, 2)}
                       icon={getLucideIcon(app.icon, { className: "h-5 w-5 text-primary group-hover:text-accent transition-colors" })}
-                      className="aspect-auto min-h-[150px]" // Adjust card aspect ratio if needed
+                      className="aspect-auto min-h-[150px]"
                     />
                   ))}
                 </div>
@@ -208,9 +207,9 @@ export default function CommandObservatory() {
       <WorkspaceGrid
         zoneConfigs={zoneConfigs}
         className="flex-grow p-2 md:p-3"
-        storageKey="commandObservatoryLayout_v3" // storageKey can remain or be incremented if layout changes are significant
+        storageKey="commandObservatoryLayout_v3"
         cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }}
-        rowHeight={20} // Consider adjusting if cards need more/less space
+        rowHeight={20}
       />
     </div>
   );
