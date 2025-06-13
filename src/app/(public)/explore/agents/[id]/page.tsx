@@ -12,7 +12,7 @@ import type { MarketplaceAgent } from '@/types/marketplace-agent';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Brain, CheckCircle, Cpu, DollarSign, FileText, GitBranch, MessageSquare, ShieldCheck, Sparkles, Tag, UserCircle, Users, Workflow, PlusCircle, Settings2, Edit } from 'lucide-react';
+import { ArrowLeft, Brain, CheckCircle, Cpu, DollarSign, FileText, GitBranch, MessageSquare, ShieldCheck, Sparkles, Tag, UserCircle, Users, Workflow, PlusCircle, Settings2, Edit, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -28,6 +28,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { deployAgentInstance, type DeployAgentInput } from '@/lib/db/actions/agent-actions';
+
 
 const getLucideIcon = (iconName: string | undefined, props?: any): React.ReactNode => {
   const iconProps = { className: "h-5 w-5", ...props };
@@ -89,50 +91,58 @@ export default function AgentDetailPage() {
   const [isDeployDialogOpen, setIsDeployDialogOpen] = useState(false);
   const [instanceName, setInstanceName] = useState('');
   const [instanceDescription, setInstanceDescription] = useState('');
-  // const [instanceConfig, setInstanceConfig] = useState('{}'); // Placeholder for JSON config
+  const [isDeploying, setIsDeploying] = useState(false);
 
   useEffect(() => {
     if (agent) {
-      setInstanceName(agent.name); // Default instance name to agent name
+      setInstanceName(agent.name); 
     }
-  }, [agent]);
+  }, [agent, isDeployDialogOpen]); // Reset instance name when dialog opens based on agent
 
-  const handleInitiateDeployment = () => {
+  const handleInitiateDeploymentDialog = () => {
     if (!agent) return;
-    // Reset form fields for the dialog
     setInstanceName(agent.name);
     setInstanceDescription('');
-    // setInstanceConfig('{}');
     setIsDeployDialogOpen(true);
   };
 
-  const handleConfirmDeployment = () => {
+  const handleConfirmDeployment = async () => {
     if (!agent) return;
+    setIsDeploying(true);
 
-    console.log('Deploying Agent Instance:', {
-      agentId: agent.id,
-      agentName: agent.name,
+    const deployInput: DeployAgentInput = {
+      marketplaceAgentId: agent.id,
       instanceName,
       instanceDescription,
-      // instanceConfig: JSON.parse(instanceConfig || '{}'),
-    });
+      userId: 1, // Placeholder - replace with actual authenticated user ID
+      // config: JSON.parse(instanceConfig || '{}'), // Placeholder for future config
+    };
 
-    addAgentId(agent.id); // Mark as acquired if deploying
-    
-    toast({
-      title: "Agent Deployment Initiated",
-      description: `Deployment of "${instanceName}" (based on ${agent.name}) has started.`,
-      variant: "default",
-    });
-    setIsDeployDialogOpen(false);
-    // In a real app, this would trigger an API call to create the deployed_agent_instances record
+    const result = await deployAgentInstance(deployInput);
+
+    if (result.success) {
+      addAgentId(agent.id); 
+      toast({
+        title: "Deployment Successful!",
+        description: `Agent instance "${instanceName}" has been created.`,
+        variant: "default",
+      });
+      setIsDeployDialogOpen(false);
+      router.push('/agents'); // Navigate to the agent console
+    } else {
+      toast({
+        title: "Deployment Failed",
+        description: result.message || "Could not deploy the agent instance. Please try again.",
+        variant: "destructive",
+      });
+    }
+    setIsDeploying(false);
   };
   
   const handleManageAgent = () => {
     if (!agent) return;
     router.push('/agents'); 
   };
-
 
   if (!agent) {
     return (
@@ -147,7 +157,7 @@ export default function AgentDetailPage() {
     );
   }
 
-  const primaryButtonAction = agentIsAcquired ? handleManageAgent : handleInitiateDeployment;
+  const primaryButtonAction = agentIsAcquired ? handleManageAgent : handleInitiateDeploymentDialog;
   const primaryButtonText = agentIsAcquired ? "Manage Agent" : "Deploy Agent";
   const primaryButtonIcon = agentIsAcquired ? <Settings2 className="mr-2 h-5 w-5" /> : <PlusCircle className="mr-2 h-5 w-5" />;
 
@@ -279,8 +289,10 @@ export default function AgentDetailPage() {
                         agentIsAcquired ? "bg-secondary hover:bg-secondary/90 text-secondary-foreground" : "bg-primary hover:bg-primary/90 text-primary-foreground"
                     )} 
                     onClick={primaryButtonAction}
+                    disabled={isDeploying}
                 >
-                    {primaryButtonIcon} {primaryButtonText}
+                    {isDeploying && agentIsAcquired ? primaryButtonIcon : isDeploying ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : primaryButtonIcon}
+                    {isDeploying && agentIsAcquired ? primaryButtonText : isDeploying ? "Deploying..." : primaryButtonText}
                 </Button>
               </CardFooter>
             </Card>
@@ -378,21 +390,18 @@ export default function AgentDetailPage() {
                 <CardContent className="p-3 pt-0 text-xs text-muted-foreground">
                     <p>Agent-specific configuration options will appear here.</p>
                     <p>For now, default settings for <strong>{agent?.name}</strong> will be used.</p>
-                    {/* Example: 
-                    <Label htmlFor="config-json" className="mt-2 block">Raw JSON Config (Advanced)</Label>
-                    <Textarea id="config-json" value={instanceConfig} onChange={(e) => setInstanceConfig(e.target.value)} className="font-code mt-1 h-24 bg-input border-input focus:ring-primary" /> 
-                    */}
                 </CardContent>
             </Card>
           </div>
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="outline">
+              <Button type="button" variant="outline" disabled={isDeploying}>
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="button" onClick={handleConfirmDeployment} className="bg-primary hover:bg-primary/90 text-primary-foreground">
-              Confirm & Deploy Agent
+            <Button type="button" onClick={handleConfirmDeployment} className="bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isDeploying}>
+              {isDeploying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              {isDeploying ? "Deploying..." : "Confirm & Deploy Agent"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -400,5 +409,3 @@ export default function AgentDetailPage() {
     </div>
   );
 }
-
-
