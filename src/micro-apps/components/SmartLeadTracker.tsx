@@ -1,13 +1,13 @@
 
 'use client';
 
-import React, { useState, useMemo, type FormEvent } from 'react';
+import React, { useState, useMemo, type FormEvent, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Users, PlusCircle, Trash2, Search } from 'lucide-react'; // Added Search icon
+import { Users, PlusCircle, Trash2, Search } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 
@@ -17,13 +17,46 @@ interface Lead {
   email: string;
 }
 
+const LOCAL_STORAGE_KEY = 'nexos-smart-lead-tracker-leads';
+
 const SmartLeadTracker: React.FC = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [leadName, setLeadName] = useState('');
   const [leadEmail, setLeadEmail] = useState('');
-  const [searchTerm, setSearchTerm] = useState(''); // State for search term
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // Memoized filtered leads based on searchTerm
+  // Load leads from localStorage on initial component mount
+  useEffect(() => {
+    try {
+      const storedLeads = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (storedLeads) {
+        const parsedLeads = JSON.parse(storedLeads);
+        // Basic validation to ensure it's an array (could be more robust)
+        if (Array.isArray(parsedLeads)) {
+          setLeads(parsedLeads);
+        } else {
+          console.warn('Invalid data found in localStorage for leads, resetting.');
+          localStorage.removeItem(LOCAL_STORAGE_KEY); // Clear corrupted data
+        }
+      }
+    } catch (error) {
+      console.error('Error loading leads from localStorage:', error);
+      // If there's an error (e.g., corrupted JSON), default to an empty list
+      // and remove potentially corrupted item from storage.
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+    }
+  }, []); // Empty dependency array ensures this runs only once on mount
+
+  // Save leads to localStorage whenever the leads state changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(leads));
+    } catch (error) {
+      console.error('Error saving leads to localStorage:', error);
+      // Potentially handle storage full errors or other issues
+    }
+  }, [leads]); // Dependency array ensures this runs whenever 'leads' changes
+
   const filteredLeads = useMemo(() => {
     if (!searchTerm.trim()) {
       return leads;
@@ -38,40 +71,32 @@ const SmartLeadTracker: React.FC = () => {
 
   const handleAddLead = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Trim inputs for validation
     const trimmedName = leadName.trim();
     const trimmedEmail = leadEmail.trim();
 
     if (!trimmedName || !trimmedEmail) {
-      // This alert is a basic feedback. In a more complex app, inline errors would be better.
       alert('Please enter both name and email for the lead.');
       return;
     }
-    // Basic email format check (can be improved with regex)
     if (!trimmedEmail.includes('@')) {
         alert('Please enter a valid email address.');
         return;
     }
 
     const newLead: Lead = {
-      id: crypto.randomUUID(), // Generate a unique ID for each lead
+      id: crypto.randomUUID(),
       name: trimmedName,
       email: trimmedEmail,
     };
-    // Add new lead to the beginning of the array for better UX (newest first)
     setLeads(prevLeads => [newLead, ...prevLeads]);
-    // Clear input fields after adding
     setLeadName('');
     setLeadEmail('');
-    // console.log('Lead added:', newLead); // For debugging/feedback
   };
 
   const handleDeleteLead = (leadId: string) => {
     setLeads(prevLeads => prevLeads.filter(lead => lead.id !== leadId));
-    // console.log('Lead deleted:', leadId); // For debugging/feedback
   };
 
-  // Determine if the add lead button should be disabled
   const isAddLeadDisabled = !leadName.trim() || !leadEmail.trim();
 
   return (
@@ -81,11 +106,10 @@ const SmartLeadTracker: React.FC = () => {
           <Users className="mr-2 h-5 w-5 text-primary" /> Smart Lead Tracker
         </CardTitle>
         <CardDescription className="text-xs text-muted-foreground">
-          Manage and track your valuable leads efficiently.
+          Manage and track your valuable leads efficiently. Leads are saved in your browser.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col gap-3 md:gap-4 px-2 md:px-3 overflow-hidden">
-        {/* Add Lead Form Section */}
         <Card className="bg-card/70 backdrop-blur-sm border-primary/20 rounded-xl p-3 md:p-4 shadow-lg flex-shrink-0">
           <form onSubmit={handleAddLead} className="space-y-3">
             <h3 className="text-sm font-medium text-foreground">Add New Lead</h3>
@@ -113,7 +137,7 @@ const SmartLeadTracker: React.FC = () => {
             <Button
               type="submit"
               className="w-full h-9 text-sm bg-primary hover:bg-primary/90 text-primary-foreground disabled:bg-muted disabled:text-muted-foreground"
-              disabled={isAddLeadDisabled} // Disable button based on input state
+              disabled={isAddLeadDisabled}
             >
               <PlusCircle className="mr-2 h-4 w-4" /> Add Lead
             </Button>
@@ -122,7 +146,6 @@ const SmartLeadTracker: React.FC = () => {
 
         <Separator className="my-1 md:my-2 bg-primary/20" />
 
-        {/* Leads List and Filter Section */}
         <div className="flex-grow flex flex-col min-h-0">
           <div className="flex justify-between items-center mb-1.5 md:mb-2">
             <h3 className="text-sm font-medium text-foreground">Current Leads ({filteredLeads.length})</h3>
@@ -138,11 +161,11 @@ const SmartLeadTracker: React.FC = () => {
             </div>
           </div>
 
-          {leads.length === 0 ? ( // Check original leads length for initial empty state
+          {leads.length === 0 ? (
             <div className="flex-grow flex items-center justify-center text-center text-muted-foreground text-xs p-4 bg-muted/20 rounded-lg">
               No leads added yet. Use the form above to add your first lead.
             </div>
-          ) : filteredLeads.length === 0 && searchTerm ? ( // Show if search yields no results
+          ) : filteredLeads.length === 0 && searchTerm ? (
             <div className="flex-grow flex items-center justify-center text-center text-muted-foreground text-xs p-4 bg-muted/20 rounded-lg">
               No leads found matching "{searchTerm}".
             </div>
