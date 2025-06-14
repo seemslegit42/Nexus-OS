@@ -11,10 +11,7 @@
 
 ## Style Guidelines:
 
-- Futuristic off-white (#FAF9F6) provides a clean and modern base.
-- Light gray (#EAEAEA), almost the same hue as the primary but desaturated.
-- Gold (#D4AF37) for highlights and key interactive elements; chosen as analogous (30 degrees away from off-white).
+
 - Comfortaa (sans-serif) for titles and user interface.
-- Lexend (sans-serif) for use with the debugger environment
+- Lexend (sans-serif) for body
 - Eliminate sidebar layouts; utilize zone-based spatial division to make interfaces dynamic.
-- Responsive motion that reflects agent state/activity, providing real-time feedback.
