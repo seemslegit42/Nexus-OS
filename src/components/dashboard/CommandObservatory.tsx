@@ -5,7 +5,7 @@ import React, { useState, useMemo, useCallback, Suspense, lazy } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { Activity, LayoutDashboard, Workflow, ShieldCheck, RadioTower, Package, TerminalSquare, PackageSearch, Cpu, ListChecks, Loader2, Users } from 'lucide-react';
+import { Activity, LayoutDashboard, Workflow, ShieldCheck, RadioTower, Package, TerminalSquare, PackageSearch, Cpu, ListChecks, Loader2, Users, Rocket } from 'lucide-react'; // Added Rocket
 import LiveOrchestrationsFeed from './LiveOrchestrationsFeed';
 import AgentPresenceGrid from './AgentPresenceGrid';
 import type { MicroApp } from '@/types/micro-app';
@@ -17,7 +17,7 @@ import { MicroAppCard } from './MicroAppCard';
 // Helper function to get Lucide icons dynamically
 const getLucideIcon = (iconName: string | undefined, props?: any): React.ReactNode => {
   const defaultProps = { className: "h-6 w-6 mb-1 text-primary opacity-80", ...props };
-  if (!iconName) return <Package {...defaultProps} />;
+  if (!iconName) return <Package {...defaultProps} />; // Default icon for full card if app.icon is undefined
   switch (iconName.toLowerCase()) {
     case 'workflow': return <Workflow {...defaultProps} />;
     case 'shieldcheck': return <ShieldCheck {...defaultProps} />;
@@ -29,12 +29,16 @@ const getLucideIcon = (iconName: string | undefined, props?: any): React.ReactNo
     case 'package': return <Package {...defaultProps} />;
     case 'users': return <Users {...defaultProps} />;
     case 'activity': return <Activity {...defaultProps} />;
+    case 'rocket': return <Rocket {...defaultProps} />; // Added Rocket case
     default: return <Package {...defaultProps} />;
   }
 };
 
 const getLucideIconSmall = (iconName: string | undefined, customClassName?: string): React.ReactNode => {
-  return getLucideIcon(iconName, { className: cn("h-4 w-4 mr-2", customClassName) });
+  // For compact card, if app.icon is not defined, MicroAppCard itself will default to Rocket.
+  // Here, we primarily care about the zone title icon.
+  const iconToUse = iconName || 'LayoutDashboard'; // Default zone icon
+  return getLucideIcon(iconToUse, { className: cn("h-4 w-4 mr-2", customClassName) });
 };
 
 // Define helper components before CommandObservatory
@@ -70,17 +74,17 @@ const MicroAppLauncherContentInternal = React.memo<MicroAppLauncherProps>(({ app
         <ScrollArea className="h-full">
           <div className="p-2">
             {appsToDisplay.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-2"> {/* Adjusted grid columns for wider compact cards */}
                 {appsToDisplay.map((app) => (
                   <MicroAppCard
                     key={app.id}
                     id={app.id}
                     name={app.displayName}
-                    description={app.description}
+                    description={app.description} // name and desc used for tooltips/aria in compact mode
                     onLaunch={() => onLaunchApp(app)}
-                    tags={app.tags}
-                    icon={getLucideIcon(app.icon, { className: "h-5 w-5 text-primary group-hover:text-accent transition-colors" })}
-                    className="aspect-auto min-h-[150px]"
+                    icon={getLucideIcon(app.icon, { className: "h-6 w-6" })} // Pass the app-specific icon, MicroAppCard handles default
+                    displayMode="compact"
+                    className="min-h-[80px] sm:min-h-[90px]" // Ensure compact cards have some height
                   />
                 ))}
               </div>
@@ -200,7 +204,7 @@ export default function CommandObservatory() {
     {
       id: "microAppLauncher",
       title: "Micro-Apps",
-      icon: getLucideIconSmall("layoutdashboard"),
+      icon: getLucideIconSmall("layoutdashboard"), // Changed from Package
       content: microAppLauncherContent,
       defaultLayout: { x: 0, y: 16, w: 4, h: 8, minW: 3, minH: 5 },
     },
@@ -214,7 +218,7 @@ export default function CommandObservatory() {
     {
       id: "launchedAppDisplay",
       title: launchedApp ? `App: ${launchedApp.displayName}` : "Application View",
-      icon: getLucideIconSmall(launchedApp?.icon, launchedApp ? undefined : 'mr-2'), // Adjust icon styling if no app is launched
+      icon: getLucideIconSmall(launchedApp?.icon || "Package", launchedApp ? undefined : 'mr-2'),
       content: launchedAppDisplayContent,
       defaultLayout: { x: 4, y: 12, w: 8, h: 12, minW: 4, minH: 6 },
       canClose: !!launchedApp,
@@ -243,9 +247,9 @@ export default function CommandObservatory() {
       <WorkspaceGrid
         zoneConfigs={zoneConfigs}
         className="flex-grow p-2 md:p-3"
-        storageKey="commandObservatoryLayout_v3"
+        storageKey="commandObservatoryLayout_v3" // Updated storage key if layout changes significantly
         cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }}
-        rowHeight={20}
+        rowHeight={20} // Adjust if necessary for new card heights
       />
     </div>
   );

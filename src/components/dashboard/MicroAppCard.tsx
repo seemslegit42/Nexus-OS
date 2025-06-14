@@ -5,7 +5,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Rocket, Settings } from 'lucide-react';
+import { Rocket, Settings } from 'lucide-react'; // Added Rocket for compact default
 import { cn } from '@/lib/utils';
 import type { MicroAppStatus } from '@/stores/micro-app-registry.store';
 
@@ -16,13 +16,14 @@ interface MicroAppCardProps {
   onLaunch: (id: string) => void;
   onConfigure?: (id: string) => void;
   tags?: string[];
-  metricPreview?: string; // For a single line metric, multi-line would require more specific props
+  metricPreview?: string;
   icon?: React.ReactNode;
   status?: MicroAppStatus;
   className?: string;
+  displayMode?: 'full' | 'compact';
 }
 
-// Helper to get appropriate badge variant for status
+// Helper to get appropriate badge variant for status (used in 'full' mode)
 const getStatusBadgeStyling = (status?: MicroAppStatus): { variant: 'default' | 'secondary' | 'destructive' | 'outline', className: string } => {
   switch (status) {
     case 'enabled': return { variant: 'default', className: 'bg-green-500/80 text-white dark:bg-green-600/80' };
@@ -30,10 +31,9 @@ const getStatusBadgeStyling = (status?: MicroAppStatus): { variant: 'default' | 
     case 'dev-only': return { variant: 'outline', className: 'border-yellow-500/80 text-yellow-600 dark:border-yellow-500/60 dark:text-yellow-400' };
     case 'archived': return { variant: 'destructive', className: 'bg-red-700/80 text-white dark:bg-red-800/80' };
     case 'beta': return { variant: 'default', className: 'bg-blue-500/80 text-white dark:bg-blue-600/80' };
-    default: return { variant: 'outline', className: 'border-border text-muted-foreground' }; // Default for undefined status
+    default: return { variant: 'outline', className: 'border-border text-muted-foreground' };
   }
 };
-
 
 export const MicroAppCard: React.FC<MicroAppCardProps> = ({
   id,
@@ -46,7 +46,40 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
   icon,
   status,
   className,
+  displayMode = 'full',
 }) => {
+
+  if (displayMode === 'compact') {
+    // Determine the icon to display: passed icon or default Rocket for compact mode
+    const displayIconNode = icon ? 
+                            React.cloneElement(icon as React.ReactElement, { className: "h-6 w-6 text-primary group-hover:text-accent transition-colors" }) : 
+                            <Rocket className="h-6 w-6 text-primary group-hover:text-accent transition-colors" />;
+    return (
+      <Card
+        className={cn(
+          "flex flex-col items-center justify-center text-center p-2 gap-1",
+          "bg-transparent", // Transparent background as per image
+          "border-2 border-primary/40 hover:border-primary/70", // Glowy border effect
+          "rounded-xl shadow-[0_0_15px_hsl(var(--primary)/0.2)] hover:shadow-[0_0_20px_hsl(var(--primary)/0.3)]", // Glowy shadow
+          "transition-all duration-200 ease-in-out cursor-pointer group",
+          "min-h-[80px]", // Minimum height to ensure cards are not too small
+          className
+        )}
+        onClick={() => onLaunch(id)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onLaunch(id); }}
+        title={`Launch ${name}`} // Tooltip for accessibility
+      >
+        {displayIconNode}
+        <span className="text-xs font-medium text-foreground group-hover:text-accent transition-colors">
+          Launch
+        </span>
+      </Card>
+    );
+  }
+
+  // Full display mode logic
   const statusStyling = getStatusBadgeStyling(status);
 
   return (
@@ -62,7 +95,7 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
                 {icon ? (
                     React.cloneElement(icon as React.ReactElement, { className: "h-5 w-5 text-primary group-hover:text-accent transition-colors" })
                 ) : (
-                    <Rocket className="h-5 w-5 text-primary group-hover:text-accent transition-colors" />
+                    <Rocket className="h-5 w-5 text-primary group-hover:text-accent transition-colors" /> // Default for full mode if no icon
                 )}
                 <CardTitle className="text-base font-semibold text-foreground group-hover:text-accent transition-colors truncate" title={name}>
                     {name}
