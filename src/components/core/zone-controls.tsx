@@ -5,7 +5,7 @@
 import React, { useMemo, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Pin, Maximize2, Minimize2, Minus, X, SlidersHorizontal, MoreVertical, PlayCircle, FileText, Edit, Trash2, Loader2, Eye, ExternalLink } from "lucide-react";
+import { Pin, Maximize2, Minimize2, Minus, X, Edit, MoreVertical, PlayCircle, FileText, Loader2, ExternalLink } from "lucide-react";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -74,7 +74,7 @@ export function ZoneControls({
       }
       setIsRunningTask(false);
     }
-  }, [onRunTask, zoneId, zoneTitle, setIsRunningTask]);
+  }, [onRunTask, zoneId, zoneTitle]);
 
   const handleOpenAppInternal = useCallback(() => {
     if (onOpenApp) {
@@ -88,13 +88,18 @@ export function ZoneControls({
     }
   }, [onViewLogs, zoneId, zoneTitle]);
 
-  const controlButtons = useMemo(() => {
-    const buttons: JSX.Element[] = [];
-    const hasMenuActions = onOpenApp || onRunTask || onViewLogs || (canSettings && onSettingsToggle) || (canClose && onClose);
+  const hasMenuActions = useMemo(() => {
+    return !!(onOpenApp || onRunTask || onViewLogs || (canSettings && onSettingsToggle) || (canClose && onClose));
+  }, [onOpenApp, onRunTask, onViewLogs, canSettings, onSettingsToggle, canClose, onClose]);
 
-    if (hasMenuActions) {
-      buttons.push(
-        <DropdownMenu key="ellipsis-menu">
+  if (!hasMenuActions && !onPinToggle && !onMinimizeToggle && !onMaximizeToggle) {
+    return null;
+  }
+
+  return (
+    <div className="flex items-center gap-1.5 flex-shrink-0">
+      {hasMenuActions && (
+        <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
@@ -134,21 +139,22 @@ export function ZoneControls({
                 <Edit className="mr-2 h-4 w-4" /> Configure
               </DropdownMenuItem>
             )}
-            {canClose && onClose && (
+            {/* Trash2 was used for Remove App, assuming X is for the direct close button */}
+            {/* For consistency with the direct X button, maybe "Close Zone" or "Hide Zone" is better if onClose is general */}
+            {/* Or keep as Remove App if its action is destructive */}
+            {canClose && onClose && ( 
               <>
-                <DropdownMenuSeparator />
+                {(onOpenApp || onRunTask || onViewLogs || (canSettings && onSettingsToggle)) && <DropdownMenuSeparator />}
                 <DropdownMenuItem onClick={onClose} className="text-destructive focus:text-destructive-foreground focus:bg-destructive">
-                  <Trash2 className="mr-2 h-4 w-4" /> Remove App
+                  <X className="mr-2 h-4 w-4" /> Close Zone 
                 </DropdownMenuItem>
               </>
             )}
           </DropdownMenuContent>
         </DropdownMenu>
-      );
-    }
+      )}
 
-    if (onPinToggle) {
-      buttons.push(
+      {onPinToggle && (
         <Button 
           key="pin-control"
           variant="ghost" 
@@ -165,11 +171,9 @@ export function ZoneControls({
           <Pin className={cn(ICON_BASE_CLASS, isPinned ? "rotate-45 scale-110" : "group-hover:rotate-[-15deg]")} />
           <span className="sr-only">{isPinned ? "Unpin" : "Pin"}</span>
         </Button>
-      );
-    }
+      )}
     
-    if (onMinimizeToggle) {
-      buttons.push(
+      {onMinimizeToggle && (
         <Button 
           key="minimize-control"
           variant="ghost" 
@@ -186,11 +190,9 @@ export function ZoneControls({
           <Minus className={cn(ICON_BASE_CLASS, "group-hover:scale-x-125")} />
           <span className="sr-only">{isMinimized ? "Restore Content" : "Minimize Content"}</span>
         </Button>
-      );
-    }
+      )}
 
-    if (onMaximizeToggle) {
-      buttons.push(
+      {onMaximizeToggle && (
         <Button 
           key="maximize-control"
           variant="ghost" 
@@ -209,25 +211,9 @@ export function ZoneControls({
             <Maximize2 className={cn(ICON_BASE_CLASS, "group-hover:rotate-[45deg] group-hover:scale-110")} />}
           <span className="sr-only">{isMaximized ? "Restore" : "Maximize"}</span>
         </Button>
-      );
-    }
-    return buttons;
-  }, [
-    zoneId, zoneTitle, onPinToggle, isPinned, onMaximizeToggle, isMaximized, 
-    onMinimizeToggle, isMinimized, onClose, onSettingsToggle, canPin, 
-    canMaximize, canMinimize, canClose, canSettings, 
-    onOpenApp, handleOpenAppInternal, 
-    onRunTask, handleRunTaskInternal, isRunningTask,
-    onViewLogs, handleViewLogsInternal
-  ]);
-
-  if (controlButtons.length === 0) {
-    return null;
-  }
-
-  return (
-    <div className="flex items-center gap-1.5 flex-shrink-0">
-      {controlButtons}
+      )}
+      {/* Direct Close button - Removed as it's now in the dropdown menu if canClose is true */}
     </div>
   );
 }
+
