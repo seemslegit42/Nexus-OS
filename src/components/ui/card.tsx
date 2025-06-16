@@ -14,8 +14,8 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <Comp
         ref={ref}
         className={cn(
-          // Updated to use new theme variables for glassmorphism
-          "rounded-[var(--border-radius-main)] border-[var(--border-width-main)] border-[var(--border-color-main)] bg-[var(--panel-background-color)] text-[var(--text-primary-color)] shadow-[var(--panel-box-shadow)] backdrop-filter-[var(--panel-backdrop-filter)]",
+          // Updated to use new theme variables for glassmorphism & new outer shadow
+          "rounded-[var(--border-radius-main)] border-[var(--border-width-main)] border-[var(--border-color-main)] bg-[var(--panel-background-color)] text-[var(--text-primary-color)] shadow-[var(--panel-box-shadow)] shadow-panel-outer backdrop-filter-[var(--panel-backdrop-filter)]",
           className
         )}
         {...props}
@@ -44,7 +44,7 @@ const CardTitle = React.forwardRef<
   <div 
     ref={ref}
     className={cn(
-      "text-size-large font-headline font-weight-bold leading-none tracking-tight text-text-primary-custom", // Use new font tokens
+      "text-size-large font-headline font-weight-bold leading-none tracking-tight text-foreground", // Use new font tokens & foreground for better default contrast
       className
     )}
     {...props}
@@ -85,4 +85,4 @@ const CardFooter = React.forwardRef<
 CardFooter.displayName = "CardFooter"
 
 export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
-
+```

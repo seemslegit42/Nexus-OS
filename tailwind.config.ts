@@ -104,6 +104,7 @@ export default {
       boxShadow: {
         'observatory-inner': 'var(--observatory-shadow)',
         'panel-custom': 'var(--panel-box-shadow)', // For custom panel shadow
+        'panel-outer': 'var(--shadow-panel-outer)', // New outer shadow utility
       },
       borderRadius: {
         lg: "var(--radius)", // main radius for larger elements: 12px -> 0.75rem
@@ -166,3 +167,4 @@ export default {
     }
   ],
 } satisfies Config;
+```
