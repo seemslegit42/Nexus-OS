@@ -1,3 +1,4 @@
+
 // src/components/dashboard/MicroAppCard.tsx
 'use client';
 
@@ -85,7 +86,9 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
   return (
     <Card
         className={cn(
-            "flex flex-col h-full bg-[rgba(16,42,32,0.65)] border border-[rgba(142,255,215,0.25)] text-[rgba(220,255,240,0.9)] rounded-xl p-3.5 shadow-lg hover:shadow-primary/20 transition-all duration-200 ease-in-out hover:border-primary/50 group",
+            // Uses standard Card component styling from ui/card.tsx (which now uses CSS vars)
+            // Specific overrides for MicroAppCard:
+            "flex flex-col h-full p-3.5 group transition-all duration-200 ease-in-out hover:shadow-primary/20 hover:border-primary/50",
             className
         )}
     >
@@ -97,7 +100,7 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
                 ) : (
                     <Rocket className="h-5 w-5 text-primary group-hover:text-accent transition-colors" /> // Default for full mode if no icon
                 )}
-                <CardTitle className="text-base font-semibold text-foreground group-hover:text-accent transition-colors truncate" title={name}>
+                <CardTitle className="text-base font-semibold text-card-foreground group-hover:text-accent transition-colors truncate" title={name}>
                     {name}
                 </CardTitle>
             </div>
@@ -157,3 +160,4 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
 };
 
 export default MicroAppCard;
+

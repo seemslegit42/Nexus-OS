@@ -89,7 +89,7 @@ const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = ({ e
         };
       default:
         return {
-          cardOuterClass: 'border-primary/20 hover:border-primary/40 bg-card/40 hover:bg-card/60',
+          cardOuterClass: 'border-[var(--glass-border)] bg-[var(--glass-bg)] hover:border-primary/40', // Use standard glass border and bg for unknown
           icon: <AlertTriangle className="h-4 w-4 text-muted-foreground" />,
           badgeVariant: 'outline'as const,
           badgeClass: 'border-muted-foreground/50 text-muted-foreground',
@@ -103,8 +103,8 @@ const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = ({ e
 
   return (
     <Card className={cn(
-        "rounded-xl transition-all duration-300 backdrop-blur-sm shadow-[0_2px_10px_rgba(0,255,162,0.08)]", // Base glassy jade
-        statusStyles.cardOuterClass // Status-specific border and hover background
+        "rounded-2xl transition-all duration-300 backdrop-blur-[var(--blur)] shadow-[var(--shadow-soft)]",
+        statusStyles.cardOuterClass 
       )}
     >
       <CardHeader
@@ -209,7 +209,7 @@ export default function LiveOrchestrationsFeed() {
   }, []);
 
   return (
-    <Card className="h-full flex flex-col bg-[rgba(15,25,20,0.25)] border border-[rgba(0,255,162,0.15)] backdrop-blur-sm shadow-[0_4px_20px_rgba(0,255,162,0.1)] rounded-2xl">
+    <Card className="h-full flex flex-col bg-transparent border-none shadow-none">
       <CardHeader className="pb-2 pt-3 px-3">
         <CardTitle className="text-base font-medium text-foreground flex items-center">
           <ListChecks className="h-4 w-4 mr-2 text-primary" /> Live Orchestration Feed
@@ -233,3 +233,4 @@ export default function LiveOrchestrationsFeed() {
     </Card>
   );
 }
+

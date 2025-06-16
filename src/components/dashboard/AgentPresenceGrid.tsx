@@ -1,3 +1,4 @@
+
 // src/components/dashboard/AgentPresenceGrid.tsx
 'use client';
 
@@ -84,7 +85,9 @@ const AgentStatusIcon: React.FC<{ status: AgentInfo['status'] }> = ({ status }) 
 const AgentDetailPanel: React.FC<{ agent: AgentInfo }> = ({ agent }) => {
   return (
     <div
-      className="bg-[rgba(16,42,32,0.65)] border border-[rgba(142,255,215,0.25)] text-[rgba(220,255,240,0.9)] rounded-lg p-3 mt-2 text-xs space-y-1.5"
+      className={cn(
+        "rounded-2xl border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-[var(--blur)] text-card-foreground shadow-[var(--shadow-soft)] p-3 mt-2 text-xs space-y-1.5"
+      )}
     >
       <h4 className="text-sm font-semibold text-primary mb-1">{agent.personaName}</h4>
       <p><strong>Agent ID:</strong> {agent.id}</p>
@@ -99,7 +102,7 @@ const AgentDetailPanel: React.FC<{ agent: AgentInfo }> = ({ agent }) => {
       <p><strong>Current Task:</strong> {agent.currentTask || 'N/A'}</p>
       <div>
         <strong>Memory Log (Static):</strong>
-        <p className="mt-0.5 text-[10px] text-[rgba(220,255,240,0.7)] leading-relaxed">
+        <p className="mt-0.5 text-[10px] text-muted-foreground leading-relaxed">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
           Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
           Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
@@ -109,7 +112,7 @@ const AgentDetailPanel: React.FC<{ agent: AgentInfo }> = ({ agent }) => {
       {agent.activeOrchestrations.length > 0 && (
         <div className="mt-1">
           <strong>Active Orchestrations:</strong>
-          <ul className="list-disc list-inside pl-2 text-[rgba(220,255,240,0.7)]">
+          <ul className="list-disc list-inside pl-2 text-muted-foreground">
             {agent.activeOrchestrations.map(orch => <li key={orch} className="text-[10px]">{orch}</li>)}
           </ul>
         </div>
@@ -148,7 +151,7 @@ const AgentEntry: React.FC<{ agent: AgentInfo }> = ({ agent }) => {
 
 export default function AgentPresenceGrid() {
   return (
-    <Card className="h-auto bg-[rgba(15,25,20,0.25)] border border-[rgba(0,255,162,0.15)] backdrop-blur-sm shadow-[0_4px_20px_rgba(0,255,162,0.1)] rounded-2xl">
+    <Card className="h-auto bg-transparent border-none shadow-none">
       <CardHeader className="pb-2 pt-3 px-3">
         <CardTitle className="text-base font-medium text-foreground flex items-center">
           <Cpu className="h-4 w-4 mr-2 text-primary" /> Agent Presence
@@ -167,3 +170,4 @@ export default function AgentPresenceGrid() {
     </Card>
   );
 }
+

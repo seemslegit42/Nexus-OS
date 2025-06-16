@@ -14,7 +14,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <Comp
         ref={ref}
         className={cn(
-          "rounded-2xl border border-primary/25 bg-card/60 backdrop-blur-sm text-card-foreground shadow-[0_4px_20px_rgba(0,255,162,0.1)]", // Consistent glassy theme: bg-card/60, backdrop-blur-sm, shadow from globals
+          "rounded-2xl border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-[var(--blur)] text-card-foreground shadow-[var(--shadow-soft)]",
           className
         )}
         {...props}
@@ -84,3 +84,4 @@ const CardFooter = React.forwardRef<
 CardFooter.displayName = "CardFooter"
 
 export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+
