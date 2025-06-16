@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,111 +5,108 @@
 /* ========== Base Layer Reset ========== */
 html, body {
   @apply antialiased overflow-x-hidden;
-  /* background-color: var(--background-main-color); Applied via :root */
   font-family: var(--font-main);
   scroll-behavior: smooth;
 }
 
 /* ========== Custom Root Theme Tokens ========== */
 :root {
-  /* Color Palette */
-  --background-main-color: #1A2E2D; /* User defined */
-  --panel-background-color: rgba(20, 48, 46, 0.75); /* User defined */
-  --accent-primary-color: #40C0A0; /* User defined */
-  --accent-secondary-color: #B8860B; /* User defined */
-  --text-primary-color: #EAEAEA; /* User defined */
-  --text-secondary-color: #A0A0A0; /* User defined */
-  --status-success-color: #40C0A0; /* User defined (same as accent-primary) */
-  --status-in-progress-color: #B8860B; /* User defined (same as accent-secondary) */
-  --status-error-color: #D9534F; /* User defined */
-  --border-color-main: rgba(64, 192, 160, 0.3); /* User defined */
+  /* Color Palette - Verdigris, Purple, Aquamarine Theme */
+  --background-main-color: hsl(175, 20%, 20%); /* Verdigris Background */
+  --panel-background-color: hsla(175, 20%, 17%, 0.75); /* Verdigris Panel */
+  --accent-primary-color: hsl(271, 76%, 53%); /* Purple */
+  --accent-secondary-color: hsl(170, 70%, 55%); /* Aquamarine */
+  --text-primary-color: #EAEAEA;
+  --text-secondary-color: #A0A0A0;
+  --status-success-color: hsl(170, 70%, 55%); /* Aquamarine for success */
+  --status-in-progress-color: hsl(271, 45%, 65%); /* Lighter Purple for in-progress/warning */
+  --status-error-color: #D9534F; /* Muted Red for error */
+  --border-color-main: hsla(271, 76%, 53%, 0.3); /* Purple Glow Border */
 
-  /* Typography (Actual font-family assigned in layout.tsx via --font-body and --font-headline) */
-  --font-main: 'Lexend', sans-serif; /* User defined */
-  --font-headline-comfortaa: 'Comfortaa', sans-serif; /* User defined, kept specific for headlines */
+  /* Typography */
+  --font-main: 'Lexend', sans-serif;
+  --font-headline-comfortaa: 'Comfortaa', sans-serif;
   
-  --font-size-base: 16px; /* User defined */
-  --font-size-small: 14px; /* User defined */
-  --font-size-large: 20px; /* User defined */
-  --font-size-h1: 32px; /* User defined */
-  --font-size-h2: 24px; /* User defined */
+  --font-size-base: 16px;
+  --font-size-small: 14px;
+  --font-size-large: 20px;
+  --font-size-h1: 32px;
+  --font-size-h2: 24px;
 
-  --font-weight-regular: 400; /* User defined */
-  --font-weight-bold: 600; /* User defined */
+  --font-weight-regular: 400;
+  --font-weight-bold: 600;
 
-  /* Spacing & Sizing (Base unit: 8px) */
-  --spacing-xs: 4px;   /* User defined */
-  --spacing-sm: 8px;   /* User defined */
-  --spacing-md: 16px;  /* User defined */
-  --spacing-lg: 24px;  /* User defined */
-  --spacing-xl: 32px;  /* User defined */
+  /* Spacing & Sizing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
 
   /* Borders & Radius */
-  --border-radius-main: 12px;  /* User defined -> 0.75rem */
-  --border-radius-small: 8px; /* User defined -> 0.5rem */
-  --border-width-main: 1px;   /* User defined */
+  --border-radius-main: 12px;
+  --border-radius-small: 8px;
+  --border-width-main: 1px;
 
   /* Effects (Glassmorphism) */
-  --panel-backdrop-filter: blur(12px); /* User defined */
-  --panel-box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05); /* User defined */
-  --shadow-panel-outer: 0 8px 32px hsla(var(--primary) / 0.1), 0 4px 12px hsla(var(--primary) / 0.08); /* New outer shadow */
-  /* --panel-border uses --border-color-main */
+  --panel-backdrop-filter: blur(12px);
+  --panel-box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  --shadow-panel-outer: 0 8px 32px hsla(271, 76%, 53%, 0.1), 0 4px 12px hsla(271, 76%, 53%, 0.08); /* Purple outer shadow */
 
 
   /* ShadCN Compatibility - Mapped to new theme */
   /* Backgrounds */
-  --background: 175 25% 14%; /* From --background-main-color: #1A2E2D */
-  --foreground: 0 0% 92%; /* From --text-primary-color: #EAEAEA */
+  --background: 175 20% 20%; /* Verdigris */
+  --foreground: 0 0% 92%; /* Text Primary (#EAEAEA) */
   
   /* Cards & Popovers */
-  /* For --panel-background-color: rgba(20, 48, 46, 0.75) -> Opaque RGB(20,48,46) is HSL 175, 41%, 13% */
-  --card: 175 41% 13% / 0.75; /* Directly use panel-background-color with alpha */
-  --card-foreground: var(--foreground); /* Use text-primary */
+  --card: 175 20% 17%; /* Opaque Verdigris Panel for card bg */
+  --card-foreground: var(--foreground); /* Text Primary on cards */
   
-  --popover: 175 41% 11% / 0.85; /* Similar to card, slightly darker/more opaque */
-  --popover-foreground: var(--foreground);
+  --popover: 175 20% 15% / 0.85; /* Slightly darker/more opaque Verdigris panel for popovers */
+  --popover-foreground: var(--foreground); /* Text Primary on popovers */
 
   /* Primary Interactive Elements */
-  --primary: 165 53% 50%; /* From --accent-primary-color: #40C0A0 */
-  --primary-foreground: 165 53% 10%; /* Darker contrast for primary accent */
+  --primary: 271 76% 53%; /* Purple */
+  --primary-foreground: 271 76% 95%; /* Light Lavender for Purple contrast */
 
   /* Secondary Elements */
-  --secondary: 43 89% 38%; /* From --accent-secondary-color: #B8860B */
-  --secondary-foreground: 43 89% 90%; /* Lighter contrast for secondary accent */
+  --secondary: 170 70% 55%; /* Aquamarine */
+  --secondary-foreground: 170 70% 15%; /* Dark Teal for Aquamarine contrast */
   
   /* Muted Text & Borders for components */
-  --muted: 175 25% 10%; /* Darker shade of main background */
-  --muted-foreground: 0 0% 63%; /* From --text-secondary-color: #A0A0A0 */
+  --muted: 175 20% 15%; /* Darker shade of Verdigris background for muted elements */
+  --muted-foreground: 0 0% 63%; /* Text Secondary (#A0A0A0) */
   
-  --accent: 165 53% 50%; /* Same as --primary for general accents */
-  --accent-foreground: 165 53% 10%; /* Same as --primary-foreground */
+  --accent: 271 76% 53%; /* Purple for general accents (can be same as primary) */
+  --accent-foreground: 271 76% 95%; /* Light Lavender for Purple contrast */
   
-  --destructive: 2 66% 61%; /* From --status-error-color: #D9534F */
-  --destructive-foreground: 2 66% 95%; /* Lighter contrast for destructive */
+  --destructive: 2 66% 61%; /* Error Red (D9534F) */
+  --destructive-foreground: 2 66% 95%; /* Light contrast for destructive */
 
   /* Borders & Inputs */
-  --border: 165 53% 50% / 0.3; /* From --border-color-main: rgba(64, 192, 160, 0.3) */
-  --input: 175 41% 13% / 0.85;  /* Similar to panel-background, slightly more opaque for inputs */
-  --ring: 165 53% 50%;       /* Primary accent for focus rings */
+  --border: 271 76% 45%;       /* Slightly darker, opaque Purple for general component borders */
+  --input: 175 20% 17% / 0.85;  /* Opaque Verdigris Panel for inputs */
+  --ring: 271 76% 53%;       /* Purple for focus rings */
 
   --radius: 0.75rem; /* From --border-radius-main: 12px */
 
-  /* Chart Colors - Harmonized */
-  --chart-1: hsl(var(--primary));
-  --chart-2: 165 65% 60%; /* Lighter Jade */
-  --chart-3: 165 45% 40%; /* Darker Jade */
-  --chart-4: hsl(var(--secondary)); /* Accent Secondary */
-  --chart-5: 0 0% 75%; /* Neutral for lines/text if needed */
+  /* Chart Colors - Harmonized with Purple/Aquamarine */
+  --chart-1: hsl(var(--primary)); /* Purple */
+  --chart-2: 271 60% 65%; /* Lighter Purple */
+  --chart-3: 271 80% 45%; /* Darker Purple */
+  --chart-4: hsl(var(--secondary)); /* Aquamarine */
+  --chart-5: 0 0% 75%; /* Neutral Grey */
 
-  /* Scrollbar Variables */
-  --scrollbar-track-bg: hsla(175, 25%, 14%, 0.6);
-  --scrollbar-thumb-bg: hsla(0, 0%, 63%, 0.3);
-  --scrollbar-thumb-hover-bg: hsla(0, 0%, 63%, 0.5);
-  --scrollbar-thumb-border-color: hsla(175, 25%, 14%, 0.6);
+  /* Scrollbar Variables (Aquamarine Theme) */
+  --scrollbar-track-bg: hsla(175, 20%, 20%, 0.6); /* Verdigris based track */
+  --scrollbar-thumb-bg: hsla(170, 70%, 55%, 0.5); /* Aquamarine thumb */
+  --scrollbar-thumb-hover-bg: hsla(170, 70%, 55%, 0.7); /* Aquamarine thumb hover */
+  --scrollbar-thumb-border-color: hsla(175, 20%, 20%, 0.6); /* Verdigris based border */
 
-  /* Command Observatory Specific Styles (Can be kept if distinct styling needed there) */
-  --observatory-bg: var(--background-main-color); /* Use main background */
-  --observatory-border: var(--border-color-main);
+  /* Command Observatory Specific Styles */
+  --observatory-bg: var(--background-main-color);
+  --observatory-border: var(--border-color-main); 
   --observatory-shadow: var(--panel-box-shadow);
 }
 
@@ -119,20 +115,20 @@ html, body {
   body {
     background-color: var(--background-main-color);
     color: var(--text-primary-color);
-    font-family: var(--font-main); /* Ensure Lexend is default body font */
+    font-family: var(--font-main);
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-regular);
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-headline-comfortaa); /* Comfortaa for headlines */
+    font-family: var(--font-headline-comfortaa);
     color: var(--text-primary-color);
   }
   h1 { font-size: var(--font-size-h1); }
   h2 { font-size: var(--font-size-h2); }
-  h3 { font-size: var(--font-size-large); } /* Example mapping */
+  h3 { font-size: var(--font-size-large); }
 
   * {
-    border-color: hsl(var(--border)); /* Default border for components */
+    border-color: hsl(var(--border)); /* Default border color for ShadCN components */
   }
 }
 
@@ -140,7 +136,7 @@ html, body {
 .panel-glass {
   background: var(--panel-background-color);
   border: var(--border-width-main) solid var(--border-color-main);
-  box-shadow: var(--panel-box-shadow), var(--shadow-panel-outer); /* Added outer shadow */
+  box-shadow: var(--panel-box-shadow), var(--shadow-panel-outer); /* Added new outer shadow */
   backdrop-filter: var(--panel-backdrop-filter);
   border-radius: var(--border-radius-main);
 }
@@ -154,13 +150,11 @@ html, body {
 .font-regular { font-weight: var(--font-weight-regular); }
 .font-bold-custom { font-weight: var(--font-weight-bold); }
 
-
-/* Other global styles from original file */
-.glow-jade {
-  box-shadow: 0 0 12px rgba(64, 192, 160, 0.5); /* Using accent-primary */
-  border-color: rgba(64, 192, 160, 0.2);
+.glow-purple { /* This class can be used for explicit purple glow on elements if needed */
+  box-shadow: 0 0 12px hsla(var(--primary) / 0.5); 
+  border-color: hsla(var(--primary) / 0.2);
 }
-/* ... (rest of the animations, RGL styles, scrollbar utilities) ... */
+
 
 /* React Grid Layout specific styles */
 .react-grid-layout {
@@ -190,7 +184,7 @@ html, body {
 }
 
 .react-grid-item.react-grid-placeholder {
-  background: hsl(var(--primary) / 0.2); 
+  background: hsl(var(--primary) / 0.2); /* Purple placeholder */
   opacity: 0.5;
   transition-duration: 100ms;
   z-index: 2;
@@ -200,7 +194,7 @@ html, body {
   -o-user-select: none;
   user-select: none;
   border-radius: var(--radius);
-  border: 1px dashed hsl(var(--primary) / 0.4); 
+  border: 1px dashed hsl(var(--primary) / 0.4); /* Purple placeholder border */
   backdrop-filter: blur(2px);
 }
 
@@ -232,7 +226,7 @@ html, body {
   display: none;
 }
 
-/* Custom Scrollbar Styles using new tokens */
+/* Custom Scrollbar Styles using new theme variables */
 @layer utilities {
   ::-webkit-scrollbar {
     width: 8px;
@@ -278,8 +272,8 @@ html, body {
       transparent,
       transparent,
       transparent,
-      rgba(64, 192, 160, 0.3), /* Changed from hsl(var(--accent) / 0.3) */
-      rgba(64, 192, 160, 0.2), /* Changed from hsl(var(--primary) / 0.2) */
+      hsla(var(--primary) / 0.3), /* Purple shimmer */
+      hsla(var(--primary) / 0.2), /* Lighter Purple shimmer */
       transparent,
       transparent
     );
