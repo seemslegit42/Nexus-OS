@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { useUserAgentsStore } from '@/stores/user-agents.store';
 import { useAgentMarketplaceStore } from '@/stores/agent-marketplace.store';
 import type { MarketplaceAgent } from '@/types/marketplace-agent';
-import { Badge } from '@/components/ui/badge'; // Import Badge component
+import { Badge } from '@/components/ui/badge';
 
 interface DisplayAgentInfo {
   id: string;
@@ -22,36 +22,39 @@ interface DisplayAgentInfo {
   currentTask: string | null;
 }
 
-const AgentStatusIcon: React.FC<{ status: DisplayAgentInfo['status'] }> = ({ status }) => {
+const AgentStatusIcon: React.FC<{ status: DisplayAgentInfo['status'] }> = React.memo(({ status }) => {
   switch (status) {
-    case 'Executing': return <Loader2 className="h-3.5 w-3.5 text-blue-400 animate-spin" />;
+    case 'Executing': return <Loader2 className="h-3.5 w-3.5 text-primary animate-spin" />; // Changed color to primary
     case 'Idle': return <CheckCircle className="h-3.5 w-3.5 text-green-400" />;
-    case 'Offline': return <XCircle className="h-3.5 w-3.5 text-muted-foreground" />;
+    case 'Offline': return <XCircle className="h-3.5 w-3.5 text-muted-foreground/70" />; // Muted more
     case 'Error': return <AlertTriangle className="h-3.5 w-3.5 text-red-400" />;
     default: return null;
   }
-};
+});
+AgentStatusIcon.displayName = 'AgentStatusIcon';
+
 
 const AgentDetailPanel: React.FC<{ agent: DisplayAgentInfo }> = React.memo(({ agent }) => {
   return (
     <div
       className={cn(
-        "rounded-2xl border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-[var(--blur)] text-card-foreground shadow-[var(--shadow-soft)] p-3 mt-2 text-xs space-y-1.5"
+        "rounded-xl border border-primary/20 bg-card/50 backdrop-blur-sm text-card-foreground shadow-lg p-3 mt-2 text-xs space-y-1.5" // Aligned with card styling
       )}
     >
       <h4 className="text-sm font-semibold text-primary mb-1">{agent.personaName}</h4>
-      <p><strong>Agent ID:</strong> {agent.id}</p>
+      <p><strong className="text-muted-foreground">ID:</strong> <span className="text-foreground/90">{agent.id}</span></p>
       <p>
-        <strong>Operational Status:</strong> <span className={cn(
-            agent.status === 'Executing' && "text-blue-400",
+        <strong className="text-muted-foreground">Operational Status:</strong> <span className={cn(
+            "font-medium",
+            agent.status === 'Executing' && "text-primary",
             agent.status === 'Idle' && "text-green-400",
             agent.status === 'Error' && "text-red-400",
-            agent.status === 'Offline' && "text-muted-foreground"
-        )}>{agent.status}</span> (Sim. Workload: {agent.workload}%)
+            agent.status === 'Offline' && "text-muted-foreground/80"
+        )}>{agent.status}</span> <span className="text-muted-foreground/80">(Workload: {agent.workload}%)</span>
       </p>
-       <p><strong>Marketplace Status:</strong> <Badge variant={agent.marketplaceStatus === 'available' ? 'default' : 'secondary'} className={cn("text-[9px] h-auto px-1 py-0", agent.marketplaceStatus === 'available' ? 'bg-green-500/20 text-green-600' : 'bg-blue-500/20 text-blue-600')}>{agent.marketplaceStatus}</Badge></p>
-       <p><strong>Category:</strong> {agent.category}</p>
-      <p><strong>Current Task:</strong> {agent.currentTask || 'N/A (Simulated)'}</p>
+       <p><strong className="text-muted-foreground">Marketplace Status:</strong> <Badge variant={agent.marketplaceStatus === 'available' ? 'default' : 'secondary'} className={cn("text-[9px] h-auto px-1 py-0 ml-1", agent.marketplaceStatus === 'available' ? 'bg-green-500/20 text-green-600' : 'bg-blue-500/20 text-blue-600')}>{agent.marketplaceStatus}</Badge></p>
+       <p><strong className="text-muted-foreground">Category:</strong> <span className="text-foreground/90">{agent.category}</span></p>
+      <p><strong className="text-muted-foreground">Current Task:</strong> <span className="text-foreground/90">{agent.currentTask || 'N/A'}</span></p>
     </div>
   );
 });
@@ -67,16 +70,16 @@ const AgentEntry: React.FC<{ agent: DisplayAgentInfo }> = React.memo(({ agent })
         onClick={() => setIsExpanded(!isExpanded)}
         className={cn(
           "p-2.5 rounded-lg bg-background/40 hover:bg-primary/10 border border-primary/20 cursor-pointer transition-all hover:shadow-md hover:border-primary/40 active:scale-[0.98]",
-          isExecuting && "shadow-[0_0_15px_1px_hsl(var(--primary)/0.3)] animate-pulse-jade",
+          isExecuting && "shadow-[0_0_15px_1px_hsl(var(--primary)/0.4)] border-primary/50 animate-pulse-jade", // Enhanced executing state
           isExpanded && "ring-1 ring-primary/70 border-primary/60 bg-primary/5"
         )}
         title={`Click to view details for ${agent.name}`}
       >
         <div className="flex justify-between items-center">
-          <p className="text-sm font-semibold text-foreground truncate">{agent.name}</p>
+          <p className="text-sm font-semibold text-foreground truncate flex-1 mr-2">{agent.name}</p>
           <AgentStatusIcon status={agent.status} />
         </div>
-        <p className="text-xs text-muted-foreground truncate">
+        <p className="text-xs text-muted-foreground truncate mt-0.5">
           {agent.currentTask ? `Task: ${agent.currentTask.substring(0,30)}${agent.currentTask.length > 30 ? '...' : ''}` : `Workload: ${agent.workload}%`}
         </p>
       </div>
@@ -116,7 +119,8 @@ const AgentPresenceGrid: React.FC = () => {
       .filter(agent => agent !== null) as DisplayAgentInfo[];
     
     setDisplayAgents(agentsData);
-    setIsLoading(false);
+    // Simulate a slight delay for loading perception if needed, or remove if data loads instantly
+    setTimeout(() => setIsLoading(false), 200); 
   }, [acquiredAgentIds, getMarketplaceAgentById]);
 
 

@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { ChevronDown, ListChecks, Zap, Users, Clock, CheckCircle, XCircle, AlertTriangle, Loader2 } from 'lucide-react';
+import { ChevronDown, ListChecks, CheckCircle, XCircle, AlertTriangle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNowStrict, format } from 'date-fns';
 
@@ -73,10 +73,10 @@ const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = Reac
         };
       case 'in-progress':
         return {
-          cardOuterClass: 'border-yellow-500/70 hover:border-yellow-500/90 bg-yellow-500/5 hover:bg-yellow-500/10',
+          cardOuterClass: 'border-yellow-500/70 hover:border-yellow-500/90 bg-yellow-500/5 hover:bg-yellow-500/10 animate-pulse-jade', // Added pulse
           icon: <Loader2 className="h-4 w-4 text-yellow-500 animate-spin" />,
           badgeVariant: 'secondary' as const,
-          badgeClass: 'bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border-yellow-500/30 animate-pulse',
+          badgeClass: 'bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border-yellow-500/30',
         };
       case 'failure':
         return {
@@ -87,7 +87,7 @@ const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = Reac
         };
       default:
         return {
-          cardOuterClass: 'border-[var(--glass-border)] bg-[var(--glass-bg)] hover:border-primary/40',
+          cardOuterClass: 'border-border/60 bg-card/50 hover:border-primary/40', // Standard card
           icon: <AlertTriangle className="h-4 w-4 text-muted-foreground" />,
           badgeVariant: 'outline'as const,
           badgeClass: 'border-muted-foreground/50 text-muted-foreground',
@@ -101,20 +101,19 @@ const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = Reac
 
   return (
     <Card className={cn(
-        // Card component handles base glassy style from ui/card.tsx
-        "rounded-2xl transition-all duration-300",
+        "rounded-xl transition-all duration-300 backdrop-blur-sm shadow-md", // Base glassy card for feed items
         statusStyles.cardOuterClass 
       )}
     >
       <CardHeader
-        className="flex flex-row items-center justify-between p-2 cursor-pointer"
+        className="flex flex-row items-center justify-between p-2.5 cursor-pointer" // Slightly more padding
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-2 overflow-hidden">
           {statusStyles.icon}
           <div className="flex-grow overflow-hidden">
             <p className="text-xs font-medium text-foreground truncate" title={entry.inputEvent}>
-              {entry.inputEvent.length > 60 ? entry.inputEvent.substring(0, 57) + "..." : entry.inputEvent}
+              {entry.inputEvent.length > 55 ? entry.inputEvent.substring(0, 52) + "..." : entry.inputEvent}
             </p>
             <p className="text-[10px] text-muted-foreground">
               {formattedTimestamp} ({timeAgo})
@@ -122,7 +121,7 @@ const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = Reac
           </div>
         </div>
         <div className="flex items-center gap-2">
-           <Badge variant={statusStyles.badgeVariant} className={cn("text-[9px] h-5 px-1.5 hidden sm:inline-flex", statusStyles.badgeClass)}>
+           <Badge variant={statusStyles.badgeVariant} className={cn("text-[10px] h-5 px-1.5 hidden sm:inline-flex items-center justify-center", statusStyles.badgeClass)}>
               {entry.status}
            </Badge>
           <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform duration-200", isExpanded && "rotate-180")} />
@@ -130,39 +129,39 @@ const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = Reac
       </CardHeader>
 
       {isExpanded && (
-        <CardContent className="px-2.5 pb-2.5 pt-1.5 text-xs space-y-2 border-t border-primary/10">
+        <CardContent className="px-3 pb-3 pt-2 text-xs space-y-2.5 border-t border-primary/10"> {/* More padding */}
           <div>
-            <strong className="text-muted-foreground block mb-0.5">Triggered Agents:</strong>
+            <strong className="text-muted-foreground block mb-0.5 text-[11px]">Triggered Agents:</strong>
             <div className="flex flex-wrap gap-1">
               {entry.agentsInvolved.length > 0 ? 
                 entry.agentsInvolved.map(agent => <Badge key={agent} variant="secondary" className="text-[10px] bg-muted/70 text-muted-foreground">{agent}</Badge>) :
-                <span className="text-foreground">N/A</span>
+                <span className="text-foreground/80">N/A</span>
               }
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-1 text-[11px]">
             <div>
               <strong className="text-muted-foreground">Started:</strong>
-              <span className="text-foreground ml-1">{format(entry.startTime, "HH:mm:ss.SSS")}</span>
+              <span className="text-foreground/90 ml-1">{format(entry.startTime, "HH:mm:ss.SSS")}</span>
             </div>
             {entry.durationMs !== undefined && (
               <div>
                 <strong className="text-muted-foreground">Duration:</strong>
-                <span className="text-foreground ml-1">{(entry.durationMs / 1000).toFixed(2)}s</span>
+                <span className="text-foreground/90 ml-1">{(entry.durationMs / 1000).toFixed(2)}s</span>
               </div>
             )}
           </div>
           {entry.outcome && (
             <div>
-              <strong className="text-muted-foreground">Outcome/Result:</strong>
-              <p className="text-foreground mt-0.5 p-1.5 bg-black/20 rounded-md text-[11px] whitespace-pre-wrap">{entry.outcome}</p>
+              <strong className="text-muted-foreground block mb-0.5 text-[11px]">Outcome/Result:</strong>
+              <p className="text-foreground/90 mt-0.5 p-2 bg-background/40 rounded-md text-[11px] whitespace-pre-wrap border border-border/50">{entry.outcome}</p>
             </div>
           )}
           {entry.rawInput && (
              <div>
-              <strong className="text-muted-foreground">Payload (Input):</strong>
-              <ScrollArea className="mt-0.5 max-h-24">
-                <pre className="p-1.5 bg-black/20 rounded-md text-[10px] font-code text-muted-foreground/80">
+              <strong className="text-muted-foreground block mb-0.5 text-[11px]">Payload (Input):</strong>
+              <ScrollArea className="mt-0.5 max-h-24 border border-border/50 rounded-md">
+                <pre className="p-2 bg-black/20 text-[10px] font-code text-muted-foreground/80">
                     {JSON.stringify(entry.rawInput, null, 2)}
                 </pre>
               </ScrollArea>
@@ -170,9 +169,9 @@ const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = Reac
           )}
            {entry.rawOutput && (
              <div>
-              <strong className="text-muted-foreground">Payload (Output):</strong>
-              <ScrollArea className="mt-0.5 max-h-24">
-                <pre className="p-1.5 bg-black/20 rounded-md text-[10px] font-code text-muted-foreground/80">
+              <strong className="text-muted-foreground block mb-0.5 text-[11px]">Payload (Output):</strong>
+              <ScrollArea className="mt-0.5 max-h-24 border border-border/50 rounded-md">
+                <pre className="p-2 bg-black/20 text-[10px] font-code text-muted-foreground/80">
                     {JSON.stringify(entry.rawOutput, null, 2)}
                 </pre>
               </ScrollArea>
@@ -196,13 +195,13 @@ const LiveOrchestrationsFeed: React.FC = () => {
         inputEvent: Math.random() > 0.5 ? "System Event: Health Check Complete" : "Agent Task: Analyze User Sentiment",
         agentsInvolved: Math.random() > 0.3 ? ['SentimentAnalyzer', 'Notifier'] : ['SystemHealthAgent'],
         startTime: new Date(Date.now() - (Math.floor(Math.random() * 5000) + 500)),
-        status: Math.random() > 0.2 ? (Math.random() > 0.4 ? 'success' : 'failure') : 'in-progress',
+        status: Math.random() > 0.15 ? (Math.random() > 0.35 ? 'success' : 'failure') : 'in-progress', // More successes
         outcome: Math.random() > 0.2 ? 'Analysis complete. Report generated.' : 'Processing data stream...',
         durationMs: Math.random() > 0.2 ? Math.floor(Math.random() * 5000) + 1000 : undefined,
         rawInput: { source: Math.random() > 0.5 ? "twitter_feed" : "internal_metrics_api" },
         rawOutput: Math.random() > 0.3 ? { result_score: Math.random().toFixed(2) } : { status_code: 200 }
       };
-      setEntries(prev => [newEntry, ...prev.slice(0, 19)]);
+      setEntries(prev => [newEntry, ...prev.slice(0, 24)]); // Keep up to 25 entries
     }, 7000); 
     return () => clearInterval(interval);
   }, []);

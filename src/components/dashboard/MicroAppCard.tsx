@@ -50,17 +50,17 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
 
   if (displayMode === 'compact') {
     const displayIconNode = icon ? 
-                            React.cloneElement(icon as React.ReactElement) : 
-                            <Rocket className="h-6 w-6 text-primary group-hover:text-accent transition-colors" />;
+                            React.cloneElement(icon as React.ReactElement, { className: "h-7 w-7 text-primary group-hover:text-accent transition-colors duration-150" }) : // Larger icon for compact
+                            <Rocket className="h-7 w-7 text-primary group-hover:text-accent transition-colors duration-150" />;
     return (
       <Card
         className={cn(
-          "flex flex-col items-center justify-center text-center p-2 gap-1",
-          "bg-transparent", // Glassy effect, but minimal for launcher
-          "border-2 border-primary/40 hover:border-primary/70", // Jade border
-          "rounded-xl shadow-[0_0_15px_hsl(var(--primary)/0.2)] hover:shadow-[0_0_20px_hsl(var(--primary)/0.3)]", // Jade glow shadow
+          "flex flex-col items-center justify-center text-center p-2 gap-1.5", // Increased gap
+          "bg-transparent", 
+          "border-2 border-primary/40 hover:border-primary/70", 
+          "rounded-2xl shadow-[0_0_15px_hsl(var(--primary)/0.2)] hover:shadow-[0_0_20px_hsl(var(--primary)/0.3)]", 
           "transition-all duration-200 ease-in-out cursor-pointer group",
-          "min-h-[80px] sm:min-h-[90px]", // Ensure enough clickable area
+          "min-h-[90px] sm:min-h-[100px]", // Slightly taller
           className
         )}
         onClick={() => onLaunch(id)}
@@ -70,7 +70,7 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
         title={`Launch ${name}`}
       >
         {displayIconNode}
-        <span className="text-xs font-medium text-foreground group-hover:text-accent transition-colors line-clamp-2">
+        <span className="text-xs font-medium text-foreground group-hover:text-accent transition-colors duration-150 line-clamp-2 leading-tight">
           {name}
         </span>
       </Card>
@@ -83,25 +83,24 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
   return (
     <Card
         className={cn(
-            // Base Card component handles the glassy look from globals.css/ui/card.tsx
             "flex flex-col h-full p-3.5 group transition-all duration-200 ease-in-out hover:shadow-primary/20 hover:border-primary/50",
             className
         )}
     >
       <CardHeader className="p-0 mb-2 relative">
-        <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+        <div className="flex items-start justify-between"> {/* Changed to items-start for better badge placement */}
+            <div className="flex items-center gap-2 flex-grow min-w-0 pr-8"> {/* Added pr-8 for space from badge */}
                 {icon ? (
-                    React.cloneElement(icon as React.ReactElement, { className: "h-5 w-5 text-primary group-hover:text-accent transition-colors" })
+                    React.cloneElement(icon as React.ReactElement, { className: "h-5 w-5 text-primary group-hover:text-accent transition-colors flex-shrink-0" })
                 ) : (
-                    <Rocket className="h-5 w-5 text-primary group-hover:text-accent transition-colors" />
+                    <Rocket className="h-5 w-5 text-primary group-hover:text-accent transition-colors flex-shrink-0" />
                 )}
                 <CardTitle className="text-base font-semibold text-card-foreground group-hover:text-accent transition-colors truncate" title={name}>
                     {name}
                 </CardTitle>
             </div>
             {status && (
-              <Badge variant={statusStyling.variant} className={cn("text-[9px] h-5 px-1.5 absolute top-0 right-0 transform translate-x-1 -translate-y-1", statusStyling.className)}>
+              <Badge variant={statusStyling.variant} className={cn("text-[9px] h-5 px-1.5 absolute top-0 right-0", statusStyling.className)}>
                 {status}
               </Badge>
             )}

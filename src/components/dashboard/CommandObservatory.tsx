@@ -1,8 +1,8 @@
 // src/components/dashboard/CommandObservatory.tsx
 'use client';
 
-import React, { useState, useMemo, useCallback, Suspense, lazy } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useMemo, useCallback, Suspense } from 'react'; // Removed lazy
+import { Card, CardContent } from '@/components/ui/card'; // Removed CardHeader, CardTitle
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { LayoutDashboard, Workflow, ShieldCheck, RadioTower, Package, TerminalSquare, PackageSearch, Cpu, ListChecks, Loader2, Users, Rocket, Activity } from 'lucide-react';
@@ -22,7 +22,7 @@ const getLucideIcon = (iconName: string | undefined, props?: any): React.ReactNo
   switch (iconName.toLowerCase()) {
     case 'workflow': return <Workflow {...defaultProps} />;
     case 'shieldcheck': return <ShieldCheck {...defaultProps} />;
-    case 'shieldalert': return <ShieldCheck {...defaultProps} />; // Map ShieldAlert to ShieldCheck for consistency here
+    case 'shieldalert': return <ShieldCheck {...defaultProps} />;
     case 'radiotower': return <RadioTower {...defaultProps} />;
     case 'terminalsquare': return <TerminalSquare {...defaultProps} />;
     case 'layoutdashboard': return <LayoutDashboard {...defaultProps} />;
@@ -60,17 +60,17 @@ const MicroAppLauncherContentInternal = React.memo<MicroAppLauncherProps>(({ app
                     name={app.displayName}
                     description={app.description}
                     onLaunch={() => onLaunchApp(app)}
-                    icon={getLucideIcon(app.icon, { className: "h-6 w-6 text-primary group-hover:text-accent transition-colors" }) }
+                    icon={getLucideIcon(app.icon, { className: "h-7 w-7 text-primary group-hover:text-accent transition-colors duration-150" }) } // Adjusted compact icon size
                     displayMode="compact"
-                    className="min-h-[80px] sm:min-h-[90px]"
+                    className="min-h-[90px] sm:min-h-[100px]" // Adjusted compact card size
                   />
                 ))}
               </div>
             ) : (
               <div className="text-center py-6 text-sm text-muted-foreground h-full flex flex-col items-center justify-center">
                 <PackageSearch className="mx-auto h-10 w-10 opacity-50 mb-2" />
-                No micro-apps available for dashboard.
-                <p className="text-xs mt-1">(Check Admin settings or deploy some!)</p>
+                No micro-apps available.
+                <p className="text-xs mt-1">(Deploy apps from Admin or check visibility settings.)</p>
               </div>
             )}
           </div>
@@ -90,7 +90,7 @@ const LaunchedAppDisplayContentInternal = React.memo<LaunchedAppDisplayProps>(({
       <div className="h-full flex flex-col items-center justify-center text-center p-4">
         <LayoutDashboard className="h-12 w-12 text-muted-foreground/50 mb-3" />
         <p className="text-sm text-muted-foreground">No micro-app launched.</p>
-        <p className="text-xs text-muted-foreground/80">Select an app from the "Micro-Apps" launcher.</p>
+        <p className="text-xs text-muted-foreground/80">Select an app from the "Micro-App Launcher".</p>
       </div>
     );
   }
@@ -101,7 +101,7 @@ const LaunchedAppDisplayContentInternal = React.memo<LaunchedAppDisplayProps>(({
     return (
       <div className="h-full flex flex-col items-center justify-center text-center p-4">
         <PackageSearch className="h-12 w-12 text-destructive/70 mb-3" />
-        <p className="text-sm font-semibold text-destructive">⚠️ Component not registered for ID: {currentApp.id}</p>
+        <p className="text-sm font-semibold text-destructive">Component not registered for ID: {currentApp.id}</p>
         <p className="text-xs text-muted-foreground/80 mt-1">
           Unable to load micro-app "{currentApp.displayName}". Please check the micro-app registry.
         </p>
@@ -109,7 +109,7 @@ const LaunchedAppDisplayContentInternal = React.memo<LaunchedAppDisplayProps>(({
     );
   }
   
-  const AppComponent = lazy(dynamicImportFn);
+  const AppComponent = React.lazy(dynamicImportFn); // Keep React.lazy here
   
   return (
       <Card className="h-full flex flex-col relative bg-transparent border-none shadow-none">
@@ -162,39 +162,39 @@ export default function CommandObservatory() {
   const zoneConfigs = useMemo((): ZoneConfig[] => [
     {
       id: "agentPresence",
-      title: "Agent Presence",
+      title: "Agent Fleet Overview", // More descriptive title
       icon: getLucideIconSmall("cpu", "text-primary/90"),
       content: agentPresenceGridContent,
-      defaultLayout: { x: 0, y: 0, w: 4, h: 9, minW: 3, minH: 6 },
+      defaultLayout: { x: 0, y: 0, w: 4, h: 9, minW: 3, minH: 6 }, // Adjusted height
     },
     {
       id: "systemSnapshot",
-      title: "System Snapshot",
+      title: "System Vital Signs", // More descriptive title
       icon: getLucideIconSmall("activity", "text-primary/90"),
       content: systemSnapshotContent,
-      defaultLayout: { x: 0, y: 9, w: 4, h: 7, minW: 3, minH: 4 },
+      defaultLayout: { x: 0, y: 9, w: 4, h: 8, minW: 3, minH: 5 }, // Adjusted height
     },
     {
       id: "microAppLauncher",
       title: "Micro-App Launcher",
-      icon: getLucideIconSmall("layoutdashboard", "text-primary/90"),
+      icon: getLucideIconSmall("rocket", "text-primary/90"), // Changed icon
       content: microAppLauncherContent,
-      defaultLayout: { x: 0, y: 16, w: 4, h: 8, minW: 3, minH: 5 },
+      defaultLayout: { x: 0, y: 17, w: 4, h: 7, minW: 3, minH: 5 }, // Adjusted y and height
     },
     {
       id: "orchestrationFeed",
-      title: "Live Orchestration Feed",
+      title: "Live System Orchestrations", // More descriptive title
       icon: getLucideIconSmall("listchecks", "text-primary/90"),
       content: liveOrchestrationsFeedContent,
-      defaultLayout: { x: 4, y: 0, w: 8, h: 12, minW: 4, minH: 6 },
+      defaultLayout: { x: 4, y: 0, w: 8, h: 12, minW: 5, minH: 7 }, // Adjusted minW
     },
     {
       id: "launchedAppDisplay",
       title: launchedApp ? `App: ${launchedApp.displayName}` : "Application View",
       icon: getLucideIconSmall(launchedApp?.icon || "Package", launchedApp ? "text-primary/90" : 'text-muted-foreground mr-2'),
       content: launchedAppDisplayContent,
-      defaultLayout: { x: 4, y: 12, w: 8, h: 12, minW: 4, minH: 6 },
-      canClose: !!launchedApp,
+      defaultLayout: { x: 4, y: 12, w: 8, h: 12, minW: 5, minH: 7 }, // Adjusted minW
+      canClose: !!launchedApp, // Only allow close if an app is launched
       onClose: launchedApp ? handleCloseApp : undefined,
       canPin: false, 
       canMinimize: !!launchedApp,
@@ -214,15 +214,15 @@ export default function CommandObservatory() {
     <div
       className={cn(
         "w-full h-full flex flex-col max-w-none mx-auto overflow-hidden backdrop-blur-md p-0",
-        "bg-observatory-bg border-observatory-border shadow-observatory-inner"
+        "bg-observatory-bg border-observatory-border shadow-observatory-inner" // Retain specific observatory background
       )}
     >
       <WorkspaceGrid
         zoneConfigs={zoneConfigs}
-        className="flex-grow p-2 md:p-3"
-        storageKey="commandObservatoryLayout_v3" // Ensure this key is unique if other grids exist
-        cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }}
-        rowHeight={20} // Fine-tuned row height
+        className="flex-grow p-1.5 md:p-2" // Standardized padding slightly
+        storageKey="commandObservatoryLayout_v4" // Incremented storage key due to layout changes
+        cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }} // Kept existing cols
+        rowHeight={25} // Slightly increased row height for better spacing
       />
     </div>
   );
