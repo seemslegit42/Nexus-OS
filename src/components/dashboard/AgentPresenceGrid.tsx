@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { useUserAgentsStore } from '@/stores/user-agents.store';
 import { useAgentMarketplaceStore } from '@/stores/agent-marketplace.store';
 import type { MarketplaceAgent } from '@/types/marketplace-agent';
+import { Badge } from '@/components/ui/badge'; // Import Badge component
 
 interface DisplayAgentInfo {
   id: string;
@@ -48,7 +49,7 @@ const AgentDetailPanel: React.FC<{ agent: DisplayAgentInfo }> = React.memo(({ ag
             agent.status === 'Offline' && "text-muted-foreground"
         )}>{agent.status}</span> (Sim. Workload: {agent.workload}%)
       </p>
-       <p><strong>Marketplace Status:</strong> {agent.marketplaceStatus}</p>
+       <p><strong>Marketplace Status:</strong> <Badge variant={agent.marketplaceStatus === 'available' ? 'default' : 'secondary'} className={cn("text-[9px] h-auto px-1 py-0", agent.marketplaceStatus === 'available' ? 'bg-green-500/20 text-green-600' : 'bg-blue-500/20 text-blue-600')}>{agent.marketplaceStatus}</Badge></p>
        <p><strong>Category:</strong> {agent.category}</p>
       <p><strong>Current Task:</strong> {agent.currentTask || 'N/A (Simulated)'}</p>
     </div>

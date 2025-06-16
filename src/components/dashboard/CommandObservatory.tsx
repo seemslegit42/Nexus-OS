@@ -22,6 +22,7 @@ const getLucideIcon = (iconName: string | undefined, props?: any): React.ReactNo
   switch (iconName.toLowerCase()) {
     case 'workflow': return <Workflow {...defaultProps} />;
     case 'shieldcheck': return <ShieldCheck {...defaultProps} />;
+    case 'shieldalert': return <ShieldCheck {...defaultProps} />; // Map ShieldAlert to ShieldCheck for consistency here
     case 'radiotower': return <RadioTower {...defaultProps} />;
     case 'terminalsquare': return <TerminalSquare {...defaultProps} />;
     case 'layoutdashboard': return <LayoutDashboard {...defaultProps} />;
@@ -162,35 +163,35 @@ export default function CommandObservatory() {
     {
       id: "agentPresence",
       title: "Agent Presence",
-      icon: getLucideIconSmall("cpu"),
+      icon: getLucideIconSmall("cpu", "text-primary/90"),
       content: agentPresenceGridContent,
       defaultLayout: { x: 0, y: 0, w: 4, h: 9, minW: 3, minH: 6 },
     },
     {
       id: "systemSnapshot",
       title: "System Snapshot",
-      icon: getLucideIconSmall("activity"),
+      icon: getLucideIconSmall("activity", "text-primary/90"),
       content: systemSnapshotContent,
       defaultLayout: { x: 0, y: 9, w: 4, h: 7, minW: 3, minH: 4 },
     },
     {
       id: "microAppLauncher",
-      title: "Micro-Apps",
-      icon: getLucideIconSmall("layoutdashboard"),
+      title: "Micro-App Launcher",
+      icon: getLucideIconSmall("layoutdashboard", "text-primary/90"),
       content: microAppLauncherContent,
       defaultLayout: { x: 0, y: 16, w: 4, h: 8, minW: 3, minH: 5 },
     },
     {
       id: "orchestrationFeed",
       title: "Live Orchestration Feed",
-      icon: getLucideIconSmall("listchecks"),
+      icon: getLucideIconSmall("listchecks", "text-primary/90"),
       content: liveOrchestrationsFeedContent,
       defaultLayout: { x: 4, y: 0, w: 8, h: 12, minW: 4, minH: 6 },
     },
     {
       id: "launchedAppDisplay",
       title: launchedApp ? `App: ${launchedApp.displayName}` : "Application View",
-      icon: getLucideIconSmall(launchedApp?.icon || "Package", launchedApp ? undefined : 'mr-2'),
+      icon: getLucideIconSmall(launchedApp?.icon || "Package", launchedApp ? "text-primary/90" : 'text-muted-foreground mr-2'),
       content: launchedAppDisplayContent,
       defaultLayout: { x: 4, y: 12, w: 8, h: 12, minW: 4, minH: 6 },
       canClose: !!launchedApp,
@@ -219,9 +220,9 @@ export default function CommandObservatory() {
       <WorkspaceGrid
         zoneConfigs={zoneConfigs}
         className="flex-grow p-2 md:p-3"
-        storageKey="commandObservatoryLayout_v3"
+        storageKey="commandObservatoryLayout_v3" // Ensure this key is unique if other grids exist
         cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }}
-        rowHeight={20}
+        rowHeight={20} // Fine-tuned row height
       />
     </div>
   );

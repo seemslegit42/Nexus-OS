@@ -101,7 +101,8 @@ const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = Reac
 
   return (
     <Card className={cn(
-        "rounded-2xl transition-all duration-300 backdrop-blur-[var(--blur)] shadow-[var(--shadow-soft)]",
+        // Card component handles base glassy style from ui/card.tsx
+        "rounded-2xl transition-all duration-300",
         statusStyles.cardOuterClass 
       )}
     >

@@ -56,11 +56,11 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
       <Card
         className={cn(
           "flex flex-col items-center justify-center text-center p-2 gap-1",
-          "bg-transparent",
-          "border-2 border-primary/40 hover:border-primary/70",
-          "rounded-xl shadow-[0_0_15px_hsl(var(--primary)/0.2)] hover:shadow-[0_0_20px_hsl(var(--primary)/0.3)]",
+          "bg-transparent", // Glassy effect, but minimal for launcher
+          "border-2 border-primary/40 hover:border-primary/70", // Jade border
+          "rounded-xl shadow-[0_0_15px_hsl(var(--primary)/0.2)] hover:shadow-[0_0_20px_hsl(var(--primary)/0.3)]", // Jade glow shadow
           "transition-all duration-200 ease-in-out cursor-pointer group",
-          "min-h-[80px] sm:min-h-[90px]",
+          "min-h-[80px] sm:min-h-[90px]", // Ensure enough clickable area
           className
         )}
         onClick={() => onLaunch(id)}
@@ -77,11 +77,13 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
     );
   }
 
+  // Full display mode
   const statusStyling = getStatusBadgeStyling(status);
 
   return (
     <Card
         className={cn(
+            // Base Card component handles the glassy look from globals.css/ui/card.tsx
             "flex flex-col h-full p-3.5 group transition-all duration-200 ease-in-out hover:shadow-primary/20 hover:border-primary/50",
             className
         )}
