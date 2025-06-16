@@ -14,7 +14,8 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <Comp
         ref={ref}
         className={cn(
-          "rounded-2xl border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-[var(--blur)] text-card-foreground shadow-[var(--shadow-soft)]",
+          // Updated to use new theme variables for glassmorphism
+          "rounded-[var(--border-radius-main)] border-[var(--border-width-main)] border-[var(--border-color-main)] bg-[var(--panel-background-color)] text-[var(--text-primary-color)] shadow-[var(--panel-box-shadow)] backdrop-filter-[var(--panel-backdrop-filter)]",
           className
         )}
         {...props}
@@ -30,7 +31,7 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col space-y-1.5 p-4 md:p-6", className)}
+    className={cn("flex flex-col space-y-1.5 p-[var(--spacing-sm)] md:p-[var(--spacing-md)]", className)} // Use spacing tokens
     {...props}
   />
 ))
@@ -43,7 +44,7 @@ const CardTitle = React.forwardRef<
   <div 
     ref={ref}
     className={cn(
-      "text-lg font-semibold leading-none tracking-tight text-foreground", // Use text-foreground for better default visibility
+      "text-size-large font-headline font-weight-bold leading-none tracking-tight text-text-primary-custom", // Use new font tokens
       className
     )}
     {...props}
@@ -57,7 +58,7 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div 
     ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
+    className={cn("text-size-small text-text-secondary-custom", className)} // Use new font tokens
     {...props}
   />
 ))
@@ -67,7 +68,7 @@ const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("p-4 md:p-6 pt-0", className)} {...props} />
+  <div ref={ref} className={cn("p-[var(--spacing-sm)] md:p-[var(--spacing-md)] pt-0", className)} {...props} /> // Use spacing tokens
 ))
 CardContent.displayName = "CardContent"
 
@@ -77,7 +78,7 @@ const CardFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex items-center p-4 md:p-6 pt-0", className)}
+    className={cn("flex items-center p-[var(--spacing-sm)] md:p-[var(--spacing-md)] pt-0", className)} // Use spacing tokens
     {...props}
   />
 ))

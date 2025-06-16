@@ -15,17 +15,17 @@ export const metadata: Metadata = {
   title: 'NexOS',
   description: 'The Next-Gen, Agent-Native, Security-Saturated OS.',
   icons: {
-    icon: '/favicon.ico', // Standard favicon
-    apple: '/apple-icon.png', // Apple touch icon
+    icon: '/favicon.ico', 
+    apple: '/apple-icon.png', 
   },
   openGraph: {
     title: 'NexOS: The Future of Operating Systems',
     description: 'Experience the next-generation, agent-native, security-saturated OS designed for innovation.',
-    url: 'https://nexos.app', // Replace with actual domain
+    url: 'https://nexos.app', 
     siteName: 'NexOS',
     images: [
       {
-        url: 'https://placehold.co/1200x630.png?text=NexOS+Platform+OG', // Replace with actual OG image URL
+        url: 'https://placehold.co/1200x630.png?text=NexOS+Platform+OG', 
         width: 1200,
         height: 630,
         alt: 'NexOS Platform - The Next-Generation OS',
@@ -38,22 +38,23 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'NexOS: The Future of Operating Systems',
     description: 'Experience the next-generation, agent-native, security-saturated OS designed for innovation.',
-    images: ['https://placehold.co/1200x630.png?text=NexOS+Platform+Twitter'], // Replace with actual OG image URL
-    // creator: '@nexosapp', // Example twitter handle
+    images: ['https://placehold.co/1200x630.png?text=NexOS+Platform+Twitter'], 
+    // creator: '@nexosapp', 
   },
-  // manifest: '/site.webmanifest', // If you have a web app manifest
+  // manifest: '/site.webmanifest', 
 };
+
+// Corrected font assignment as per user request (Lexend for main, Comfortaa for headlines)
+const lexend = Lexend({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-main', // Main body font
+});
 
 const comfortaa = Comfortaa({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-comfortaa',
-});
-
-const lexend = Lexend({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-lexend',
+  variable: '--font-headline-comfortaa', // Specific for headlines
 });
 
 export default function RootLayout({
@@ -65,13 +66,13 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "NexOS",
-    "url": "https://nexos.app", // Replace with actual domain
-    "logo": "https://nexos.app/logo.png", // Replace with actual logo URL
+    "url": "https://nexos.app", 
+    "logo": "https://nexos.app/logo.png", 
     // "sameAs": [ /* Add social links here */ ]
   };
 
   return (
-    <html lang="en" className={cn("dark", comfortaa.variable, lexend.variable)} suppressHydrationWarning>
+    <html lang="en" className={cn("dark", lexend.variable, comfortaa.variable)} suppressHydrationWarning>
       <head>
         <Script
           id="organization-schema"
@@ -79,7 +80,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
       </head>
-      <body className="font-body antialiased flex flex-col min-h-screen bg-background text-foreground">
+      <body className="font-main antialiased flex flex-col min-h-screen bg-background text-foreground text-size-base font-weight-regular"> {/* Apply base font tokens */}
         <FirebaseAnalytics />
         <LogProvider>
           <TopBar />
