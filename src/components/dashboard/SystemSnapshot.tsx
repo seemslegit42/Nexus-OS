@@ -12,7 +12,7 @@ interface Metric {
   label: string;
   unit: string;
   icon: React.ReactNode;
-  colorClass: string; // Tailwind color class for progress bar
+  colorClass: string;
 }
 
 const initialMetrics: Metric[] = [
@@ -32,18 +32,18 @@ const SystemSnapshot: React.FC = () => {
         prevMetrics.map(metric => {
           let newValue = metric.value;
           if (metric.label === "CPU Load" || metric.label === "Memory Usage") {
-            newValue = Math.max(10, Math.min(95, metric.value + Math.floor(Math.random() * 21) - 10)); // Fluctuate between 10-95
+            newValue = Math.max(10, Math.min(95, metric.value + Math.floor(Math.random() * 21) - 10));
           } else if (metric.label === "Active Tasks") {
-            newValue = Math.max(0, metric.value + Math.floor(Math.random() * 5) - 2); // Fluctuate tasks
+            newValue = Math.max(0, metric.value + Math.floor(Math.random() * 5) - 2);
           } else if (metric.label === "Security Score") {
-            newValue = Math.max(70, Math.min(100, metric.value + Math.floor(Math.random() * 5) - 2)); // Keep score high
+            newValue = Math.max(70, Math.min(100, metric.value + Math.floor(Math.random() * 5) - 2));
           } else if (metric.label === "System Alerts") {
-            newValue = Math.random() > 0.8 ? Math.floor(Math.random() * 5) : metric.value; // Occasionally change alerts
+            newValue = Math.random() > 0.8 ? Math.floor(Math.random() * 5) : metric.value;
           }
           return { ...metric, value: newValue };
         })
       );
-    }, 3000); // Update every 3 seconds
+    }, 3000);
 
     return () => clearInterval(interval);
   }, []);
@@ -75,4 +75,4 @@ const SystemSnapshot: React.FC = () => {
   );
 };
 
-export default SystemSnapshot;
+export default React.memo(SystemSnapshot);

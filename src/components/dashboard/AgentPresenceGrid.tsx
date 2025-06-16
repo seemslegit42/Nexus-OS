@@ -1,7 +1,7 @@
 // src/components/dashboard/AgentPresenceGrid.tsx
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react'; // Added useEffect
+import React, { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Cpu, CheckCircle, XCircle, AlertTriangle, Loader2, PackageSearch } from 'lucide-react';
@@ -12,13 +12,13 @@ import type { MarketplaceAgent } from '@/types/marketplace-agent';
 
 interface DisplayAgentInfo {
   id: string;
-  name: string; // Marketplace name
-  personaName: string; // Could be same as name or from metadata
-  status: 'Idle' | 'Executing' | 'Offline' | 'Error'; // Operational status (simulated)
-  workload: number; // Simulated
-  marketplaceStatus: MarketplaceAgent['status']; // Status from marketplace
-  category: string; // Category from marketplace
-  currentTask: string | null; // Simulated
+  name: string;
+  personaName: string;
+  status: 'Idle' | 'Executing' | 'Offline' | 'Error';
+  workload: number;
+  marketplaceStatus: MarketplaceAgent['status'];
+  category: string;
+  currentTask: string | null;
 }
 
 const AgentStatusIcon: React.FC<{ status: DisplayAgentInfo['status'] }> = ({ status }) => {
@@ -31,7 +31,7 @@ const AgentStatusIcon: React.FC<{ status: DisplayAgentInfo['status'] }> = ({ sta
   }
 };
 
-const AgentDetailPanel: React.FC<{ agent: DisplayAgentInfo }> = ({ agent }) => {
+const AgentDetailPanel: React.FC<{ agent: DisplayAgentInfo }> = React.memo(({ agent }) => {
   return (
     <div
       className={cn(
@@ -53,9 +53,10 @@ const AgentDetailPanel: React.FC<{ agent: DisplayAgentInfo }> = ({ agent }) => {
       <p><strong>Current Task:</strong> {agent.currentTask || 'N/A (Simulated)'}</p>
     </div>
   );
-};
+});
+AgentDetailPanel.displayName = 'AgentDetailPanel';
 
-const AgentEntry: React.FC<{ agent: DisplayAgentInfo }> = ({ agent }) => {
+const AgentEntry: React.FC<{ agent: DisplayAgentInfo }> = React.memo(({ agent }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const isExecuting = agent.status === 'Executing';
 
@@ -81,9 +82,10 @@ const AgentEntry: React.FC<{ agent: DisplayAgentInfo }> = ({ agent }) => {
       {isExpanded && <AgentDetailPanel agent={agent} />}
     </div>
   );
-};
+});
+AgentEntry.displayName = 'AgentEntry';
 
-export default function AgentPresenceGrid() {
+const AgentPresenceGrid: React.FC = () => {
   const acquiredAgentIds = useUserAgentsStore(state => state.acquiredAgentIds);
   const getMarketplaceAgentById = useAgentMarketplaceStore(state => state.getAgentById);
   const [displayAgents, setDisplayAgents] = useState<DisplayAgentInfo[]>([]);
@@ -96,17 +98,16 @@ export default function AgentPresenceGrid() {
         const marketplaceAgent = getMarketplaceAgentById(id);
         if (!marketplaceAgent) return null;
 
-        // Simulate operational status and workload
         const operationalStatuses: DisplayAgentInfo['status'][] = ['Idle', 'Executing', 'Error', 'Offline'];
         const randomOpStatus = operationalStatuses[Math.floor(Math.random() * operationalStatuses.length)];
         
         return {
           id: marketplaceAgent.id,
           name: marketplaceAgent.name,
-          personaName: marketplaceAgent.tagline || marketplaceAgent.name, // Use tagline as persona name, fallback to name
-          status: randomOpStatus, // Simulated operational status
-          workload: Math.floor(Math.random() * 100), // Simulated workload
-          marketplaceStatus: marketplaceAgent.status, // Actual marketplace status
+          personaName: marketplaceAgent.tagline || marketplaceAgent.name,
+          status: randomOpStatus,
+          workload: Math.floor(Math.random() * 100),
+          marketplaceStatus: marketplaceAgent.status,
           category: marketplaceAgent.category,
           currentTask: randomOpStatus === 'Executing' ? `Simulated task for ${marketplaceAgent.name}` : null,
         };
@@ -133,16 +134,15 @@ export default function AgentPresenceGrid() {
     );
   }
 
-
   return (
-    <Card className="h-auto bg-transparent border-none shadow-none">
+    <Card className="h-full bg-transparent border-none shadow-none">
       <CardHeader className="pb-2 pt-3 px-3">
         <CardTitle className="text-base font-medium text-foreground flex items-center">
           <Cpu className="h-4 w-4 mr-2 text-primary" /> Agent Presence ({displayAgents.length})
         </CardTitle>
       </CardHeader>
-      <CardContent className="px-3 pb-3">
-        <ScrollArea className="max-h-[calc(100vh_-_var(--topbar-height,_4rem)_-_var(--observatory-padding,_2rem)_-_150px)] sm:max-h-[300px] md:max-h-none pr-1">
+      <CardContent className="px-3 pb-3 h-full flex-grow flex flex-col overflow-hidden">
+        <ScrollArea className="flex-grow pr-1">
           <div className="space-y-2">
             {displayAgents.map((agent) => (
               <AgentEntry key={agent.id} agent={agent} />
@@ -159,4 +159,6 @@ export default function AgentPresenceGrid() {
       </CardContent>
     </Card>
   );
-}
+};
+
+export default React.memo(AgentPresenceGrid);

@@ -1,4 +1,3 @@
-
 // src/components/dashboard/MicroAppCard.tsx
 'use client';
 
@@ -6,7 +5,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Rocket, Settings } from 'lucide-react'; // Added Rocket for compact default
+import { Rocket, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { MicroAppStatus } from '@/stores/micro-app-registry.store';
 
@@ -24,7 +23,6 @@ interface MicroAppCardProps {
   displayMode?: 'full' | 'compact';
 }
 
-// Helper to get appropriate badge variant for status (used in 'full' mode)
 const getStatusBadgeStyling = (status?: MicroAppStatus): { variant: 'default' | 'secondary' | 'destructive' | 'outline', className: string } => {
   switch (status) {
     case 'enabled': return { variant: 'default', className: 'bg-green-500/80 text-white dark:bg-green-600/80' };
@@ -51,43 +49,39 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
 }) => {
 
   if (displayMode === 'compact') {
-    // Determine the icon to display: passed icon or default Rocket for compact mode
     const displayIconNode = icon ? 
-                            React.cloneElement(icon as React.ReactElement, { className: "h-6 w-6 text-primary group-hover:text-accent transition-colors" }) : 
+                            React.cloneElement(icon as React.ReactElement) : 
                             <Rocket className="h-6 w-6 text-primary group-hover:text-accent transition-colors" />;
     return (
       <Card
         className={cn(
           "flex flex-col items-center justify-center text-center p-2 gap-1",
-          "bg-transparent", // Transparent background as per image
-          "border-2 border-primary/40 hover:border-primary/70", // Glowy border effect
-          "rounded-xl shadow-[0_0_15px_hsl(var(--primary)/0.2)] hover:shadow-[0_0_20px_hsl(var(--primary)/0.3)]", // Glowy shadow
+          "bg-transparent",
+          "border-2 border-primary/40 hover:border-primary/70",
+          "rounded-xl shadow-[0_0_15px_hsl(var(--primary)/0.2)] hover:shadow-[0_0_20px_hsl(var(--primary)/0.3)]",
           "transition-all duration-200 ease-in-out cursor-pointer group",
-          "min-h-[80px]", // Minimum height to ensure cards are not too small
+          "min-h-[80px] sm:min-h-[90px]",
           className
         )}
         onClick={() => onLaunch(id)}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onLaunch(id); }}
-        title={`Launch ${name}`} // Tooltip for accessibility
+        title={`Launch ${name}`}
       >
         {displayIconNode}
-        <span className="text-xs font-medium text-foreground group-hover:text-accent transition-colors">
-          Launch
+        <span className="text-xs font-medium text-foreground group-hover:text-accent transition-colors line-clamp-2">
+          {name}
         </span>
       </Card>
     );
   }
 
-  // Full display mode logic
   const statusStyling = getStatusBadgeStyling(status);
 
   return (
     <Card
         className={cn(
-            // Uses standard Card component styling from ui/card.tsx (which now uses CSS vars)
-            // Specific overrides for MicroAppCard:
             "flex flex-col h-full p-3.5 group transition-all duration-200 ease-in-out hover:shadow-primary/20 hover:border-primary/50",
             className
         )}
@@ -98,7 +92,7 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
                 {icon ? (
                     React.cloneElement(icon as React.ReactElement, { className: "h-5 w-5 text-primary group-hover:text-accent transition-colors" })
                 ) : (
-                    <Rocket className="h-5 w-5 text-primary group-hover:text-accent transition-colors" /> // Default for full mode if no icon
+                    <Rocket className="h-5 w-5 text-primary group-hover:text-accent transition-colors" />
                 )}
                 <CardTitle className="text-base font-semibold text-card-foreground group-hover:text-accent transition-colors truncate" title={name}>
                     {name}
@@ -160,4 +154,3 @@ export const MicroAppCard: React.FC<MicroAppCardProps> = ({
 };
 
 export default MicroAppCard;
-

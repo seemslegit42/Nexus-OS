@@ -5,7 +5,7 @@ import React, { useState, useMemo, useCallback, Suspense, lazy } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Workflow, ShieldCheck, RadioTower, Package, TerminalSquare, PackageSearch, Cpu, ListChecks, Loader2, Users, Rocket, Activity } from 'lucide-react'; // Added Activity
+import { LayoutDashboard, Workflow, ShieldCheck, RadioTower, Package, TerminalSquare, PackageSearch, Cpu, ListChecks, Loader2, Users, Rocket, Activity } from 'lucide-react';
 import LiveOrchestrationsFeed from './LiveOrchestrationsFeed';
 import AgentPresenceGrid from './AgentPresenceGrid';
 import type { MicroApp } from '@/types/micro-app';
@@ -13,12 +13,12 @@ import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
 import { WorkspaceGrid, type ZoneConfig } from '@/components/core/workspace-grid';
 import { getDynamicImportFn } from '@/micro-apps/registry';
 import { MicroAppCard } from './MicroAppCard';
-import SystemSnapshot from './SystemSnapshot'; // Import the new SystemSnapshot component
+import SystemSnapshot from './SystemSnapshot';
 
 // Helper function to get Lucide icons dynamically
 const getLucideIcon = (iconName: string | undefined, props?: any): React.ReactNode => {
   const defaultProps = { className: "h-6 w-6 mb-1 text-primary opacity-80", ...props };
-  if (!iconName) return <Package {...defaultProps} />; // Default icon for full card if app.icon is undefined
+  if (!iconName) return <Package {...defaultProps} />;
   switch (iconName.toLowerCase()) {
     case 'workflow': return <Workflow {...defaultProps} />;
     case 'shieldcheck': return <ShieldCheck {...defaultProps} />;
@@ -59,7 +59,7 @@ const MicroAppLauncherContentInternal = React.memo<MicroAppLauncherProps>(({ app
                     name={app.displayName}
                     description={app.description}
                     onLaunch={() => onLaunchApp(app)}
-                    icon={getLucideIcon(app.icon, { className: "h-6 w-6" })}
+                    icon={getLucideIcon(app.icon, { className: "h-6 w-6 text-primary group-hover:text-accent transition-colors" }) }
                     displayMode="compact"
                     className="min-h-[80px] sm:min-h-[90px]"
                   />
@@ -127,9 +127,6 @@ const LaunchedAppDisplayContentInternal = React.memo<LaunchedAppDisplayProps>(({
 });
 LaunchedAppDisplayContentInternal.displayName = 'LaunchedAppDisplayContentInternal';
 
-const MemoizedAgentPresenceGrid = React.memo(AgentPresenceGrid);
-const MemoizedLiveOrchestrationsFeed = React.memo(LiveOrchestrationsFeed);
-
 
 export default function CommandObservatory() {
   const [launchedApp, setLaunchedApp] = useState<MicroApp | null>(null);
@@ -149,9 +146,9 @@ export default function CommandObservatory() {
     setLaunchedApp(null);
   }, []);
 
-  const agentPresenceGridContent = useMemo(() => <MemoizedAgentPresenceGrid />, []);
-  const systemSnapshotContent = useMemo(() => <SystemSnapshot />, []); // Use the new SystemSnapshot component
-  const liveOrchestrationsFeedContent = useMemo(() => <MemoizedLiveOrchestrationsFeed />, []);
+  const agentPresenceGridContent = useMemo(() => <AgentPresenceGrid />, []);
+  const systemSnapshotContent = useMemo(() => <SystemSnapshot />, []);
+  const liveOrchestrationsFeedContent = useMemo(() => <LiveOrchestrationsFeed />, []);
 
   const microAppLauncherContent = useMemo(() => (
     <MicroAppLauncherContentInternal appsToDisplay={dashboardMicroApps} onLaunchApp={handleLaunchApp} />
@@ -172,7 +169,7 @@ export default function CommandObservatory() {
     {
       id: "systemSnapshot",
       title: "System Snapshot",
-      icon: getLucideIconSmall("activity"), // Updated icon to Activity
+      icon: getLucideIconSmall("activity"),
       content: systemSnapshotContent,
       defaultLayout: { x: 0, y: 9, w: 4, h: 7, minW: 3, minH: 4 },
     },

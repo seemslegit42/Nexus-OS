@@ -1,4 +1,3 @@
-
 // src/components/dashboard/LiveOrchestrationsFeed.tsx
 'use client';
 
@@ -23,15 +22,14 @@ interface OrchestrationEntryData {
   rawOutput?: Record<string, any>;
 }
 
-// Mock Data
 const mockOrchestrationEntries: OrchestrationEntryData[] = [
   {
     id: 'orch_1',
-    timestamp: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
+    timestamp: new Date(Date.now() - 5 * 60 * 1000),
     inputEvent: "User command: 'Summarize recent system logs'",
     agentsInvolved: ['LogSummarizerAgent', 'NotificationAgent'],
-    startTime: new Date(Date.now() - 5 * 60 * 1000 - 30000), // Started 30s before completion
-    durationMs: 30000, // 30 seconds
+    startTime: new Date(Date.now() - 5 * 60 * 1000 - 30000),
+    durationMs: 30000,
     status: 'success',
     outcome: 'Log summary generated and sent to user via email.',
     rawInput: { command: "summarize_logs", period: "last_24_hours", user: "alex_ryder" },
@@ -39,7 +37,7 @@ const mockOrchestrationEntries: OrchestrationEntryData[] = [
   },
   {
     id: 'orch_2',
-    timestamp: new Date(Date.now() - 2 * 60 * 1000), // 2 minutes ago
+    timestamp: new Date(Date.now() - 2 * 60 * 1000),
     inputEvent: "API Call: '/api/v1/process_order'",
     agentsInvolved: ['OrderProcessingAgent', 'InventoryAgent', 'BillingAgent'],
     startTime: new Date(Date.now() - 2 * 60 * 1000 - 10000),
@@ -51,7 +49,7 @@ const mockOrchestrationEntries: OrchestrationEntryData[] = [
   },
   {
     id: 'orch_3',
-    timestamp: new Date(Date.now() - 30 * 1000), // 30 seconds ago
+    timestamp: new Date(Date.now() - 30 * 1000),
     inputEvent: "Scheduled Task: 'Nightly Backup'",
     agentsInvolved: ['BackupAgent', 'SystemMonitorAgent'],
     startTime: new Date(Date.now() - 30 * 1000),
@@ -61,7 +59,7 @@ const mockOrchestrationEntries: OrchestrationEntryData[] = [
   },
 ];
 
-const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = ({ entry }) => {
+const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = React.memo(({ entry }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const getStatusStyles = () => {
@@ -89,7 +87,7 @@ const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = ({ e
         };
       default:
         return {
-          cardOuterClass: 'border-[var(--glass-border)] bg-[var(--glass-bg)] hover:border-primary/40', // Use standard glass border and bg for unknown
+          cardOuterClass: 'border-[var(--glass-border)] bg-[var(--glass-bg)] hover:border-primary/40',
           icon: <AlertTriangle className="h-4 w-4 text-muted-foreground" />,
           badgeVariant: 'outline'as const,
           badgeClass: 'border-muted-foreground/50 text-muted-foreground',
@@ -183,12 +181,12 @@ const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = ({ e
       )}
     </Card>
   );
-};
+});
+OrchestrationEntryCard.displayName = 'OrchestrationEntryCard';
 
-export default function LiveOrchestrationsFeed() {
+const LiveOrchestrationsFeed: React.FC = () => {
   const [entries, setEntries] = useState<OrchestrationEntryData[]>(mockOrchestrationEntries);
 
-  // Simulate new entries arriving
   useEffect(() => {
     const interval = setInterval(() => {
       const newEntry: OrchestrationEntryData = {
@@ -196,14 +194,14 @@ export default function LiveOrchestrationsFeed() {
         timestamp: new Date(),
         inputEvent: Math.random() > 0.5 ? "System Event: Health Check Complete" : "Agent Task: Analyze User Sentiment",
         agentsInvolved: Math.random() > 0.3 ? ['SentimentAnalyzer', 'Notifier'] : ['SystemHealthAgent'],
-        startTime: new Date(Date.now() - (Math.floor(Math.random() * 5000) + 500)), // started 0.5s to 5.5s ago
+        startTime: new Date(Date.now() - (Math.floor(Math.random() * 5000) + 500)),
         status: Math.random() > 0.2 ? (Math.random() > 0.4 ? 'success' : 'failure') : 'in-progress',
         outcome: Math.random() > 0.2 ? 'Analysis complete. Report generated.' : 'Processing data stream...',
         durationMs: Math.random() > 0.2 ? Math.floor(Math.random() * 5000) + 1000 : undefined,
         rawInput: { source: Math.random() > 0.5 ? "twitter_feed" : "internal_metrics_api" },
         rawOutput: Math.random() > 0.3 ? { result_score: Math.random().toFixed(2) } : { status_code: 200 }
       };
-      setEntries(prev => [newEntry, ...prev.slice(0, 19)]); // Keep last 20 entries
+      setEntries(prev => [newEntry, ...prev.slice(0, 19)]);
     }, 7000); 
     return () => clearInterval(interval);
   }, []);
@@ -232,5 +230,6 @@ export default function LiveOrchestrationsFeed() {
       </CardContent>
     </Card>
   );
-}
+};
 
+export default React.memo(LiveOrchestrationsFeed);
