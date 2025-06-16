@@ -152,6 +152,7 @@ const SmartLeadTracker: React.FC = () => {
           lead.id === leadId ? { ...lead, insightError: errorMessage, isLoadingInsight: false } : lead
         )
       );
+      toast({ title: "Insight Error", description: `Could not fetch insight for ${leadToAnalyze.name}: ${errorMessage}`, variant: "destructive" });
       console.error(`Error getting insight for lead ${leadId}:`, err);
     }
   };
