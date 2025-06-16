@@ -24,9 +24,9 @@ interface DisplayAgentInfo {
 
 const AgentStatusIcon: React.FC<{ status: DisplayAgentInfo['status'] }> = React.memo(({ status }) => {
   switch (status) {
-    case 'Executing': return <Loader2 className="h-3.5 w-3.5 text-primary animate-spin" />; // Changed color to primary
+    case 'Executing': return <Loader2 className="h-3.5 w-3.5 text-primary animate-spin" />; 
     case 'Idle': return <CheckCircle className="h-3.5 w-3.5 text-green-400" />;
-    case 'Offline': return <XCircle className="h-3.5 w-3.5 text-muted-foreground/70" />; // Muted more
+    case 'Offline': return <XCircle className="h-3.5 w-3.5 text-muted-foreground/70" />; 
     case 'Error': return <AlertTriangle className="h-3.5 w-3.5 text-red-400" />;
     default: return null;
   }
@@ -38,11 +38,11 @@ const AgentDetailPanel: React.FC<{ agent: DisplayAgentInfo }> = React.memo(({ ag
   return (
     <div
       className={cn(
-        "rounded-xl border border-primary/20 bg-card/50 backdrop-blur-sm text-card-foreground shadow-lg p-3 mt-2 text-xs space-y-1.5" // Aligned with card styling
+        "rounded-xl border border-primary/20 bg-card/50 backdrop-blur-sm text-card-foreground shadow-lg p-3 mt-2 text-xs space-y-1.5" 
       )}
     >
       <h4 className="text-sm font-semibold text-primary mb-1">{agent.personaName}</h4>
-      <p><strong className="text-muted-foreground">ID:</strong> <span className="text-foreground/90">{agent.id}</span></p>
+      <p><strong className="text-muted-foreground">ID:</strong> <span className="text-foreground/90 font-mono text-[11px]">{agent.id}</span></p>
       <p>
         <strong className="text-muted-foreground">Operational Status:</strong> <span className={cn(
             "font-medium",
@@ -52,7 +52,7 @@ const AgentDetailPanel: React.FC<{ agent: DisplayAgentInfo }> = React.memo(({ ag
             agent.status === 'Offline' && "text-muted-foreground/80"
         )}>{agent.status}</span> <span className="text-muted-foreground/80">(Workload: {agent.workload}%)</span>
       </p>
-       <p><strong className="text-muted-foreground">Marketplace Status:</strong> <Badge variant={agent.marketplaceStatus === 'available' ? 'default' : 'secondary'} className={cn("text-[9px] h-auto px-1 py-0 ml-1", agent.marketplaceStatus === 'available' ? 'bg-green-500/20 text-green-600' : 'bg-blue-500/20 text-blue-600')}>{agent.marketplaceStatus}</Badge></p>
+       <p><strong className="text-muted-foreground">Marketplace Status:</strong> <Badge variant={agent.marketplaceStatus === 'available' ? 'default' : 'secondary'} className={cn("text-[9px] h-auto px-1 py-0 ml-1", agent.marketplaceStatus === 'available' ? 'bg-green-500/20 text-green-600 dark:text-green-400' : 'bg-blue-500/20 text-blue-600 dark:text-blue-400')}>{agent.marketplaceStatus}</Badge></p>
        <p><strong className="text-muted-foreground">Category:</strong> <span className="text-foreground/90">{agent.category}</span></p>
       <p><strong className="text-muted-foreground">Current Task:</strong> <span className="text-foreground/90">{agent.currentTask || 'N/A'}</span></p>
     </div>
@@ -70,7 +70,7 @@ const AgentEntry: React.FC<{ agent: DisplayAgentInfo }> = React.memo(({ agent })
         onClick={() => setIsExpanded(!isExpanded)}
         className={cn(
           "p-2.5 rounded-lg bg-background/40 hover:bg-primary/10 border border-primary/20 cursor-pointer transition-all hover:shadow-md hover:border-primary/40 active:scale-[0.98]",
-          isExecuting && "shadow-[0_0_15px_1px_hsl(var(--primary)/0.4)] border-primary/50 animate-pulse-jade", // Enhanced executing state
+          isExecuting && "shadow-[0_0_15px_1px_hsl(var(--primary)/0.4)] border-primary/50 animate-pulse-jade", 
           isExpanded && "ring-1 ring-primary/70 border-primary/60 bg-primary/5"
         )}
         title={`Click to view details for ${agent.name}`}
@@ -119,7 +119,7 @@ const AgentPresenceGrid: React.FC = () => {
       .filter(agent => agent !== null) as DisplayAgentInfo[];
     
     setDisplayAgents(agentsData);
-    // Simulate a slight delay for loading perception if needed, or remove if data loads instantly
+    
     setTimeout(() => setIsLoading(false), 200); 
   }, [acquiredAgentIds, getMarketplaceAgentById]);
 

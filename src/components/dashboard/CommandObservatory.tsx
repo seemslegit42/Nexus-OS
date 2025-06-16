@@ -1,8 +1,8 @@
 // src/components/dashboard/CommandObservatory.tsx
 'use client';
 
-import React, { useState, useMemo, useCallback, Suspense } from 'react'; // Removed lazy
-import { Card, CardContent } from '@/components/ui/card'; // Removed CardHeader, CardTitle
+import React, { useState, useMemo, useCallback, Suspense } from 'react'; 
+import { Card, CardContent } from '@/components/ui/card'; 
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { LayoutDashboard, Workflow, ShieldCheck, RadioTower, Package, TerminalSquare, PackageSearch, Cpu, ListChecks, Loader2, Users, Rocket, Activity } from 'lucide-react';
@@ -60,9 +60,9 @@ const MicroAppLauncherContentInternal = React.memo<MicroAppLauncherProps>(({ app
                     name={app.displayName}
                     description={app.description}
                     onLaunch={() => onLaunchApp(app)}
-                    icon={getLucideIcon(app.icon, { className: "h-7 w-7 text-primary group-hover:text-accent transition-colors duration-150" }) } // Adjusted compact icon size
+                    icon={getLucideIcon(app.icon, { className: "h-7 w-7 text-primary group-hover:text-accent transition-colors duration-150" }) } 
                     displayMode="compact"
-                    className="min-h-[90px] sm:min-h-[100px]" // Adjusted compact card size
+                    className="min-h-[90px] sm:min-h-[100px]" 
                   />
                 ))}
               </div>
@@ -109,7 +109,7 @@ const LaunchedAppDisplayContentInternal = React.memo<LaunchedAppDisplayProps>(({
     );
   }
   
-  const AppComponent = React.lazy(dynamicImportFn); // Keep React.lazy here
+  const AppComponent = React.lazy(dynamicImportFn); 
   
   return (
       <Card className="h-full flex flex-col relative bg-transparent border-none shadow-none">
@@ -162,39 +162,39 @@ export default function CommandObservatory() {
   const zoneConfigs = useMemo((): ZoneConfig[] => [
     {
       id: "agentPresence",
-      title: "Agent Fleet Overview", // More descriptive title
+      title: "Agent Fleet Overview", 
       icon: getLucideIconSmall("cpu", "text-primary/90"),
       content: agentPresenceGridContent,
-      defaultLayout: { x: 0, y: 0, w: 4, h: 9, minW: 3, minH: 6 }, // Adjusted height
+      defaultLayout: { x: 0, y: 0, w: 4, h: 9, minW: 3, minH: 6 }, 
     },
     {
       id: "systemSnapshot",
-      title: "System Vital Signs", // More descriptive title
+      title: "System Vital Signs", 
       icon: getLucideIconSmall("activity", "text-primary/90"),
       content: systemSnapshotContent,
-      defaultLayout: { x: 0, y: 9, w: 4, h: 8, minW: 3, minH: 5 }, // Adjusted height
+      defaultLayout: { x: 0, y: 9, w: 4, h: 8, minW: 3, minH: 5 }, 
     },
     {
       id: "microAppLauncher",
       title: "Micro-App Launcher",
-      icon: getLucideIconSmall("rocket", "text-primary/90"), // Changed icon
+      icon: getLucideIconSmall("rocket", "text-primary/90"), 
       content: microAppLauncherContent,
-      defaultLayout: { x: 0, y: 17, w: 4, h: 7, minW: 3, minH: 5 }, // Adjusted y and height
+      defaultLayout: { x: 0, y: 17, w: 4, h: 7, minW: 3, minH: 5 }, 
     },
     {
       id: "orchestrationFeed",
-      title: "Live System Orchestrations", // More descriptive title
+      title: "Live System Orchestrations", 
       icon: getLucideIconSmall("listchecks", "text-primary/90"),
       content: liveOrchestrationsFeedContent,
-      defaultLayout: { x: 4, y: 0, w: 8, h: 12, minW: 5, minH: 7 }, // Adjusted minW
+      defaultLayout: { x: 4, y: 0, w: 8, h: 12, minW: 4, minH: 7 }, 
     },
     {
       id: "launchedAppDisplay",
       title: launchedApp ? `App: ${launchedApp.displayName}` : "Application View",
       icon: getLucideIconSmall(launchedApp?.icon || "Package", launchedApp ? "text-primary/90" : 'text-muted-foreground mr-2'),
       content: launchedAppDisplayContent,
-      defaultLayout: { x: 4, y: 12, w: 8, h: 12, minW: 5, minH: 7 }, // Adjusted minW
-      canClose: !!launchedApp, // Only allow close if an app is launched
+      defaultLayout: { x: 4, y: 12, w: 8, h: 12, minW: 4, minH: 7 }, 
+      canClose: !!launchedApp, 
       onClose: launchedApp ? handleCloseApp : undefined,
       canPin: false, 
       canMinimize: !!launchedApp,
@@ -214,15 +214,15 @@ export default function CommandObservatory() {
     <div
       className={cn(
         "w-full h-full flex flex-col max-w-none mx-auto overflow-hidden backdrop-blur-md p-0",
-        "bg-observatory-bg border-observatory-border shadow-observatory-inner" // Retain specific observatory background
+        "bg-observatory-bg border-observatory-border shadow-observatory-inner" 
       )}
     >
       <WorkspaceGrid
         zoneConfigs={zoneConfigs}
-        className="flex-grow p-1.5 md:p-2" // Standardized padding slightly
-        storageKey="commandObservatoryLayout_v4" // Incremented storage key due to layout changes
-        cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }} // Kept existing cols
-        rowHeight={25} // Slightly increased row height for better spacing
+        className="flex-grow p-1.5 md:p-2" 
+        storageKey="commandObservatoryLayout_v4" 
+        cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }} 
+        rowHeight={25} 
       />
     </div>
   );

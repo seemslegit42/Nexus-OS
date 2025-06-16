@@ -12,15 +12,15 @@ interface Metric {
   label: string;
   unit: string;
   icon: React.ReactNode;
-  colorClass: string; // Base color for progress
-  threshold?: { warn: number; error: number }; // Optional thresholds for color change
+  colorClass: string; 
+  threshold?: { warn: number; error: number }; 
 }
 
 const initialMetrics: Metric[] = [
   { value: 35, label: "CPU Load", unit: "%", icon: <Cpu className="h-3.5 w-3.5" />, colorClass: "bg-chart-1", threshold: { warn: 70, error: 90 } },
   { value: 60, label: "Memory Usage", unit: "%", icon: <Database className="h-3.5 w-3.5" />, colorClass: "bg-chart-2", threshold: { warn: 75, error: 90 } },
   { value: 12, label: "Active Tasks", unit: "", icon: <Zap className="h-3.5 w-3.5" />, colorClass: "bg-chart-3" },
-  { value: 98, label: "Security Score", unit: "/100", icon: <ShieldCheck className="h-3.5 w-3.5" />, colorClass: "bg-green-500", threshold: { warn: 80, error: 60 } }, // Lower is worse for score
+  { value: 98, label: "Security Score", unit: "/100", icon: <ShieldCheck className="h-3.5 w-3.5" />, colorClass: "bg-green-500", threshold: { warn: 80, error: 60 } }, 
   { value: 2, label: "System Alerts", unit: "", icon: <AlertTriangle className="h-3.5 w-3.5" />, colorClass: "bg-yellow-500", threshold: { warn: 3, error: 5 } },
 ];
 
@@ -37,9 +37,9 @@ const SystemSnapshot: React.FC = () => {
           } else if (metric.label === "Active Tasks") {
             newValue = Math.max(0, metric.value + Math.floor(Math.random() * 5) - 2);
           } else if (metric.label === "Security Score") {
-            newValue = Math.max(50, Math.min(100, metric.value + Math.floor(Math.random() * 7) - 3)); // Score tends to be higher
+            newValue = Math.max(50, Math.min(100, metric.value + Math.floor(Math.random() * 7) - 3)); 
           } else if (metric.label === "System Alerts") {
-            newValue = Math.random() > 0.7 ? Math.floor(Math.random() * 5) : Math.max(0, metric.value -1); // Alerts tend to decrease
+            newValue = Math.random() > 0.7 ? Math.floor(Math.random() * 5) : Math.max(0, metric.value -1); 
           }
           return { ...metric, value: newValue };
         })
@@ -57,10 +57,10 @@ const SystemSnapshot: React.FC = () => {
       const isScore = metric.label === "Security Score";
       if ((isScore && metric.value < metric.threshold.error) || (!isScore && metric.value >= metric.threshold.error)) {
         progressClass = "[&>div]:bg-destructive";
-        textClass = "text-destructive";
+        textClass = "text-destructive font-bold"; // Added font-bold for error state
       } else if ((isScore && metric.value < metric.threshold.warn) || (!isScore && metric.value >= metric.threshold.warn)) {
         progressClass = "[&>div]:bg-yellow-500";
-        textClass = "text-yellow-500 dark:text-yellow-400";
+        textClass = "text-yellow-500 dark:text-yellow-400 font-semibold"; // Added font-semibold for warning
       } else if (isScore) {
         progressClass = "[&>div]:bg-green-500";
         textClass = "text-green-400";

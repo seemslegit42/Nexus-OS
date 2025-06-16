@@ -73,7 +73,7 @@ const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = Reac
         };
       case 'in-progress':
         return {
-          cardOuterClass: 'border-yellow-500/70 hover:border-yellow-500/90 bg-yellow-500/5 hover:bg-yellow-500/10 animate-pulse-jade', // Added pulse
+          cardOuterClass: 'border-yellow-500/70 hover:border-yellow-500/90 bg-yellow-500/5 hover:bg-yellow-500/10 animate-pulse-jade', 
           icon: <Loader2 className="h-4 w-4 text-yellow-500 animate-spin" />,
           badgeVariant: 'secondary' as const,
           badgeClass: 'bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border-yellow-500/30',
@@ -87,7 +87,7 @@ const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = Reac
         };
       default:
         return {
-          cardOuterClass: 'border-border/60 bg-card/50 hover:border-primary/40', // Standard card
+          cardOuterClass: 'border-border/60 bg-card/50 hover:border-primary/40', 
           icon: <AlertTriangle className="h-4 w-4 text-muted-foreground" />,
           badgeVariant: 'outline'as const,
           badgeClass: 'border-muted-foreground/50 text-muted-foreground',
@@ -101,12 +101,12 @@ const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = Reac
 
   return (
     <Card className={cn(
-        "rounded-xl transition-all duration-300 backdrop-blur-sm shadow-md", // Base glassy card for feed items
+        "rounded-xl transition-all duration-300 backdrop-blur-sm shadow-md", 
         statusStyles.cardOuterClass 
       )}
     >
       <CardHeader
-        className="flex flex-row items-center justify-between p-2.5 cursor-pointer" // Slightly more padding
+        className="flex flex-row items-center justify-between p-2.5 cursor-pointer" 
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-2 overflow-hidden">
@@ -129,7 +129,7 @@ const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = Reac
       </CardHeader>
 
       {isExpanded && (
-        <CardContent className="px-3 pb-3 pt-2 text-xs space-y-2.5 border-t border-primary/10"> {/* More padding */}
+        <CardContent className="px-3 pb-3 pt-2 text-xs space-y-2.5 border-t border-primary/10"> 
           <div>
             <strong className="text-muted-foreground block mb-0.5 text-[11px]">Triggered Agents:</strong>
             <div className="flex flex-wrap gap-1">
@@ -160,8 +160,8 @@ const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = Reac
           {entry.rawInput && (
              <div>
               <strong className="text-muted-foreground block mb-0.5 text-[11px]">Payload (Input):</strong>
-              <ScrollArea className="mt-0.5 max-h-24 border border-border/50 rounded-md">
-                <pre className="p-2 bg-black/20 text-[10px] font-code text-muted-foreground/80">
+              <ScrollArea className="mt-0.5 max-h-24 border border-border/50 rounded-md bg-background/70 backdrop-blur-sm">
+                <pre className="p-2 text-[10px] font-code text-muted-foreground">
                     {JSON.stringify(entry.rawInput, null, 2)}
                 </pre>
               </ScrollArea>
@@ -170,8 +170,8 @@ const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = Reac
            {entry.rawOutput && (
              <div>
               <strong className="text-muted-foreground block mb-0.5 text-[11px]">Payload (Output):</strong>
-              <ScrollArea className="mt-0.5 max-h-24 border border-border/50 rounded-md">
-                <pre className="p-2 bg-black/20 text-[10px] font-code text-muted-foreground/80">
+              <ScrollArea className="mt-0.5 max-h-24 border border-border/50 rounded-md bg-background/70 backdrop-blur-sm">
+                <pre className="p-2 text-[10px] font-code text-muted-foreground">
                     {JSON.stringify(entry.rawOutput, null, 2)}
                 </pre>
               </ScrollArea>
@@ -195,13 +195,13 @@ const LiveOrchestrationsFeed: React.FC = () => {
         inputEvent: Math.random() > 0.5 ? "System Event: Health Check Complete" : "Agent Task: Analyze User Sentiment",
         agentsInvolved: Math.random() > 0.3 ? ['SentimentAnalyzer', 'Notifier'] : ['SystemHealthAgent'],
         startTime: new Date(Date.now() - (Math.floor(Math.random() * 5000) + 500)),
-        status: Math.random() > 0.15 ? (Math.random() > 0.35 ? 'success' : 'failure') : 'in-progress', // More successes
+        status: Math.random() > 0.15 ? (Math.random() > 0.35 ? 'success' : 'failure') : 'in-progress', 
         outcome: Math.random() > 0.2 ? 'Analysis complete. Report generated.' : 'Processing data stream...',
         durationMs: Math.random() > 0.2 ? Math.floor(Math.random() * 5000) + 1000 : undefined,
         rawInput: { source: Math.random() > 0.5 ? "twitter_feed" : "internal_metrics_api" },
         rawOutput: Math.random() > 0.3 ? { result_score: Math.random().toFixed(2) } : { status_code: 200 }
       };
-      setEntries(prev => [newEntry, ...prev.slice(0, 24)]); // Keep up to 25 entries
+      setEntries(prev => [newEntry, ...prev.slice(0, 24)]); 
     }, 7000); 
     return () => clearInterval(interval);
   }, []);
