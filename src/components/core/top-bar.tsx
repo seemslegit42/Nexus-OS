@@ -58,7 +58,7 @@ import { ModuleSwitcherDropdownContent } from './ModuleSwitcherDropdownContent';
 import { cn } from '@/lib/utils';
 
 const navModules = [
-  { name: 'Home Dashboard', href: '/', icon: <Home className="mr-2 h-4 w-4" /> },
+  { name: 'Home Dashboard', href: '/home', icon: <Home className="mr-2 h-4 w-4" /> }, // Updated href
   { name: 'Loom Studio', href: '/loom-studio', icon: <LayoutGrid className="mr-2 h-4 w-4" /> },
   { name: 'Pulse', href: '/pulse', icon: <RadioTower className="mr-2 h-4 w-4" /> },
   { name: 'Agent Console', href: '/agents', icon: <Cpu className="mr-2 h-4 w-4" /> },
@@ -99,7 +99,7 @@ export function TopBar() {
       }
     }, 1000);
     return () => clearInterval(timerId);
-  }, [previousHour]); // Rerun effect if previousHour changes (though it's set inside)
+  }, [previousHour]); 
   
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -114,6 +114,11 @@ export function TopBar() {
 
 
   const currentModule = useMemo(() => {
+    // Prioritize exact match for /home
+    if (pathname === '/home' || pathname.startsWith('/home/')) {
+      return navModules.find(mod => mod.href === '/home') || { name: 'NexOS Context', href: pathname, icon: <NexosLogo className="h-4 w-4 text-primary" /> };
+    }
+    // Fallback to general matching logic for other paths
     const sortedModules = [...navModules].sort((a, b) => {
       if (pathname === a.href) return -1;
       if (pathname === b.href) return 1;
@@ -125,12 +130,7 @@ export function TopBar() {
       return b.href.length - a.href.length; 
     });
     
-    let foundModule = sortedModules.find(mod => pathname.startsWith(mod.href));
-    
-    if (pathname === '/' || pathname.startsWith('/home/items')) {
-      foundModule = navModules.find(mod => mod.href === '/');
-    }
-
+    const foundModule = sortedModules.find(mod => pathname.startsWith(mod.href));
     return foundModule || { name: 'NexOS Context', href: pathname, icon: <NexosLogo className="h-4 w-4 text-primary" /> };
   }, [pathname]);
 
@@ -150,7 +150,7 @@ export function TopBar() {
       <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-background/30 backdrop-blur-lg border-b border-primary/20 shadow-[0_2px_15px_hsl(var(--primary)/0.1)]">
         <div className="container mx-auto h-full flex items-center justify-between px-2 sm:px-4">
           <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-            <Link href="/" className="flex items-center gap-1.5 sm:gap-2" aria-label="NexOS Home">
+            <Link href="/home" className="flex items-center gap-1.5 sm:gap-2" aria-label="NexOS Home"> {/* Updated href */}
               <NexosLogo className="h-7 w-7 sm:h-8 sm:w-8 text-primary flex-shrink-0" />
               <span className="hidden sm:inline text-xl sm:text-2xl font-headline font-bold text-foreground">NexOS</span>
             </Link>

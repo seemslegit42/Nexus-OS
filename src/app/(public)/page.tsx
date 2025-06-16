@@ -1,4 +1,3 @@
-
 // src/app/(public)/page.tsx (Landing Page)
 'use client';
 import { Button } from '@/components/ui/button';

@@ -46,7 +46,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   const navItems = [
-    { href: '/', icon: <Home />, label: 'Home' },
+    { href: '/home', icon: <Home />, label: 'Home' }, // Updated href
     { href: '/agents', icon: <Cpu />, label: 'Agents' },
     // Placeholder for FAB
     { href: '/pulse', icon: <RadioTower />, label: 'Pulse' },
@@ -81,12 +81,13 @@ export function BottomNav() {
           }
 
           let isActiveCalc = false;
-          if (item.href === '/') {
+          // Special handling for the /home link to match both /home and /home/*
+          if (item.href === '/home') {
+            isActiveCalc = pathname === '/home' || pathname.startsWith('/home/');
+          } else if (item.href === '/') { // For any other root-level links, if they existed
             isActiveCalc = pathname === '/';
           } else {
-            // Ensures an exact match or a true sub-path (e.g., /agents/details for /agents)
-            // and not a sibling path with a similar prefix (e.g., /agents-profile for /agents).
-            isActiveCalc = pathname === item.href || pathname.startsWith(item.href + '/');
+            isActiveCalc = pathname.startsWith(item.href);
           }
 
           return (
@@ -103,4 +104,3 @@ export function BottomNav() {
     </div>
   );
 }
-

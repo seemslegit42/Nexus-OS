@@ -35,7 +35,7 @@ export default function PublicLayout({
       <body className="font-body antialiased flex flex-col min-h-screen bg-background text-foreground">
         <header className="sticky top-0 z-40 w-full border-b border-primary/25 bg-background/80 backdrop-blur-lg shadow-[0_2px_15px_hsl(var(--primary)/0.1)]">
           <div className="container flex h-16 items-center justify-between">
-            <Link href="/" className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2"> {/* Public layout logo links to / */}
               <NexosLogo className="h-7 w-7 text-primary" />
               <span className="text-xl font-bold font-headline">NexOS Platform</span>
             </Link>
