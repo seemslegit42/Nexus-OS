@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Users, Target, Eye, Zap, Milestone, CheckCircle } from 'lucide-react';
+import { Users, Target, Eye, Zap, Milestone, CheckCircle, Cpu } from 'lucide-react';
 import type { Metadata } from 'next';
 
 // It's not possible to export Metadata from a 'use client' component.
@@ -144,7 +144,7 @@ export default function AboutPage() {
             Join Us in Building the Future
           </h2>
           <p className="text-md text-muted-foreground max-w-xl mx-auto mb-8">
-            NexOS is more than a platform; it&apos;s a community of innovators. Explore career opportunities or contribute to our ecosystem.
+            NexOS is more than a platform; it's a community of innovators. Explore career opportunities or contribute to our ecosystem.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
