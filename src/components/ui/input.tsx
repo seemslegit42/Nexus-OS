@@ -9,7 +9,7 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
       <input
         type={type}
         className={cn(
-          "flex h-10 w-full rounded-xl border border-primary/25 bg-input backdrop-blur-sm px-3 py-2 text-base text-foreground ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm shadow-inner shadow-black/20", // Updated: rounded-xl, jade border, glassy bg-input, text-foreground
+          "flex h-10 w-full rounded-[var(--border-radius-small)] border-[var(--border-width-main)] border-[var(--border-color-main)] bg-[var(--panel-background-color)] backdrop-filter-[var(--panel-backdrop-filter)] px-3 py-2 text-base text-[var(--text-primary-color)] ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[var(--text-secondary-color)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm shadow-[var(--panel-box-shadow)]", 
           className
         )}
         ref={ref}
@@ -21,3 +21,4 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
 Input.displayName = "Input"
 
 export { Input }
+
