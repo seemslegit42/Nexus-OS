@@ -1,19 +1,35 @@
-
 // src/app/home/items/page.tsx
 'use client';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { PlusCircle, Edit, Trash2 } from "lucide-react";
+import { PlusCircle, Edit, Trash2, Loader2 } from "lucide-react";
+import React, { useState, useEffect } from 'react'; // Added React and hooks
 
-// Placeholder data
-const userItems = [
-  { id: 'item_1', name: 'My First Project', type: 'Application', lastModified: '2023-10-26' },
-  { id: 'item_2', name: 'Cool API Service', type: 'Service', lastModified: '2023-10-25' },
-  { id: 'item_3', name: 'Automated Workflow', type: 'Workflow', lastModified: '2023-10-24' },
-];
+interface UserItem {
+  id: string;
+  name: string;
+  type: string;
+  lastModified: string;
+}
 
 export default function ItemsListPage() {
+  const [userItems, setUserItems] = useState<UserItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate fetching user items
+  useEffect(() => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setUserItems([
+        { id: 'item_1', name: 'My First Project', type: 'Application', lastModified: '2023-10-26' },
+        { id: 'item_2', name: 'Cool API Service', type: 'Service', lastModified: '2023-10-25' },
+        { id: 'item_3', name: 'Automated Workflow', type: 'Workflow', lastModified: '2023-10-24' },
+      ]);
+      setIsLoading(false);
+    }, 1000);
+  }, []);
+
   return (
     <div className="flex flex-col gap-4 p-4 md:p-6">
       <header className="flex justify-between items-center">
@@ -25,7 +41,11 @@ export default function ItemsListPage() {
         </Link>
       </header>
 
-      {userItems.length === 0 ? (
+      {isLoading ? (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        </div>
+      ) : userItems.length === 0 ? (
         <Card className="text-center py-10">
           <CardContent>
             <h2 className="text-xl font-semibold mb-2">No items yet!</h2>
@@ -46,7 +66,7 @@ export default function ItemsListPage() {
                 <CardDescription>Type: {item.type} | Last Modified: {item.lastModified}</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">Placeholder content for item summary or stats.</p>
+                <p className="text-sm text-muted-foreground">Placeholder content for item summary or stats. Real data would be fetched.</p>
               </CardContent>
               <CardFooter className="flex justify-end gap-2">
                 <Link href={`/home/items/${item.id}`} legacyBehavior>

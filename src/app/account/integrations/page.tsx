@@ -1,36 +1,75 @@
-
 // src/app/account/integrations/page.tsx
 'use client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { KeyRound, Settings2, PlusCircle, Trash2, Edit2, LinkIcon, Webhook } from 'lucide-react';
+import { KeyRound, PlusCircle, Trash2, Edit2, LinkIcon, Webhook, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import React, { useState, useEffect } from 'react'; // Added React and hooks
 
-// Placeholder data
-const apiKeys = [
-  { id: 'key_abc123', label: 'Main Production Key', created: '2023-01-15', lastUsed: '2023-10-25', tokenPreview: 'nexos_sk_live_...xyz' },
-  { id: 'key_def456', label: 'Development Key', created: '2023-05-10', lastUsed: '2 hours ago', tokenPreview: 'nexos_sk_dev_...pqr' },
-];
+interface ApiKey {
+  id: string;
+  label: string;
+  created: string;
+  lastUsed: string;
+  tokenPreview: string;
+}
 
-const webhooks = [
-    { id: 'wh_1', url: 'https://api.example.com/nexos/item-updated', events: ['item.updated', 'item.created'], status: 'Active' },
-    { id: 'wh_2', url: 'https://service.another.com/webhook', events: ['module.deployed'], status: 'Inactive' },
-];
+interface WebhookEntry {
+  id: string;
+  url: string;
+  events: string[];
+  status: 'Active' | 'Inactive';
+}
 
-const availableIntegrations = [
-    {id: 'slack', name: 'Slack', logo: 'https://placehold.co/32x32.png?text=S', dataAiHint: 'slack logo', description: 'Receive notifications and manage tasks via Slack.', connected: true},
-    {id: 'github', name: 'GitHub', logo: 'https://placehold.co/32x32.png?text=G', dataAiHint: 'github logo', description: 'Sync repositories and trigger builds on code changes.', connected: false},
-    {id: 'google_drive', name: 'Google Drive', logo: 'https://placehold.co/32x32.png?text=GD', dataAiHint: 'google drive logo', description: 'Connect your cloud storage for file management.', connected: false},
-];
-
-const innerCardClassName = "bg-card/70 backdrop-blur-sm border-primary/20 rounded-xl p-3 shadow-lg hover:border-primary/30 transition-all";
-
+interface IntegrationApp {
+  id: string;
+  name: string;
+  logo: string;
+  dataAiHint?: string;
+  description: string;
+  connected: boolean;
+}
 
 export default function AccountIntegrationsPage() {
+  const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
+  const [webhooks, setWebhooks] = useState<WebhookEntry[]>([]);
+  const [availableIntegrations, setAvailableIntegrations] = useState<IntegrationApp[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(true);
+    // Simulate fetching data
+    setTimeout(() => {
+      setApiKeys([
+        { id: 'key_abc123', label: 'Main Production Key', created: '2023-01-15', lastUsed: '2023-10-25', tokenPreview: 'nexos_sk_live_...xyz' },
+        { id: 'key_def456', label: 'Development Key', created: '2023-05-10', lastUsed: '2 hours ago', tokenPreview: 'nexos_sk_dev_...pqr' },
+      ]);
+      setWebhooks([
+          { id: 'wh_1', url: 'https://api.example.com/nexos/item-updated', events: ['item.updated', 'item.created'], status: 'Active' },
+          { id: 'wh_2', url: 'https://service.another.com/webhook', events: ['module.deployed'], status: 'Inactive' },
+      ]);
+      setAvailableIntegrations([
+          {id: 'slack', name: 'Slack', logo: 'https://placehold.co/32x32.png?text=S', dataAiHint: 'slack logo', description: 'Receive notifications and manage tasks via Slack.', connected: true},
+          {id: 'github', name: 'GitHub', logo: 'https://placehold.co/32x32.png?text=G', dataAiHint: 'github logo', description: 'Sync repositories and trigger builds on code changes.', connected: false},
+          {id: 'google_drive', name: 'Google Drive', logo: 'https://placehold.co/32x32.png?text=GD', dataAiHint: 'google drive logo', description: 'Connect your cloud storage for file management.', connected: false},
+      ]);
+      setIsLoading(false);
+    }, 1000);
+  }, []);
+
+  const innerCardClassName = "bg-card/70 backdrop-blur-sm border-primary/20 rounded-xl p-3 shadow-lg hover:border-primary/30 transition-all";
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-6 p-4 md:p-6 items-center justify-center h-full">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="text-muted-foreground">Loading integrations...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6">
       <header>

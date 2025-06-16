@@ -1,4 +1,3 @@
-
 // src/app/account/security/page.tsx
 'use client';
 import { Button } from '@/components/ui/button';
@@ -7,18 +6,36 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { KeyRound, ShieldCheck, Smartphone, History, LogOut } from 'lucide-react';
+import { KeyRound, ShieldCheck, Smartphone, History, LogOut, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import React, { useState, useEffect } from 'react';
 
-// Placeholder data
-const activeSessions = [
-  { id: 'session_1', device: 'Chrome on macOS', ip: '192.168.1.101', lastActive: 'Current session', location: 'New York, USA' },
-  { id: 'session_2', device: 'NexOS Mobile App on iOS', ip: '10.0.0.5', lastActive: '2 hours ago', location: 'Remote' },
-];
-
-const innerCardClassName = "bg-card/70 backdrop-blur-sm border-primary/20 rounded-xl p-3 shadow-lg hover:border-primary/30 transition-all";
+interface ActiveSession {
+  id: string;
+  device: string;
+  ip: string;
+  lastActive: string;
+  location: string;
+}
 
 export default function AccountSecurityPage() {
+  const [activeSessions, setActiveSessions] = useState<ActiveSession[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(true);
+    // Simulate fetching active sessions
+    setTimeout(() => {
+      setActiveSessions([
+        { id: 'session_1', device: 'Chrome on macOS', ip: '192.168.1.101', lastActive: 'Current session', location: 'New York, USA' },
+        { id: 'session_2', device: 'NexOS Mobile App on iOS', ip: '10.0.0.5', lastActive: '2 hours ago', location: 'Remote' },
+      ]);
+      setIsLoading(false);
+    }, 1000);
+  }, []);
+
+  const innerCardClassName = "bg-card/70 backdrop-blur-sm border-primary/20 rounded-xl p-3 shadow-lg hover:border-primary/30 transition-all";
+
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6 max-w-3xl mx-auto">
       <header>
@@ -79,30 +96,38 @@ export default function AccountSecurityPage() {
           <CardDescription>Review and manage devices logged into your account.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Device</TableHead>
-                <TableHead>Location / IP</TableHead>
-                <TableHead>Last Active</TableHead>
-                <TableHead className="text-right">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {activeSessions.map((session) => (
-                <TableRow key={session.id}>
-                  <TableCell className="font-medium">{session.device}</TableCell>
-                  <TableCell className="text-xs text-muted-foreground">{session.location} ({session.ip})</TableCell>
-                  <TableCell>{session.lastActive}</TableCell>
-                  <TableCell className="text-right">
-                    {session.lastActive !== 'Current session' && 
-                      <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive/80">Log Out</Button>
-                    }
-                  </TableCell>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-10">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : activeSessions.length === 0 ? (
+            <p className="text-sm text-center py-4 text-muted-foreground">No active sessions found.</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Device</TableHead>
+                  <TableHead>Location / IP</TableHead>
+                  <TableHead>Last Active</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {activeSessions.map((session) => (
+                  <TableRow key={session.id}>
+                    <TableCell className="font-medium">{session.device}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground">{session.location} ({session.ip})</TableCell>
+                    <TableCell>{session.lastActive}</TableCell>
+                    <TableCell className="text-right">
+                      {session.lastActive !== 'Current session' && 
+                        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive/80">Log Out</Button>
+                      }
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
         <CardFooter>
             <Button variant="destructive" className="ml-auto"><LogOut className="mr-2 h-4 w-4" /> Log Out All Other Sessions</Button>

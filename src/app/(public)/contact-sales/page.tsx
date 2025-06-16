@@ -1,12 +1,10 @@
-
 // src/app/(public)/contact-sales/page.tsx
 'use client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label'; // Will be replaced by FormLabel
 import { Textarea } from '@/components/ui/textarea';
-import { Mail } from 'lucide-react';
+import { Mail, Loader2 } from 'lucide-react'; // Added Loader2
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -18,7 +16,7 @@ const contactSalesSchema = z.object({
   fullName: z.string().min(2, { message: "Full name must be at least 2 characters." }),
   companyEmail: z.string().email({ message: "Please enter a valid email address." }),
   companyName: z.string().min(2, { message: "Company name must be at least 2 characters." }),
-  companySize: z.coerce.number().min(1, { message: "Company size must be at least 1." }).optional().or(z.literal('')), // Allow empty string, coerce to number
+  companySize: z.coerce.number().min(1, { message: "Company size must be at least 1." }).optional().or(z.literal('')), 
   message: z.string().min(10, { message: "Message must be at least 10 characters." }).max(500, { message: "Message cannot exceed 500 characters." }),
 });
 
@@ -41,16 +39,25 @@ export default function ContactSalesPage() {
 
   async function onSubmit(data: ContactSalesFormValues) {
     setIsSubmitting(true);
-    console.log('Contact Sales Form Submitted:', data);
+    console.log('Simulating API Call for Contact Sales Form:', data);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    toast({
-      title: "Message Sent!",
-      description: "Our sales team will get back to you shortly. Thank you for your interest in NexOS Platform.",
-      variant: "default", // Use default for success, or create a "success" variant if needed
-    });
-    form.reset(); // Reset form after successful submission
+    // Simulate a random success/failure for demonstration
+    if (Math.random() > 0.1) { // 90% success rate
+        toast({
+        title: "Message Sent!",
+        description: "Our sales team will get back to you shortly. Thank you for your interest in NexOS Platform.",
+        variant: "default",
+        });
+        form.reset(); 
+    } else {
+        toast({
+        title: "Submission Error",
+        description: "Could not send your message to sales. Please try again later.",
+        variant: "destructive",
+        });
+    }
     setIsSubmitting(false);
   }
 
@@ -78,7 +85,7 @@ export default function ContactSalesPage() {
                       <FormItem>
                         <FormLabel>Full Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Your Name" {...field} className="bg-input border-input focus:ring-primary" />
+                          <Input placeholder="Your Name" {...field} className="bg-input border-input focus:ring-primary" disabled={isSubmitting} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -91,7 +98,7 @@ export default function ContactSalesPage() {
                       <FormItem>
                         <FormLabel>Company Email</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="work@example.com" {...field} className="bg-input border-input focus:ring-primary" />
+                          <Input type="email" placeholder="work@example.com" {...field} className="bg-input border-input focus:ring-primary" disabled={isSubmitting} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -106,7 +113,7 @@ export default function ContactSalesPage() {
                       <FormItem>
                         <FormLabel>Company Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Your Company Inc." {...field} className="bg-input border-input focus:ring-primary" />
+                          <Input placeholder="Your Company Inc." {...field} className="bg-input border-input focus:ring-primary" disabled={isSubmitting} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -119,7 +126,7 @@ export default function ContactSalesPage() {
                       <FormItem>
                         <FormLabel>Company Size (Approx. Employees)</FormLabel>
                         <FormControl>
-                          <Input type="number" placeholder="e.g., 500" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : parseInt(e.target.value, 10))} className="bg-input border-input focus:ring-primary" />
+                          <Input type="number" placeholder="e.g., 500" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : parseInt(e.target.value, 10))} className="bg-input border-input focus:ring-primary" disabled={isSubmitting} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -137,6 +144,7 @@ export default function ContactSalesPage() {
                           placeholder="Tell us about your needs, project requirements, or any questions you have..."
                           className="min-h-[120px] bg-input border-input focus:ring-primary"
                           {...field}
+                          disabled={isSubmitting}
                         />
                       </FormControl>
                       <FormMessage />
@@ -146,6 +154,7 @@ export default function ContactSalesPage() {
               </CardContent>
               <CardFooter>
                 <Button type="submit" size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isSubmitting}>
+                  {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   {isSubmitting ? 'Sending...' : 'Send Message'}
                 </Button>
               </CardFooter>

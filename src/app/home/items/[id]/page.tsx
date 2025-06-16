@@ -1,20 +1,64 @@
-
 // src/app/home/items/[id]/page.tsx
 'use client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, Settings, Layers, Code, Play } from "lucide-react";
+import { ArrowLeft, Settings, Layers, Code, Play, Loader2 } from "lucide-react";
+import React, { useState, useEffect } from 'react'; // Added React and hooks
+
+interface ItemDetails {
+  id: string;
+  name: string;
+  type: string;
+  status: string;
+  createdAt: string;
+  modulesAttached: number; // Example detail
+  lastDeployed: string; // Example detail
+}
 
 export default function ItemManagementPage({ params }: { params: { id: string } }) {
-  // Placeholder data - fetch item data based on params.id in a real app
-  const item = {
-    id: params.id,
-    name: `Managed Item ${params.id.substring(0,5)}`,
-    type: 'Application',
-    status: 'Active',
-    createdAt: new Date().toLocaleDateString(),
-  };
+  const [item, setItem] = useState<ItemDetails | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(true);
+    // Simulate fetching item data based on params.id
+    setTimeout(() => {
+      // In a real app, you'd fetch this. For now, create plausible data.
+      setItem({
+        id: params.id,
+        name: `Managed Item ${params.id.substring(0,5)}`,
+        type: 'Application', // Could be dynamic
+        status: 'Active', // Could be dynamic
+        createdAt: new Date(Date.now() - Math.random() * 10000000000).toLocaleDateString(), // Random creation date
+        modulesAttached: Math.floor(Math.random() * 5) + 1,
+        lastDeployed: new Date(Date.now() - Math.random() * 1000000000).toLocaleDateString(),
+      });
+      setIsLoading(false);
+    }, 1000);
+  }, [params.id]);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-4 p-4 md:p-6 items-center justify-center h-full">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="text-muted-foreground">Loading item details...</p>
+      </div>
+    );
+  }
+
+  if (!item) {
+    return (
+      <div className="flex flex-col gap-4 p-4 md:p-6 items-center justify-center h-full">
+        <p className="text-destructive">Could not load item details.</p>
+         <Link href="/home/items" legacyBehavior>
+            <Button asChild variant="outline" className="mt-4">
+                <a><ArrowLeft className="mr-2 h-4 w-4" /> Back to All Items</a>
+            </Button>
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4 p-4 md:p-6">
@@ -36,8 +80,8 @@ export default function ItemManagementPage({ params }: { params: { id: string } 
           </CardHeader>
           <CardContent>
             <p className="text-sm">Status: <span className="text-green-400 font-semibold">{item.status}</span></p>
-            <p className="text-sm">Modules Attached: 3 (Placeholder)</p>
-            <p className="text-sm">Last Deployed: Yesterday (Placeholder)</p>
+            <p className="text-sm">Modules Attached: {item.modulesAttached}</p>
+            <p className="text-sm">Last Deployed: {item.lastDeployed}</p>
           </CardContent>
            <CardFooter>
              <Button variant="outline" size="sm" className="w-full"><Play className="mr-2 h-4 w-4" /> Run/Deploy Item</Button>
@@ -81,7 +125,7 @@ export default function ItemManagementPage({ params }: { params: { id: string } 
         <Card>
             <CardHeader><CardTitle className="font-headline text-lg">Settings & Configuration</CardTitle></CardHeader>
             <CardContent>
-                <p className="text-sm text-muted-foreground">Placeholder for item-specific settings like environment variables, domain settings, etc.</p>
+                <p className="text-sm text-muted-foreground">Item-specific settings like environment variables, domain settings, etc., would be managed here.</p>
             </CardContent>
             <CardFooter>
                 <Button variant="outline"><Settings className="mr-2 h-4 w-4" /> Configure Item</Button>

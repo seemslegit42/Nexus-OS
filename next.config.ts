@@ -18,6 +18,22 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'], // Add mdx
+  webpack: (config, options) => {
+    config.module.rules.push({
+      test: /\.mdx?$/,
+      use: [
+        options.defaultLoaders.babel,
+        {
+          loader: '@mdx-js/loader',
+          options: {
+            /* mdxOptions */
+          },
+        },
+      ],
+    });
+    return config;
+  },
 };
 
 export default nextConfig;

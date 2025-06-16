@@ -1,4 +1,3 @@
-
 // src/app/(public)/contact/page.tsx
 'use client';
 import { Button } from '@/components/ui/button';
@@ -12,12 +11,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import type { Metadata } from 'next';
-
-// export const metadata: Metadata = {
-//   title: 'Contact Us | NexOS Platform',
-//   description: 'Get in touch with the NexOS Platform team. Send us a message, find our location, or connect on social media.',
-// };
 
 const contactFormSchema = z.object({
   fullName: z.string().min(2, { message: "Full name must be at least 2 characters." }),
@@ -44,15 +37,25 @@ export default function ContactPage() {
 
   async function onSubmit(data: ContactFormValues) {
     setIsSubmitting(true);
-    console.log('General Contact Form Submitted:', data);
+    console.log('Simulating API Call for General Contact Form:', data);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    toast({
-      title: "Message Received!",
-      description: "Thank you for contacting us. We'll get back to you as soon as possible.",
-    });
-    form.reset();
+    // Simulate a random success/failure for demonstration
+    if (Math.random() > 0.1) { // 90% success rate
+        toast({
+        title: "Message Received!",
+        description: "Thank you for contacting us. We'll get back to you as soon as possible.",
+        variant: "default",
+        });
+        form.reset();
+    } else {
+        toast({
+        title: "Submission Error",
+        description: "Could not send your message. Please try again later.",
+        variant: "destructive",
+        });
+    }
     setIsSubmitting(false);
   }
 
@@ -166,7 +169,6 @@ export default function ContactPage() {
                   1 Infinite Loop, Future City, FC 90210<br />
                   Metaverse Realm
                 </p>
-                {/* Placeholder for Map Embed */}
                 <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
                   <p className="text-xs text-muted-foreground">(Map Placeholder)</p>
                 </div>
@@ -201,4 +203,3 @@ export default function ContactPage() {
     </div>
   );
 }
-

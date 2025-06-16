@@ -1,32 +1,64 @@
-
 // src/app/account/earnings/page.tsx
 'use client';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { DollarSign, TrendingUp, Download, CalendarDays, BarChart2 } from "lucide-react"; // Added BarChart2
-// Assuming you might have chart components, import them if needed
-// import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { DollarSign, TrendingUp, Download, CalendarDays, BarChart2, Loader2 } from "lucide-react";
+import React, { useState, useEffect } from 'react'; // Added React and hooks
 
-// Placeholder data
-const earningsSummary = {
-  totalEarned: 1250.75,
-  pendingPayout: 300.50,
-  lastPayout: { date: '2023-10-15', amount: 950.25 },
-};
+interface EarningsSummary {
+  totalEarned: number;
+  pendingPayout: number;
+  lastPayout: { date: string; amount: number };
+}
 
-const earningsBreakdown = [
-  { month: 'Oct 2023', item: 'AI Content Writer Module', sales: 50, revenue: 175.00 },
-  { month: 'Oct 2023', item: 'SaaS Admin Dashboard Template', sales: 20, revenue: 125.50 },
-  { month: 'Sep 2023', item: 'AI Content Writer Module', sales: 45, revenue: 157.50 },
-];
-
-// const monthlyChartData = [
-//   { name: 'Jul', earnings: 200 }, { name: 'Aug', earnings: 450 },
-//   { name: 'Sep', earnings: 600 }, { name: 'Oct', earnings: 300.50 },
-// ];
+interface EarningBreakdownItem {
+  month: string;
+  item: string;
+  sales: number;
+  revenue: number;
+}
 
 export default function AccountEarningsPage() {
+  const [earningsSummary, setEarningsSummary] = useState<EarningsSummary | null>(null);
+  const [earningsBreakdown, setEarningsBreakdown] = useState<EarningBreakdownItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate fetching earnings data
+  useEffect(() => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setEarningsSummary({
+        totalEarned: 1250.75,
+        pendingPayout: 300.50,
+        lastPayout: { date: '2023-10-15', amount: 950.25 },
+      });
+      setEarningsBreakdown([
+        { month: 'Oct 2023', item: 'AI Content Writer Module', sales: 50, revenue: 175.00 },
+        { month: 'Oct 2023', item: 'SaaS Admin Dashboard Template', sales: 20, revenue: 125.50 },
+        { month: 'Sep 2023', item: 'AI Content Writer Module', sales: 45, revenue: 157.50 },
+      ]);
+      setIsLoading(false);
+    }, 1000);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-6 p-4 md:p-6 items-center justify-center h-full">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="text-muted-foreground">Loading earnings data...</p>
+      </div>
+    );
+  }
+
+  if (!earningsSummary) {
+    return (
+      <div className="flex flex-col gap-6 p-4 md:p-6 items-center justify-center h-full">
+        <p className="text-destructive">Could not load earnings data.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6">
       <header>
@@ -72,18 +104,6 @@ export default function AccountEarningsPage() {
           <CardTitle className="font-headline">Monthly Earnings Trend</CardTitle>
         </CardHeader>
         <CardContent className="h-[300px] flex items-center justify-center rounded-md">
-          {/* 
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={monthlyChartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="earnings" fill="hsl(var(--primary))" />
-            </BarChart>
-          </ResponsiveContainer> 
-          */}
            <div className="text-center text-muted-foreground">
             <BarChart2 className="h-12 w-12 mx-auto opacity-50 mb-2" />
             <p>Monthly earnings chart placeholder.</p>
