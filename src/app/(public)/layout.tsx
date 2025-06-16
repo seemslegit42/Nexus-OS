@@ -1,16 +1,28 @@
 
 import type { Metadata } from 'next';
+import Script from 'next/script'; // Added for JSON-LD
 import { Comfortaa, Lexend } from 'next/font/google';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { NexosLogo } from '@/components/icons/nexos-logo'; // Assuming this exists from NexOS
+import { NexosLogo } from '@/components/icons/nexos-logo';
 import '../globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'NexOS Platform',
-  description: 'The Next-Generation Modular SaaS Platform.',
+  title: 'NexOS Platform', // Default title for public pages
+  description: 'Discover NexOS, the next-generation modular SaaS platform for developers and innovators.',
+  openGraph: {
+    title: 'NexOS Platform: Build, Automate, Scale',
+    description: 'Explore the NexOS Platform, designed for modern SaaS development with AI-powered agents and modular architecture.',
+    // url will be specific to each page, this acts as a default if not overridden by child page.tsx
+    // images will inherit from root or be set per-page by child page.tsx
+  },
+  twitter: {
+    title: 'NexOS Platform: Build, Automate, Scale',
+    description: 'Explore the NexOS Platform, designed for modern SaaS development with AI-powered agents and modular architecture.',
+    // images will inherit or be set by child page.tsx
+  }
 };
 
 const comfortaa = Comfortaa({
@@ -30,12 +42,31 @@ export default function PublicLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "NexOS Platform",
+    "url": "https://nexos.app", // Replace with actual domain
+    // "potentialAction": { // Optional: For sitelinks search box
+    //   "@type": "SearchAction",
+    //   "target": "https://nexos.app/search?q={search_term_string}",
+    //   "query-input": "required name=search_term_string"
+    // }
+  };
+
   return (
     <html lang="en" className={cn("dark", comfortaa.variable, lexend.variable)} suppressHydrationWarning>
+      <head>
+        <Script
+          id="website-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
+      </head>
       <body className="font-body antialiased flex flex-col min-h-screen bg-background text-foreground">
         <header className="sticky top-0 z-40 w-full border-b border-primary/25 bg-background/80 backdrop-blur-lg shadow-[0_2px_15px_hsl(var(--primary)/0.1)]">
           <div className="container flex h-16 items-center justify-between">
-            <Link href="/" className="flex items-center gap-2"> {/* Public layout logo links to / */}
+            <Link href="/" className="flex items-center gap-2">
               <NexosLogo className="h-7 w-7 text-primary" />
               <span className="text-xl font-bold font-headline">NexOS Platform</span>
             </Link>
@@ -54,8 +85,6 @@ export default function PublicLayout({
               <Link href="/register" legacyBehavior>
                  <Button asChild size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground"><a>Sign Up</a></Button>
               </Link>
-              {/* Mobile Menu Trigger - Placeholder */}
-              {/* <Button variant="ghost" size="icon" className="md:hidden"><Menu className="h-5 w-5"/></Button> */}
             </div>
           </div>
         </header>
@@ -77,4 +106,3 @@ export default function PublicLayout({
     </html>
   );
 }
-

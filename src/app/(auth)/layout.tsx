@@ -8,6 +8,16 @@ import { Toaster } from "@/components/ui/toaster";
 export const metadata: Metadata = {
   title: 'NexOS Platform - Authentication',
   description: 'Secure authentication for NexOS Platform.',
+  openGraph: {
+    title: 'NexOS Platform - Secure Sign-in',
+    description: 'Access your NexOS account securely or register for the next-generation platform.',
+    // Images and site URL will be inherited from the root layout
+  },
+  twitter: {
+    title: 'NexOS Platform - Secure Sign-in',
+    description: 'Access your NexOS account securely or register for the next-generation platform.',
+    // Images will be inherited
+  }
 };
 
 const comfortaa = Comfortaa({
