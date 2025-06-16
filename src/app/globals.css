@@ -23,6 +23,10 @@ html, body {
   --status-error-color: #D9534F; /* Muted Red for error */
   --border-color-main: hsla(271, 76%, 53%, 0.3); /* Purple Glow Border */
 
+  /* HSL versions for easier manipulation in JS/animations if needed */
+  --primary-hsl: 271 76% 53%;
+  --secondary-hsl: 170 70% 55%;
+
   /* Typography */
   --font-main: 'Lexend', sans-serif;
   --font-headline-comfortaa: 'Comfortaa', sans-serif;
@@ -49,9 +53,10 @@ html, body {
   --border-width-main: 1px;
 
   /* Effects (Glassmorphism) */
-  --panel-backdrop-filter: blur(12px);
+  --panel-backdrop-filter: blur(14px) saturate(110%); /* Enhanced */
   --panel-box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
-  --shadow-panel-outer: 0 8px 32px hsla(271, 76%, 53%, 0.1), 0 4px 12px hsla(271, 76%, 53%, 0.08); /* Purple outer shadow */
+  /* shadow-panel-outer will be handled by animation for cards, or a static var for other elements */
+  --shadow-panel-outer-static: 0 8px 32px hsla(var(--primary-hsl) / 0.1), 0 4px 12px hsla(var(--primary-hsl) / 0.08);
 
 
   /* ShadCN Compatibility - Mapped to new theme */
@@ -136,7 +141,7 @@ html, body {
 .panel-glass {
   background: var(--panel-background-color);
   border: var(--border-width-main) solid var(--border-color-main);
-  box-shadow: var(--panel-box-shadow), var(--shadow-panel-outer); /* Added new outer shadow */
+  box-shadow: var(--panel-box-shadow), var(--shadow-panel-outer-static); /* Use static outer shadow */
   backdrop-filter: var(--panel-backdrop-filter);
   border-radius: var(--border-radius-main);
 }
@@ -272,8 +277,8 @@ html, body {
       transparent,
       transparent,
       transparent,
-      hsla(var(--primary) / 0.3), /* Purple shimmer */
-      hsla(var(--primary) / 0.2), /* Lighter Purple shimmer */
+      hsla(var(--primary-hsl) / 0.3), /* Purple shimmer */
+      hsla(var(--primary-hsl) / 0.2), /* Lighter Purple shimmer */
       transparent,
       transparent
     );
@@ -293,5 +298,15 @@ html, body {
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+
+/* Purple Pulsating Glow Animation for Cards */
+@keyframes pulse-glow-purple {
+  0%, 100% {
+    box-shadow: var(--panel-box-shadow), 0 8px 32px hsla(var(--primary-hsl) / 0.1), 0 4px 12px hsla(var(--primary-hsl) / 0.08);
+  }
+  50% {
+    box-shadow: var(--panel-box-shadow), 0 8px 45px hsla(var(--primary-hsl) / 0.18), 0 4px 20px hsla(var(--primary-hsl) / 0.12);
   }
 }

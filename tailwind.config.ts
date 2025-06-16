@@ -18,25 +18,22 @@ export default {
     },
     extend: {
       fontFamily: {
-        // These are now primarily controlled by CSS variables in globals.css
-        // but we can keep them here for Tailwind's IntelliSense and as fallbacks if needed.
-        // Or define custom utilities if Tailwind's `font-*` classes are preferred over `font-family: var(...)`
-        main: ['var(--font-main)', 'sans-serif'], // Lexend for body
-        headline: ['var(--font-headline-comfortaa)', 'sans-serif'], // Comfortaa for headlines
-        code: ['var(--font-main)', 'monospace'], // Assuming Lexend can also serve as a monospace alternative if needed
+        main: ['var(--font-main)', 'sans-serif'],
+        headline: ['var(--font-headline-comfortaa)', 'sans-serif'],
+        code: ['var(--font-main)', 'monospace'],
       },
-      fontSize: { // Mapped to new tokens, Tailwind will generate classes like text-size-base
+      fontSize: {
         'size-base': 'var(--font-size-base)',
         'size-small': 'var(--font-size-small)',
         'size-large': 'var(--font-size-large)',
         'size-h1': 'var(--font-size-h1)',
         'size-h2': 'var(--font-size-h2)',
       },
-      fontWeight: { // Mapped to new tokens
+      fontWeight: {
         'weight-regular': 'var(--font-weight-regular)',
         'weight-bold': 'var(--font-weight-bold)',
       },
-      spacing: { // Explicitly map spacing tokens if Tailwind's default scale isn't used directly
+      spacing: {
         'space-xs': 'var(--spacing-xs)',
         'space-sm': 'var(--spacing-sm)',
         'space-md': 'var(--spacing-md)',
@@ -44,7 +41,6 @@ export default {
         'space-xl': 'var(--spacing-xl)',
       },
       colors: {
-        // ShadCN variables, now sourced from :root in globals.css
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
@@ -85,7 +81,6 @@ export default {
           '4': 'hsl(var(--chart-4))',
           '5': 'hsl(var(--chart-5))',
         },
-        // Custom tokens directly usable in Tailwind, e.g., bg-background-main-custom
         'background-main-custom': 'var(--background-main-color)',
         'panel-background-custom': 'var(--panel-background-color)',
         'accent-primary-custom': 'var(--accent-primary-color)',
@@ -96,59 +91,58 @@ export default {
         'status-in-progress-custom': 'var(--status-in-progress-color)',
         'status-error-custom': 'var(--status-error-color)',
         'border-color-main-custom': 'var(--border-color-main)',
-
-        // Command Observatory specific colors (if kept distinct)
         'observatory-bg': 'var(--observatory-bg)',
         'observatory-border': 'var(--observatory-border)',
       },
       boxShadow: {
         'observatory-inner': 'var(--observatory-shadow)',
-        'panel-custom': 'var(--panel-box-shadow)', // For custom panel shadow
-        'panel-outer': 'var(--shadow-panel-outer)', // New outer shadow utility
+        'panel-custom': 'var(--panel-box-shadow)',
+        // 'panel-outer' is removed here, will be applied by animation or specific utility
       },
       borderRadius: {
-        lg: "var(--radius)", // main radius for larger elements: 12px -> 0.75rem
-        md: "calc(var(--radius) - 2px)", // (12px - 2px = 10px)
-        sm: "var(--border-radius-small)", // small radius for buttons/inputs: 8px -> 0.5rem
-        main: "var(--border-radius-main)", // explicit 12px
-        small: "var(--border-radius-small)", // explicit 8px
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "var(--border-radius-small)",
+        main: "var(--border-radius-main)",
+        small: "var(--border-radius-small)",
       },
-      backdropFilter: { // Custom utility if needed, though direct application in CSS is also fine
+      backdropFilter: {
         'panel': 'var(--panel-backdrop-filter)',
       },
       keyframes: {
         'accordion-down': {
-          from: {
-            height: '0',
-          },
-          to: {
-            height: 'var(--radix-accordion-content-height)',
-          },
+          from: { height: '0' },
+          to: { height: 'var(--radix-accordion-content-height)' },
         },
         'accordion-up': {
-          from: {
-            height: 'var(--radix-accordion-content-height)',
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: '0' },
+        },
+        'pulse-glow-purple': { // Keyframes for the pulsating glow
+          '0%, 100%': {
+            boxShadow: 'var(--panel-box-shadow), 0 8px 32px hsla(var(--primary-hsl, 271 76% 53%) / 0.1), 0 4px 12px hsla(var(--primary-hsl, 271 76% 53%) / 0.08)',
           },
-          to: {
-            height: '0',
+          '50%': {
+            boxShadow: 'var(--panel-box-shadow), 0 8px 45px hsla(var(--primary-hsl, 271 76% 53%) / 0.18), 0 4px 20px hsla(var(--primary-hsl, 271 76% 53%) / 0.12)',
           },
         },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'pulse-glow-purple': 'pulse-glow-purple 4s infinite ease-in-out', // Animation utility
       },
     },
   },
   plugins: [
     require('tailwindcss-animate'),
-    require('@tailwindcss/typography'), // Added for prose styling
+    require('@tailwindcss/typography'),
     function ({ addUtilities }: { addUtilities: any}) {
       addUtilities({
         '.panel-glass-effect': {
           'background': 'var(--panel-background-color)',
           'border': 'var(--border-width-main) solid var(--border-color-main)',
-          'box-shadow': 'var(--panel-box-shadow)',
+          'box-shadow': 'var(--panel-box-shadow), var(--shadow-panel-outer-static)', // Static outer shadow for this utility
           'backdrop-filter': 'var(--panel-backdrop-filter)',
           'border-radius': 'var(--border-radius-main)',
         },
@@ -159,7 +153,6 @@ export default {
         },
         '.text-headline': {
           'font-family': 'var(--font-headline-comfortaa)',
-          // Default headline size might be h2 or h3
           'font-size': 'var(--font-size-h2)',
           'font-weight': 'var(--font-weight-bold)',
         },
@@ -167,4 +160,3 @@ export default {
     }
   ],
 } satisfies Config;
-```

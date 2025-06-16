@@ -14,8 +14,8 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <Comp
         ref={ref}
         className={cn(
-          // Updated to use new theme variables for glassmorphism & new outer shadow
-          "rounded-[var(--border-radius-main)] border-[var(--border-width-main)] border-[var(--border-color-main)] bg-[var(--panel-background-color)] text-[var(--text-primary-color)] shadow-[var(--panel-box-shadow)] shadow-panel-outer backdrop-filter-[var(--panel-backdrop-filter)]",
+          "rounded-[var(--border-radius-main)] border-[var(--border-width-main)] border-[var(--border-color-main)] bg-[var(--panel-background-color)] text-[var(--text-primary-color)] backdrop-filter-[var(--panel-backdrop-filter)]",
+          "animate-pulse-glow-purple", // Apply the pulsating glow animation
           className
         )}
         {...props}
@@ -31,7 +31,7 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col space-y-1.5 p-[var(--spacing-sm)] md:p-[var(--spacing-md)]", className)} // Use spacing tokens
+    className={cn("flex flex-col space-y-1.5 p-[var(--spacing-sm)] md:p-[var(--spacing-md)]", className)}
     {...props}
   />
 ))
@@ -44,7 +44,7 @@ const CardTitle = React.forwardRef<
   <div 
     ref={ref}
     className={cn(
-      "text-size-large font-headline font-weight-bold leading-none tracking-tight text-foreground", // Use new font tokens & foreground for better default contrast
+      "text-size-large font-headline font-weight-bold leading-none tracking-tight text-foreground", 
       className
     )}
     {...props}
@@ -58,7 +58,7 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div 
     ref={ref}
-    className={cn("text-size-small text-text-secondary-custom", className)} // Use new font tokens
+    className={cn("text-size-small text-text-secondary-custom", className)} 
     {...props}
   />
 ))
@@ -68,7 +68,7 @@ const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("p-[var(--spacing-sm)] md:p-[var(--spacing-md)] pt-0", className)} {...props} /> // Use spacing tokens
+  <div ref={ref} className={cn("p-[var(--spacing-sm)] md:p-[var(--spacing-md)] pt-0", className)} {...props} />
 ))
 CardContent.displayName = "CardContent"
 
@@ -78,11 +78,10 @@ const CardFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex items-center p-[var(--spacing-sm)] md:p-[var(--spacing-md)] pt-0", className)} // Use spacing tokens
+    className={cn("flex items-center p-[var(--spacing-sm)] md:p-[var(--spacing-md)] pt-0", className)}
     {...props}
   />
 ))
 CardFooter.displayName = "CardFooter"
 
 export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
-```
