@@ -38,7 +38,7 @@ interface ZoneControlsProps {
   onViewLogs?: (zoneId: string, zoneTitle: string) => void;
 }
 
-const BASE_BUTTON_CLASS = "relative h-7 w-7 p-1 rounded-full border border-white/10 bg-black/20 backdrop-blur-sm shadow-md focus:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:opacity-30 disabled:pointer-events-none transition-all duration-200 ease-in-out overflow-hidden group";
+const BASE_BUTTON_CLASS = "relative h-7 w-7 p-1 rounded-full border border-primary/15 bg-primary/5 backdrop-blur-sm shadow-md focus:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:opacity-30 disabled:pointer-events-none transition-all duration-200 ease-in-out overflow-hidden group";
 const ICON_BASE_CLASS = "h-4 w-4 transition-all duration-200 ease-in-out";
 
 export function ZoneControls({
@@ -104,7 +104,7 @@ export function ZoneControls({
             <Button
               variant="ghost"
               size="icon"
-              className={cn(BASE_BUTTON_CLASS, "text-muted-foreground hover:text-foreground hover:border-foreground/40 hover:shadow-foreground/20")}
+              className={cn(BASE_BUTTON_CLASS, "text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/10 hover:shadow-primary/20")}
               title="More actions"
             >
               <MoreVertical className={ICON_BASE_CLASS} />
@@ -139,9 +139,6 @@ export function ZoneControls({
                 <Edit className="mr-2 h-4 w-4" /> Configure
               </DropdownMenuItem>
             )}
-            {/* Trash2 was used for Remove App, assuming X is for the direct close button */}
-            {/* For consistency with the direct X button, maybe "Close Zone" or "Hide Zone" is better if onClose is general */}
-            {/* Or keep as Remove App if its action is destructive */}
             {canClose && onClose && ( 
               <>
                 {(onOpenApp || onRunTask || onViewLogs || (canSettings && onSettingsToggle)) && <DropdownMenuSeparator />}
@@ -161,8 +158,8 @@ export function ZoneControls({
           size="icon" 
           className={cn(
             BASE_BUTTON_CLASS,
-            "text-muted-foreground hover:text-primary hover:border-primary/40 hover:shadow-primary/20 hover:shadow-[0_0_10px_2px_var(--tw-shadow-color)]",
-            isPinned && "text-primary border-primary/50 shadow-primary/30 shadow-[0_0_8px_1px_var(--tw-shadow-color)]"
+            "text-muted-foreground hover:text-primary hover:border-primary/30 hover:bg-primary/10 hover:shadow-primary/20",
+            isPinned && "text-primary border-primary/40 bg-primary/15 shadow-primary/30"
           )} 
           onClick={onPinToggle} 
           title={isPinned ? "Unpin Zone" : "Pin Zone"}
@@ -180,8 +177,8 @@ export function ZoneControls({
           size="icon" 
           className={cn(
             BASE_BUTTON_CLASS,
-            "text-yellow-400/70 hover:text-yellow-300 hover:border-yellow-400/40 hover:shadow-yellow-400/30 hover:shadow-[0_0_10px_2px_var(--tw-shadow-color)]",
-            isMinimized && "text-yellow-300 border-yellow-400/50 shadow-yellow-400/40 shadow-[0_0_8px_1px_var(--tw-shadow-color)]"
+            "text-yellow-500/80 hover:text-yellow-400 hover:border-yellow-500/30 hover:bg-yellow-500/10 hover:shadow-yellow-500/20",
+            isMinimized && "text-yellow-400 border-yellow-500/40 bg-yellow-500/15 shadow-yellow-500/30"
           )} 
           onClick={onMinimizeToggle} 
           title={isMinimized ? "Restore Content" : "Minimize Content"}
@@ -199,8 +196,8 @@ export function ZoneControls({
           size="icon" 
           className={cn(
             BASE_BUTTON_CLASS,
-            "text-green-400/70 hover:text-green-300 hover:border-green-400/40 hover:shadow-green-400/30 hover:shadow-[0_0_10px_2px_var(--tw-shadow-color)]",
-            isMaximized && "text-green-300 border-green-400/50 shadow-green-400/40 shadow-[0_0_8px_1px_var(--tw-shadow-color)]"
+            "text-green-500/80 hover:text-green-400 hover:border-green-500/30 hover:bg-green-500/10 hover:shadow-green-500/20",
+            isMaximized && "text-green-400 border-green-500/40 bg-green-500/15 shadow-green-500/30"
           )} 
           onClick={onMaximizeToggle} 
           title={isMaximized ? "Restore Zone" : "Maximize Zone"}
@@ -212,8 +209,6 @@ export function ZoneControls({
           <span className="sr-only">{isMaximized ? "Restore" : "Maximize"}</span>
         </Button>
       )}
-      {/* Direct Close button - Removed as it's now in the dropdown menu if canClose is true */}
     </div>
   );
 }
-

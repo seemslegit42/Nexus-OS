@@ -22,7 +22,7 @@ const SheetOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SheetPrimitive.Overlay
     className={cn(
-      "fixed inset-0 z-50 bg-black/80 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0", // Added backdrop-blur-sm
+      "fixed inset-0 z-50 bg-black/80 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0", 
       className
     )}
     {...props}
@@ -32,7 +32,7 @@ const SheetOverlay = React.forwardRef<
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName
 
 const sheetVariants = cva(
-  "fixed z-50 gap-4 bg-popover backdrop-blur-md p-6 shadow-[0_4px_30px_hsl(var(--primary)/0.12)] transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500 border-primary/25", // Base glassy styles, updated border opacity
+  "fixed z-50 gap-4 bg-popover backdrop-blur-md p-6 shadow-[0_4px_30px_hsl(var(--primary)/0.12)] transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500 border-primary/25", 
   {
     variants: {
       side: {
@@ -62,7 +62,7 @@ const SheetContent = React.forwardRef<
     <SheetOverlay />
     <SheetPrimitive.Content
       ref={ref}
-      className={cn(sheetVariants({ side }), className)} // Ensures rounded-2xl from base or variant
+      className={cn(sheetVariants({ side }), className)} 
       {...props}
     >
       {children}
@@ -109,7 +109,7 @@ const SheetTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SheetPrimitive.Title
     ref={ref}
-    className={cn("text-lg font-semibold text-foreground", className)} // Ensured foreground color
+    className={cn("text-lg font-semibold text-foreground", className)} 
     {...props}
   />
 ))

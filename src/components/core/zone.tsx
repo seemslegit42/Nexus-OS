@@ -67,8 +67,8 @@ export function Zone({
   return (
     <Card className={cn(
         // Base Card styling (rounded-2xl, jade border, glass bg, custom jade glow) is now handled by Card component itself
-        "flex flex-col overflow-hidden h-full", // Removed explicit styling already in Card
-        hasActiveAutomation && "zone-shimmer-border", // Keep shimmer if active
+        "flex flex-col overflow-hidden h-full", 
+        hasActiveAutomation && "zone-shimmer-border", 
         className
       )}
     >
@@ -76,8 +76,8 @@ export function Zone({
         <CardHeader 
           className={cn(
             "draggable-zone-header", 
-            "flex flex-row items-center justify-between space-y-0 p-2.5 md:p-3 border-b border-primary/20 min-h-[44px] cursor-grab backdrop-blur-sm bg-card/30 rounded-t-2xl", // Ensure header also has some blur and jade border
-            isMinimized && "rounded-b-2xl" // If minimized, header should also have bottom rounded corners
+            "flex flex-row items-center justify-between space-y-0 p-2.5 md:p-3 border-b border-primary/20 min-h-[44px] cursor-grab bg-card/30 backdrop-blur-sm rounded-t-2xl", // Ensure header also has some blur and consistent bg
+            isMinimized && "rounded-b-2xl" 
           )}
         >
           <div className="flex items-center gap-2 overflow-hidden">
@@ -109,7 +109,7 @@ export function Zone({
       <CardContent 
         className={cn(
           "flex-grow overflow-auto transition-all duration-300 ease-in-out",
-          showHeader ? "p-3" : "p-0", // Keep p-0 if no header to allow full bleed content
+          showHeader ? "p-3" : "p-0", 
           isMinimized ? "max-h-0 !p-0 opacity-0 invisible" : "opacity-100 visible"
         )}
       >
