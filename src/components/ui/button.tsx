@@ -10,13 +10,13 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground shadow-[0_2px_10px_hsl(var(--primary)/0.3)] hover:bg-primary/90 hover:shadow-[0_4px_15px_hsl(var(--primary)/0.4),0_0_10px_hsl(var(--secondary-hsl,170_70%_55%)/0.5)]", // Added Aquamarine glow to purple shadow on hover
+        default: "bg-primary text-primary-foreground shadow-[0_2px_10px_hsla(var(--primary-hsl)/0.3)] hover:bg-primary/90 hover:shadow-[0_4px_15px_hsla(var(--primary-hsl)/0.4),0_0_10px_hsla(var(--secondary-hsl)/0.5)]",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-[0_2px_10px_hsl(var(--destructive)/0.3)] hover:shadow-[0_4px_15px_hsl(var(--destructive)/0.4)]",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-[0_2px_10px_hsla(var(--destructive)/0.3)] hover:shadow-[0_4px_15px_hsla(var(--destructive)/0.4)]",
         outline:
           "border border-primary/40 bg-primary/5 backdrop-blur-sm hover:bg-primary/15 hover:text-accent-foreground text-text-primary-custom",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-[0_2px_8px_hsl(var(--secondary)/0.25)]",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-[0_2px_8px_hsla(var(--secondary-hsl)/0.25)]",
         ghost: "hover:bg-accent/15 hover:text-accent-foreground text-text-secondary-custom hover:text-text-primary-custom",
         link: "text-primary underline-offset-4 hover:underline hover:text-accent",
       },
@@ -55,3 +55,5 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = "Button"
 
 export { Button, buttonVariants }
+
+    

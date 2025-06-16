@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -11,22 +12,29 @@ html, body {
 
 /* ========== Custom Root Theme Tokens ========== */
 :root {
-  /* Color Palette - Greener Verdigris, Purple, Aquamarine Theme */
-  --background-main-color: hsl(160, 25%, 14%); /* Greener Verdigris Background */
-  --panel-background-color: hsla(160, 25%, 11%, 0.75); /* Greener Verdigris Panel */
-  --accent-primary-color: hsl(271, 76%, 53%); /* Purple */
-  --accent-secondary-color: hsl(170, 70%, 55%); /* Aquamarine */
-  --text-primary-color: #EAEAEA;
-  --text-secondary-color: #A0A0A0;
-  --status-success-color: hsl(170, 70%, 55%); /* Aquamarine for success */
-  --status-in-progress-color: hsl(271, 45%, 65%); /* Lighter Purple for in-progress/warning */
-  --status-error-color: #D9534F; /* Muted Red for error */
-  --border-color-main: hsla(271, 76%, 53%, 0.3); /* Purple Glow Border */
+  /* Color Palette - Verdigris, Deep Purple, Aquamarine-Cyan Theme */
+  --verdigris-jade-base: hsl(146, 50%, 36%);
+  --deep-purple-base: hsl(271, 47%, 42%);
+  --aquamarine-cyan-base: hsl(177, 100%, 41%);
+
+  --background-main-color: var(--verdigris-jade-base); /* Verdigris/Jade Background */
+  --panel-background-color: hsla(146, 50%, 30%, 0.75); /* Verdigris/Jade Panel (darker, semi-transparent) */
+  
+  --accent-primary-color: var(--deep-purple-base); /* Deep Purple */
+  --accent-secondary-color: var(--aquamarine-cyan-base); /* Aquamarine-Cyan */
+  
+  --text-primary-color: #EAEAEA; /* Off-white for main text */
+  --text-secondary-color: #A0A0A0; /* Light grey for secondary text */
+  
+  --status-success-color: var(--aquamarine-cyan-base); /* Aquamarine-Cyan for success */
+  --status-in-progress-color: var(--aquamarine-cyan-base); /* Aquamarine-Cyan for in-progress/warning */
+  --status-error-color: hsl(2, 66%, 61%); /* Muted Red for error (#D9534F) */
+  
+  --border-color-main: hsla(271, 47%, 42%, 0.3); /* Purple Glow Border */
 
   /* HSL versions for easier manipulation in JS/animations if needed */
-  --primary-hsl: 271 76% 53%;
-  --secondary-hsl: 170 70% 55%;
-  --secondary-foreground-hsl: 170 70% 15%; /* Dark Teal for Aquamarine contrast */
+  --primary-hsl: 271 47% 42%; /* Deep Purple HSL string */
+  --secondary-hsl: 177 100% 41%; /* Aquamarine-Cyan HSL string */
 
 
   /* Typography */
@@ -55,62 +63,60 @@ html, body {
   --border-width-main: 1px;
 
   /* Effects (Glassmorphism) */
-  --panel-backdrop-filter: blur(14px) saturate(110%); /* Enhanced */
+  --panel-backdrop-filter: blur(14px) saturate(110%);
   --panel-box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
-  /* shadow-panel-outer will be handled by animation for cards, or a static var for other elements */
-  --shadow-panel-outer-static: 0 8px 32px hsla(var(--primary-hsl) / 0.1), 0 4px 12px hsla(var(--primary-hsl) / 0.08);
 
 
   /* ShadCN Compatibility - Mapped to new theme */
   /* Backgrounds */
-  --background: 160 25% 14%; /* Greener Verdigris */
+  --background: 146 50% 36%; /* Verdigris/Jade */
   --foreground: 0 0% 92%; /* Text Primary (#EAEAEA) */
   
   /* Cards & Popovers */
-  --card: 160 25% 11%; /* Opaque Greener Verdigris Panel for card bg */
+  --card: 146 50% 30%; /* Opaque Verdigris/Jade Panel for card bg */
   --card-foreground: var(--foreground); /* Text Primary on cards */
   
-  /* Popover defaults to Greener Verdigris base, Tooltip overrides specifically */
-  --popover: 160 25% 9% / 0.85; /* Slightly darker/more opaque Greener Verdigris panel for popovers */
+  /* Popover defaults to Verdigris/Jade base */
+  --popover: 146 50% 28% / 0.85; /* Slightly darker/more opaque Verdigris/Jade panel for popovers */
   --popover-foreground: var(--foreground); /* Text Primary on popovers */
 
   /* Primary Interactive Elements */
-  --primary: 271 76% 53%; /* Purple */
-  --primary-foreground: 271 76% 95%; /* Light Lavender for Purple contrast */
+  --primary: 271 47% 42%; /* Deep Purple */
+  --primary-foreground: 271 47% 90%; /* Light Lavender for Deep Purple contrast */
 
   /* Secondary Elements */
-  --secondary: 170 70% 55%; /* Aquamarine */
-  --secondary-foreground: 170 70% 15%; /* Dark Teal for Aquamarine contrast */
+  --secondary: 177 100% 41%; /* Aquamarine-Cyan */
+  --secondary-foreground: 177 100% 15%; /* Dark Cyan for Aquamarine-Cyan contrast */
   
   /* Muted Text & Borders for components */
-  --muted: 160 25% 9%; /* Darker shade of Greener Verdigris background for muted elements */
+  --muted: 146 50% 25%; /* Darker shade of Verdigris/Jade background for muted elements */
   --muted-foreground: 0 0% 63%; /* Text Secondary (#A0A0A0) */
   
-  --accent: 271 76% 53%; /* Purple for general accents (can be same as primary) */
-  --accent-foreground: 271 76% 95%; /* Light Lavender for Purple contrast */
+  --accent: 271 47% 42%; /* Deep Purple for general accents */
+  --accent-foreground: 271 47% 90%; /* Light Lavender for Deep Purple contrast */
   
   --destructive: 2 66% 61%; /* Error Red (D9534F) */
   --destructive-foreground: 2 66% 95%; /* Light contrast for destructive */
 
   /* Borders & Inputs */
-  --border: 271 76% 45%;       /* Slightly darker, opaque Purple for general component borders */
-  --input: 160 25% 11% / 0.85;  /* Opaque Greener Verdigris Panel for inputs */
-  --ring: 271 76% 53%;       /* Purple for focus rings */
+  --border: 271 47% 35%;       /* Slightly darker, opaque Purple for general component borders */
+  --input: 146 50% 30% / 0.85;  /* Opaque Verdigris/Jade Panel for inputs */
+  --ring: 271 47% 42%;       /* Deep Purple for focus rings */
 
   --radius: 0.75rem; /* From --border-radius-main: 12px */
 
-  /* Chart Colors - Harmonized with Purple/Aquamarine */
-  --chart-1: hsl(var(--primary)); /* Purple */
-  --chart-2: 271 60% 65%; /* Lighter Purple */
-  --chart-3: 271 80% 45%; /* Darker Purple */
-  --chart-4: hsl(var(--secondary)); /* Aquamarine */
+  /* Chart Colors - Harmonized with Purple/Aquamarine-Cyan */
+  --chart-1: hsl(var(--primary)); /* Deep Purple */
+  --chart-2: 271 40% 55%; /* Lighter Purple */
+  --chart-3: 271 50% 35%; /* Darker Purple */
+  --chart-4: hsl(var(--secondary)); /* Aquamarine-Cyan */
   --chart-5: 0 0% 75%; /* Neutral Grey */
 
-  /* Scrollbar Variables (Aquamarine Theme with Greener Verdigris track) */
-  --scrollbar-track-bg: hsla(160, 25%, 14%, 0.6); /* Greener Verdigris based track */
-  --scrollbar-thumb-bg: hsla(170, 70%, 55%, 0.5); /* Aquamarine thumb */
-  --scrollbar-thumb-hover-bg: hsla(170, 70%, 55%, 0.7); /* Aquamarine thumb hover */
-  --scrollbar-thumb-border-color: hsla(160, 25%, 14%, 0.6); /* Greener Verdigris based border */
+  /* Scrollbar Variables (Aquamarine-Cyan Theme with Verdigris/Jade track) */
+  --scrollbar-track-bg: hsla(146, 50%, 36%, 0.6); /* Verdigris/Jade based track */
+  --scrollbar-thumb-bg: hsla(177, 100%, 41%, 0.5); /* Aquamarine-Cyan thumb */
+  --scrollbar-thumb-hover-bg: hsla(177, 100%, 41%, 0.7); /* Aquamarine-Cyan thumb hover */
+  --scrollbar-thumb-border-color: hsla(146, 50%, 36%, 0.6); /* Verdigris/Jade based border */
 
   /* Command Observatory Specific Styles */
   --observatory-bg: var(--background-main-color);
@@ -144,7 +150,7 @@ html, body {
 .panel-glass {
   background: var(--panel-background-color);
   border: var(--border-width-main) solid var(--border-color-main);
-  box-shadow: var(--panel-box-shadow), var(--shadow-panel-outer-static); /* Use static outer shadow */
+  box-shadow: var(--panel-box-shadow), 0 8px 32px hsla(var(--primary-hsl) / 0.1), 0 4px 12px hsla(var(--primary-hsl) / 0.08); /* Use static outer shadow */
   backdrop-filter: var(--panel-backdrop-filter);
   border-radius: var(--border-radius-main);
 }
@@ -159,8 +165,8 @@ html, body {
 .font-bold-custom { font-weight: var(--font-weight-bold); }
 
 .glow-purple { /* This class can be used for explicit purple glow on elements if needed */
-  box-shadow: 0 0 12px hsla(var(--primary) / 0.5); 
-  border-color: hsla(var(--primary) / 0.2);
+  box-shadow: 0 0 12px hsla(var(--primary-hsl) / 0.5); 
+  border-color: hsla(var(--primary-hsl) / 0.2);
 }
 
 
@@ -192,7 +198,7 @@ html, body {
 }
 
 .react-grid-item.react-grid-placeholder {
-  background: hsl(var(--primary) / 0.2); /* Purple placeholder */
+  background: hsla(var(--primary-hsl) / 0.2); /* Purple placeholder */
   opacity: 0.5;
   transition-duration: 100ms;
   z-index: 2;
@@ -202,7 +208,7 @@ html, body {
   -o-user-select: none;
   user-select: none;
   border-radius: var(--radius);
-  border: 1px dashed hsl(var(--primary) / 0.4); /* Purple placeholder border */
+  border: 1px dashed hsla(var(--primary-hsl) / 0.4); /* Purple placeholder border */
   backdrop-filter: blur(2px);
 }
 
@@ -313,3 +319,5 @@ html, body {
     box-shadow: var(--panel-box-shadow), 0 8px 45px hsla(var(--primary-hsl) / 0.18), 0 4px 20px hsla(var(--primary-hsl) / 0.12);
   }
 }
+
+    

@@ -97,7 +97,6 @@ export default {
       boxShadow: {
         'observatory-inner': 'var(--observatory-shadow)',
         'panel-custom': 'var(--panel-box-shadow)',
-        // 'panel-outer' is removed here, will be applied by animation or specific utility
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -118,19 +117,19 @@ export default {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
-        'pulse-glow-purple': { // Keyframes for the pulsating glow
+        'pulse-glow-purple': { 
           '0%, 100%': {
-            boxShadow: 'var(--panel-box-shadow), 0 8px 32px hsla(var(--primary-hsl, 271 76% 53%) / 0.1), 0 4px 12px hsla(var(--primary-hsl, 271 76% 53%) / 0.08)',
+            boxShadow: 'var(--panel-box-shadow), 0 8px 32px hsla(var(--primary-hsl) / 0.1), 0 4px 12px hsla(var(--primary-hsl) / 0.08)',
           },
           '50%': {
-            boxShadow: 'var(--panel-box-shadow), 0 8px 45px hsla(var(--primary-hsl, 271 76% 53%) / 0.18), 0 4px 20px hsla(var(--primary-hsl, 271 76% 53%) / 0.12)',
+            boxShadow: 'var(--panel-box-shadow), 0 8px 45px hsla(var(--primary-hsl) / 0.18), 0 4px 20px hsla(var(--primary-hsl) / 0.12)',
           },
         },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'pulse-glow-purple': 'pulse-glow-purple 4s infinite ease-in-out', // Animation utility
+        'pulse-glow-purple': 'pulse-glow-purple 4s infinite ease-in-out',
       },
     },
   },
@@ -142,7 +141,7 @@ export default {
         '.panel-glass-effect': {
           'background': 'var(--panel-background-color)',
           'border': 'var(--border-width-main) solid var(--border-color-main)',
-          'box-shadow': 'var(--panel-box-shadow), var(--shadow-panel-outer-static)', // Static outer shadow for this utility
+          'box-shadow': 'var(--panel-box-shadow), 0 8px 32px hsla(var(--primary-hsl) / 0.1), 0 4px 12px hsla(var(--primary-hsl) / 0.08)', // Added static outer glow here
           'backdrop-filter': 'var(--panel-backdrop-filter)',
           'border-radius': 'var(--border-radius-main)',
         },
@@ -160,3 +159,5 @@ export default {
     }
   ],
 } satisfies Config;
+
+    
