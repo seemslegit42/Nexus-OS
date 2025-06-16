@@ -26,6 +26,8 @@ html, body {
   /* HSL versions for easier manipulation in JS/animations if needed */
   --primary-hsl: 271 76% 53%;
   --secondary-hsl: 170 70% 55%;
+  --secondary-foreground-hsl: 170 70% 15%; /* Dark Teal for Aquamarine contrast */
+
 
   /* Typography */
   --font-main: 'Lexend', sans-serif;
@@ -68,6 +70,7 @@ html, body {
   --card: 175 20% 17%; /* Opaque Verdigris Panel for card bg */
   --card-foreground: var(--foreground); /* Text Primary on cards */
   
+  /* Popover defaults to Verdigris base, Tooltip overrides specifically */
   --popover: 175 20% 15% / 0.85; /* Slightly darker/more opaque Verdigris panel for popovers */
   --popover-foreground: var(--foreground); /* Text Primary on popovers */
 

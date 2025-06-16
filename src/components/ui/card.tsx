@@ -1,4 +1,4 @@
-
+// src/components/ui/card.tsx
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot" 
 import { cn } from "@/lib/utils"
@@ -15,7 +15,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
         ref={ref}
         className={cn(
           "rounded-[var(--border-radius-main)] border-[var(--border-width-main)] border-[var(--border-color-main)] bg-[var(--panel-background-color)] text-[var(--text-primary-color)] backdrop-filter-[var(--panel-backdrop-filter)]",
-          "animate-pulse-glow-purple", // Apply the pulsating glow animation
+          "animate-pulse-glow-purple", 
           className
         )}
         {...props}
