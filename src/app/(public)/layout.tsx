@@ -39,18 +39,24 @@ export default function PublicLayout({
               <NexosLogo className="h-7 w-7 text-primary" />
               <span className="text-xl font-bold font-headline">NexOS Platform</span>
             </Link>
-            <nav className="flex items-center gap-4">
+            <nav className="hidden md:flex items-center gap-4">
               <Link href="/plans" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
               <Link href="/explore" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Explore</Link>
               <Link href="/blog" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
               <Link href="/docs" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Docs</Link>
+              <Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">About</Link>
+              <Link href="/contact" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Contact</Link>
+            </nav>
+            <div className="flex items-center gap-2">
               <Link href="/login" legacyBehavior>
-                <Button asChild variant="outline" size="sm"><a>Login</a></Button>
+                <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex"><a>Login</a></Button>
               </Link>
               <Link href="/register" legacyBehavior>
                  <Button asChild size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground"><a>Sign Up</a></Button>
               </Link>
-            </nav>
+              {/* Mobile Menu Trigger - Placeholder */}
+              {/* <Button variant="ghost" size="icon" className="md:hidden"><Menu className="h-5 w-5"/></Button> */}
+            </div>
           </div>
         </header>
         <main className="flex-grow">
@@ -62,6 +68,7 @@ export default function PublicLayout({
             <div className="mt-2 space-x-4">
                 <Link href="/privacy" className="hover:text-foreground">Privacy Policy</Link>
                 <Link href="/terms" className="hover:text-foreground">Terms of Service</Link>
+                <Link href="/contact-sales" className="hover:text-foreground">Contact Sales</Link>
             </div>
           </div>
         </footer>
