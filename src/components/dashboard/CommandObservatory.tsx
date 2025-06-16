@@ -5,7 +5,7 @@ import React, { useState, useMemo, useCallback, Suspense, lazy } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { Activity, LayoutDashboard, Workflow, ShieldCheck, RadioTower, Package, TerminalSquare, PackageSearch, Cpu, ListChecks, Loader2, Users, Rocket } from 'lucide-react'; // Added Rocket
+import { LayoutDashboard, Workflow, ShieldCheck, RadioTower, Package, TerminalSquare, PackageSearch, Cpu, ListChecks, Loader2, Users, Rocket, Activity } from 'lucide-react'; // Added Activity
 import LiveOrchestrationsFeed from './LiveOrchestrationsFeed';
 import AgentPresenceGrid from './AgentPresenceGrid';
 import type { MicroApp } from '@/types/micro-app';
@@ -13,6 +13,7 @@ import { useMicroAppRegistryStore } from '@/stores/micro-app-registry.store';
 import { WorkspaceGrid, type ZoneConfig } from '@/components/core/workspace-grid';
 import { getDynamicImportFn } from '@/micro-apps/registry';
 import { MicroAppCard } from './MicroAppCard';
+import SystemSnapshot from './SystemSnapshot'; // Import the new SystemSnapshot component
 
 // Helper function to get Lucide icons dynamically
 const getLucideIcon = (iconName: string | undefined, props?: any): React.ReactNode => {
@@ -29,39 +30,15 @@ const getLucideIcon = (iconName: string | undefined, props?: any): React.ReactNo
     case 'package': return <Package {...defaultProps} />;
     case 'users': return <Users {...defaultProps} />;
     case 'activity': return <Activity {...defaultProps} />;
-    case 'rocket': return <Rocket {...defaultProps} />; // Added Rocket case
+    case 'rocket': return <Rocket {...defaultProps} />;
     default: return <Package {...defaultProps} />;
   }
 };
 
 const getLucideIconSmall = (iconName: string | undefined, customClassName?: string): React.ReactNode => {
-  // For compact card, if app.icon is not defined, MicroAppCard itself will default to Rocket.
-  // Here, we primarily care about the zone title icon.
-  const iconToUse = iconName || 'LayoutDashboard'; // Default zone icon
+  const iconToUse = iconName || 'LayoutDashboard';
   return getLucideIcon(iconToUse, { className: cn("h-4 w-4 mr-2", customClassName) });
 };
-
-// Define helper components before CommandObservatory
-const SystemSnapshotPlaceholder = React.memo(function SystemSnapshotPlaceholder() {
-  return (
-    <Card className="h-full bg-[rgba(15,25,20,0.25)] border border-[rgba(0,255,162,0.15)] backdrop-blur-sm shadow-[0_4px_20px_rgba(0,255,162,0.1)] rounded-2xl">
-      <CardHeader className="pb-2 pt-3 px-3">
-        <CardTitle className="text-base font-medium text-foreground flex items-center">
-          <Activity className="h-4 w-4 mr-2 text-primary" /> System Snapshot
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="px-3 pb-3 space-y-1.5 text-sm">
-        <p className="text-muted-foreground">CPU Load: <span className="text-foreground font-medium">35%</span></p>
-        <p className="text-muted-foreground">Memory Usage: <span className="text-foreground font-medium">60%</span></p>
-        <p className="text-muted-foreground">Network I/O: <span className="text-foreground font-medium">1.2 Gbps</span></p>
-        <p className="text-muted-foreground">Active Tasks: <span className="text-foreground font-medium">12</span></p>
-        <p className="text-muted-foreground">Security Score: <span className="text-green-400 font-medium">98/100</span></p>
-      </CardContent>
-    </Card>
-  );
-});
-SystemSnapshotPlaceholder.displayName = 'SystemSnapshotPlaceholder';
-
 
 interface MicroAppLauncherProps {
   appsToDisplay: MicroApp[];
@@ -74,17 +51,17 @@ const MicroAppLauncherContentInternal = React.memo<MicroAppLauncherProps>(({ app
         <ScrollArea className="h-full">
           <div className="p-2">
             {appsToDisplay.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-2"> {/* Adjusted grid columns for wider compact cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-2">
                 {appsToDisplay.map((app) => (
                   <MicroAppCard
                     key={app.id}
                     id={app.id}
                     name={app.displayName}
-                    description={app.description} // name and desc used for tooltips/aria in compact mode
+                    description={app.description}
                     onLaunch={() => onLaunchApp(app)}
-                    icon={getLucideIcon(app.icon, { className: "h-6 w-6" })} // Pass the app-specific icon, MicroAppCard handles default
+                    icon={getLucideIcon(app.icon, { className: "h-6 w-6" })}
                     displayMode="compact"
-                    className="min-h-[80px] sm:min-h-[90px]" // Ensure compact cards have some height
+                    className="min-h-[80px] sm:min-h-[90px]"
                   />
                 ))}
               </div>
@@ -150,7 +127,6 @@ const LaunchedAppDisplayContentInternal = React.memo<LaunchedAppDisplayProps>(({
 });
 LaunchedAppDisplayContentInternal.displayName = 'LaunchedAppDisplayContentInternal';
 
-// Memoized versions of imported static content components
 const MemoizedAgentPresenceGrid = React.memo(AgentPresenceGrid);
 const MemoizedLiveOrchestrationsFeed = React.memo(LiveOrchestrationsFeed);
 
@@ -173,9 +149,8 @@ export default function CommandObservatory() {
     setLaunchedApp(null);
   }, []);
 
-  // Memoize content elements to stabilize their references
   const agentPresenceGridContent = useMemo(() => <MemoizedAgentPresenceGrid />, []);
-  const systemSnapshotContent = useMemo(() => <SystemSnapshotPlaceholder />, []);
+  const systemSnapshotContent = useMemo(() => <SystemSnapshot />, []); // Use the new SystemSnapshot component
   const liveOrchestrationsFeedContent = useMemo(() => <MemoizedLiveOrchestrationsFeed />, []);
 
   const microAppLauncherContent = useMemo(() => (
@@ -197,14 +172,14 @@ export default function CommandObservatory() {
     {
       id: "systemSnapshot",
       title: "System Snapshot",
-      icon: getLucideIconSmall("activity"),
+      icon: getLucideIconSmall("activity"), // Updated icon to Activity
       content: systemSnapshotContent,
       defaultLayout: { x: 0, y: 9, w: 4, h: 7, minW: 3, minH: 4 },
     },
     {
       id: "microAppLauncher",
       title: "Micro-Apps",
-      icon: getLucideIconSmall("layoutdashboard"), // Changed from Package
+      icon: getLucideIconSmall("layoutdashboard"),
       content: microAppLauncherContent,
       defaultLayout: { x: 0, y: 16, w: 4, h: 8, minW: 3, minH: 5 },
     },
@@ -247,9 +222,9 @@ export default function CommandObservatory() {
       <WorkspaceGrid
         zoneConfigs={zoneConfigs}
         className="flex-grow p-2 md:p-3"
-        storageKey="commandObservatoryLayout_v3" // Updated storage key if layout changes significantly
+        storageKey="commandObservatoryLayout_v3"
         cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }}
-        rowHeight={20} // Adjust if necessary for new card heights
+        rowHeight={20}
       />
     </div>
   );

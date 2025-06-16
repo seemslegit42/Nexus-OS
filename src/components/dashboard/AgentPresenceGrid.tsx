@@ -1,78 +1,27 @@
-
 // src/components/dashboard/AgentPresenceGrid.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react'; // Added useEffect
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Cpu, CheckCircle, XCircle, AlertTriangle, Loader2 } from 'lucide-react';
+import { Cpu, CheckCircle, XCircle, AlertTriangle, Loader2, PackageSearch } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useUserAgentsStore } from '@/stores/user-agents.store';
+import { useAgentMarketplaceStore } from '@/stores/agent-marketplace.store';
+import type { MarketplaceAgent } from '@/types/marketplace-agent';
 
-interface AgentInfo {
+interface DisplayAgentInfo {
   id: string;
-  name: string;
-  personaName: string;
-  status: 'Idle' | 'Executing' | 'Offline' | 'Error';
-  workload: number; 
-  activeOrchestrations: string[];
-  currentTask: string | null;
-  memoryPreview: { used: string; total: string; summary: string };
+  name: string; // Marketplace name
+  personaName: string; // Could be same as name or from metadata
+  status: 'Idle' | 'Executing' | 'Offline' | 'Error'; // Operational status (simulated)
+  workload: number; // Simulated
+  marketplaceStatus: MarketplaceAgent['status']; // Status from marketplace
+  category: string; // Category from marketplace
+  currentTask: string | null; // Simulated
 }
 
-const mockAgentsData: AgentInfo[] = [
-  {
-    id: 'agent_orion',
-    name: 'OrionCore_7B',
-    personaName: 'System Optimizer Prime',
-    status: 'Executing',
-    workload: 85,
-    activeOrchestrations: ['LogProcessing_HighTraffic', 'SecurityScan_Critical'],
-    currentTask: "Optimizing resource allocation for 'Project Phoenix'",
-    memoryPreview: { used: '2.1GB', total: '4GB', summary: 'Core system functions, anomaly detection model loaded.' },
-  },
-  {
-    id: 'agent_nexus',
-    name: 'NexusGuard_Alpha',
-    personaName: 'Network Sentinel',
-    status: 'Idle',
-    workload: 15,
-    activeOrchestrations: [],
-    currentTask: null,
-    memoryPreview: { used: '512MB', total: '2GB', summary: 'Firewall rules, basic monitoring scripts.' },
-  },
-  {
-    id: 'agent_data',
-    name: 'DataHarvesterX_v2',
-    personaName: 'Insight Extractor',
-    status: 'Executing',
-    workload: 60,
-    activeOrchestrations: ['ETL_SalesData_Q4'],
-    currentTask: "Aggregating sales data from Q4 sources",
-    memoryPreview: { used: '1.5GB', total: '3GB', summary: 'Data aggregation, transformation scripts, temporary datasets.' },
-  },
-  {
-    id: 'agent_reflex',
-    name: 'ReflexRoutine_Bot',
-    personaName: 'Automated Responder',
-    status: 'Error',
-    workload: 5,
-    activeOrchestrations: ['Email_Triage_Failed'],
-    currentTask: "Attempting to process incoming email queue (failed)",
-    memoryPreview: { used: '256MB', total: '1GB', summary: 'Rule engine, NLP model (partially loaded).' },
-  },
-  {
-    id: 'agent_scribe',
-    name: 'ContentScribe_AI',
-    personaName: 'Creative Assistant',
-    status: 'Idle',
-    workload: 22,
-    activeOrchestrations: [],
-    currentTask: null,
-    memoryPreview: { used: '780MB', total: '2GB', summary: 'Language models, style guides, content templates.' },
-  },
-];
-
-const AgentStatusIcon: React.FC<{ status: AgentInfo['status'] }> = ({ status }) => {
+const AgentStatusIcon: React.FC<{ status: DisplayAgentInfo['status'] }> = ({ status }) => {
   switch (status) {
     case 'Executing': return <Loader2 className="h-3.5 w-3.5 text-blue-400 animate-spin" />;
     case 'Idle': return <CheckCircle className="h-3.5 w-3.5 text-green-400" />;
@@ -82,7 +31,7 @@ const AgentStatusIcon: React.FC<{ status: AgentInfo['status'] }> = ({ status }) 
   }
 };
 
-const AgentDetailPanel: React.FC<{ agent: AgentInfo }> = ({ agent }) => {
+const AgentDetailPanel: React.FC<{ agent: DisplayAgentInfo }> = ({ agent }) => {
   return (
     <div
       className={cn(
@@ -92,36 +41,21 @@ const AgentDetailPanel: React.FC<{ agent: AgentInfo }> = ({ agent }) => {
       <h4 className="text-sm font-semibold text-primary mb-1">{agent.personaName}</h4>
       <p><strong>Agent ID:</strong> {agent.id}</p>
       <p>
-        <strong>Status:</strong> <span className={cn(
+        <strong>Operational Status:</strong> <span className={cn(
             agent.status === 'Executing' && "text-blue-400",
             agent.status === 'Idle' && "text-green-400",
             agent.status === 'Error' && "text-red-400",
             agent.status === 'Offline' && "text-muted-foreground"
-        )}>{agent.status}</span> (Workload: {agent.workload}%)
+        )}>{agent.status}</span> (Sim. Workload: {agent.workload}%)
       </p>
-      <p><strong>Current Task:</strong> {agent.currentTask || 'N/A'}</p>
-      <div>
-        <strong>Memory Log (Static):</strong>
-        <p className="mt-0.5 text-[10px] text-muted-foreground leading-relaxed">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-          Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </p>
-      </div>
-      {agent.activeOrchestrations.length > 0 && (
-        <div className="mt-1">
-          <strong>Active Orchestrations:</strong>
-          <ul className="list-disc list-inside pl-2 text-muted-foreground">
-            {agent.activeOrchestrations.map(orch => <li key={orch} className="text-[10px]">{orch}</li>)}
-          </ul>
-        </div>
-      )}
+       <p><strong>Marketplace Status:</strong> {agent.marketplaceStatus}</p>
+       <p><strong>Category:</strong> {agent.category}</p>
+      <p><strong>Current Task:</strong> {agent.currentTask || 'N/A (Simulated)'}</p>
     </div>
   );
 };
 
-const AgentEntry: React.FC<{ agent: AgentInfo }> = ({ agent }) => {
+const AgentEntry: React.FC<{ agent: DisplayAgentInfo }> = ({ agent }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const isExecuting = agent.status === 'Executing';
 
@@ -150,24 +84,79 @@ const AgentEntry: React.FC<{ agent: AgentInfo }> = ({ agent }) => {
 };
 
 export default function AgentPresenceGrid() {
+  const acquiredAgentIds = useUserAgentsStore(state => state.acquiredAgentIds);
+  const getMarketplaceAgentById = useAgentMarketplaceStore(state => state.getAgentById);
+  const [displayAgents, setDisplayAgents] = useState<DisplayAgentInfo[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(true);
+    const agentsData = acquiredAgentIds
+      .map(id => {
+        const marketplaceAgent = getMarketplaceAgentById(id);
+        if (!marketplaceAgent) return null;
+
+        // Simulate operational status and workload
+        const operationalStatuses: DisplayAgentInfo['status'][] = ['Idle', 'Executing', 'Error', 'Offline'];
+        const randomOpStatus = operationalStatuses[Math.floor(Math.random() * operationalStatuses.length)];
+        
+        return {
+          id: marketplaceAgent.id,
+          name: marketplaceAgent.name,
+          personaName: marketplaceAgent.tagline || marketplaceAgent.name, // Use tagline as persona name, fallback to name
+          status: randomOpStatus, // Simulated operational status
+          workload: Math.floor(Math.random() * 100), // Simulated workload
+          marketplaceStatus: marketplaceAgent.status, // Actual marketplace status
+          category: marketplaceAgent.category,
+          currentTask: randomOpStatus === 'Executing' ? `Simulated task for ${marketplaceAgent.name}` : null,
+        };
+      })
+      .filter(agent => agent !== null) as DisplayAgentInfo[];
+    
+    setDisplayAgents(agentsData);
+    setIsLoading(false);
+  }, [acquiredAgentIds, getMarketplaceAgentById]);
+
+
+  if (isLoading) {
+    return (
+      <Card className="h-auto bg-transparent border-none shadow-none">
+        <CardHeader className="pb-2 pt-3 px-3">
+          <CardTitle className="text-base font-medium text-foreground flex items-center">
+            <Cpu className="h-4 w-4 mr-2 text-primary" /> Agent Presence
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="px-3 pb-3 h-[200px] flex items-center justify-center">
+            <Loader2 className="h-8 w-8 text-primary animate-spin"/>
+        </CardContent>
+      </Card>
+    );
+  }
+
+
   return (
     <Card className="h-auto bg-transparent border-none shadow-none">
       <CardHeader className="pb-2 pt-3 px-3">
         <CardTitle className="text-base font-medium text-foreground flex items-center">
-          <Cpu className="h-4 w-4 mr-2 text-primary" /> Agent Presence
+          <Cpu className="h-4 w-4 mr-2 text-primary" /> Agent Presence ({displayAgents.length})
         </CardTitle>
       </CardHeader>
       <CardContent className="px-3 pb-3">
         <ScrollArea className="max-h-[calc(100vh_-_var(--topbar-height,_4rem)_-_var(--observatory-padding,_2rem)_-_150px)] sm:max-h-[300px] md:max-h-none pr-1">
           <div className="space-y-2">
-            {mockAgentsData.map((agent) => (
+            {displayAgents.map((agent) => (
               <AgentEntry key={agent.id} agent={agent} />
             ))}
-            {mockAgentsData.length === 0 && <p className="text-sm text-muted-foreground">No active agents.</p>}
+            {displayAgents.length === 0 && (
+                <div className="text-center py-6 text-sm text-muted-foreground h-full flex flex-col items-center justify-center">
+                    <PackageSearch className="mx-auto h-10 w-10 opacity-50 mb-2" />
+                    No agents acquired yet.
+                    <p className="text-xs mt-1">Deploy agents from the Marketplace to see them here.</p>
+                </div>
+            )}
           </div>
         </ScrollArea>
       </CardContent>
     </Card>
   );
 }
-
