@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Mail, MessageSquare, MapPin, Twitter, Linkedin, Github } from 'lucide-react';
+import { Mail, MessageSquare, MapPin, Twitter, Linkedin, Github, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -90,7 +90,7 @@ export default function ContactPage() {
                         <FormItem>
                           <FormLabel>Full Name</FormLabel>
                           <FormControl>
-                            <Input placeholder="Your Full Name" {...field} className="bg-input border-input focus:ring-primary" />
+                            <Input placeholder="Your Full Name" {...field} className="bg-input border-input focus:ring-primary" disabled={isSubmitting} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -103,7 +103,7 @@ export default function ContactPage() {
                         <FormItem>
                           <FormLabel>Email Address</FormLabel>
                           <FormControl>
-                            <Input type="email" placeholder="your.email@example.com" {...field} className="bg-input border-input focus:ring-primary" />
+                            <Input type="email" placeholder="your.email@example.com" {...field} className="bg-input border-input focus:ring-primary" disabled={isSubmitting} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -117,7 +117,7 @@ export default function ContactPage() {
                         <FormItem>
                           <FormLabel>Subject</FormLabel>
                           <FormControl>
-                            <Input placeholder="Regarding..." {...field} className="bg-input border-input focus:ring-primary" />
+                            <Input placeholder="Regarding..." {...field} className="bg-input border-input focus:ring-primary" disabled={isSubmitting} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -134,6 +134,7 @@ export default function ContactPage() {
                             placeholder="Let us know how we can help or what's on your mind..."
                             className="min-h-[120px] bg-input border-input focus:ring-primary"
                             {...field}
+                            disabled={isSubmitting}
                           />
                         </FormControl>
                         <FormMessage />
@@ -143,6 +144,7 @@ export default function ContactPage() {
                 </CardContent>
                 <CardFooter>
                   <Button type="submit" size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isSubmitting}>
+                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                     {isSubmitting ? 'Submitting...' : 'Send Message'}
                   </Button>
                 </CardFooter>
@@ -199,3 +201,4 @@ export default function ContactPage() {
     </div>
   );
 }
+
