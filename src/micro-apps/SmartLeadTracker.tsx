@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Users, PlusCircle, Trash2, Search, Sparkles, Loader2, AlertCircle, Download, Upload, UserCircle as UserIcon } from 'lucide-react';
+import { Users, PlusCircle, Trash2, Search, Sparkles, Loader2, AlertCircle, Download, Upload, UserCircle as UserIcon, RefreshCcw } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { generateLeadInsight, type GenerateLeadInsightInput, type GenerateLeadInsightOutput } from '@/ai/flows/generate-lead-insight';
@@ -461,7 +461,7 @@ const SmartLeadTracker: React.FC = () => {
                               Getting insight...
                             </div>
                           )}
-                          {lead.insightError && (
+                          {lead.insightError && !lead.isLoadingInsight && (
                             <div className="flex items-center text-xs text-destructive">
                               <AlertCircle className="mr-2 h-4 w-4" />
                               Error: {lead.insightError}
@@ -473,15 +473,16 @@ const SmartLeadTracker: React.FC = () => {
                               <p className="text-muted-foreground bg-muted/30 p-1.5 rounded-md">{lead.insight}</p>
                             </div>
                           )}
-                          {!lead.isLoadingInsight && !lead.insight && !lead.insightError && (
+                          {/* Show "Get Insight" or "Retry Insight" button */}
+                          {!lead.isLoadingInsight && (!lead.insight || lead.insightError) && (
                              <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={() => handleGetInsight(lead.id)}
                                 className="h-7 text-xs bg-accent/10 border-accent/30 text-accent-foreground hover:bg-accent/20"
-                                disabled={lead.isLoadingInsight} // Ensure button is disabled while loading
                               >
-                                <Sparkles className="mr-2 h-3.5 w-3.5" /> Get Insight
+                                {lead.insightError ? <RefreshCcw className="mr-2 h-3.5 w-3.5" /> : <Sparkles className="mr-2 h-3.5 w-3.5" />}
+                                {lead.insightError ? "Retry Insight" : "Get Insight"}
                               </Button>
                           )}
                         </div>
@@ -498,3 +499,4 @@ const SmartLeadTracker: React.FC = () => {
 };
 
 export default SmartLeadTracker;
+
