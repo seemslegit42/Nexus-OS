@@ -15,11 +15,12 @@ interface DisplayAgentInfo {
   id: string;
   name: string;
   personaName: string;
-  status: 'Idle' | 'Executing' | 'Offline' | 'Error';
-  workload: number;
+  // Operational status fields - now represent a snapshot, not live client-side simulation
+  status: 'Idle' | 'Executing' | 'Offline' | 'Error'; 
+  workload: number; // Represents last known workload
+  currentTask: string | null; // Represents last known task
   marketplaceStatus: MarketplaceAgent['status'];
   category: string;
-  currentTask: string | null;
 }
 
 const AgentStatusIcon: React.FC<{ status: DisplayAgentInfo['status'] }> = React.memo(({ status }) => {
@@ -50,11 +51,11 @@ const AgentDetailPanel: React.FC<{ agent: DisplayAgentInfo }> = React.memo(({ ag
             agent.status === 'Idle' && "text-green-400",
             agent.status === 'Error' && "text-red-400",
             agent.status === 'Offline' && "text-muted-foreground/80"
-        )}>{agent.status}</span> <span className="text-muted-foreground/80">(Workload: {agent.workload}%)</span>
+        )}>{agent.status}</span> <span className="text-muted-foreground/80">(Last Workload: {agent.workload}%)</span>
       </p>
        <p><strong className="text-muted-foreground">Marketplace Status:</strong> <Badge variant={agent.marketplaceStatus === 'available' ? 'default' : 'secondary'} className={cn("text-[9px] h-auto px-1 py-0 ml-1", agent.marketplaceStatus === 'available' ? 'bg-green-500/20 text-green-600 dark:text-green-400' : 'bg-blue-500/20 text-blue-600 dark:text-blue-400')}>{agent.marketplaceStatus}</Badge></p>
        <p><strong className="text-muted-foreground">Category:</strong> <span className="text-foreground/90">{agent.category}</span></p>
-      <p><strong className="text-muted-foreground">Current Task:</strong> <span className="text-foreground/90">{agent.currentTask || 'N/A'}</span></p>
+      <p><strong className="text-muted-foreground">Last Task:</strong> <span className="text-foreground/90">{agent.currentTask || 'N/A'}</span></p>
     </div>
   );
 });
@@ -62,7 +63,7 @@ AgentDetailPanel.displayName = 'AgentDetailPanel';
 
 const AgentEntry: React.FC<{ agent: DisplayAgentInfo }> = React.memo(({ agent }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const isExecuting = agent.status === 'Executing';
+  const isExecuting = agent.status === 'Executing'; // This now represents a snapshot status
 
   return (
     <div>
@@ -70,7 +71,8 @@ const AgentEntry: React.FC<{ agent: DisplayAgentInfo }> = React.memo(({ agent })
         onClick={() => setIsExpanded(!isExpanded)}
         className={cn(
           "p-2.5 rounded-lg bg-background/40 hover:bg-primary/10 border border-primary/20 cursor-pointer transition-all hover:shadow-md hover:border-primary/40 active:scale-[0.98]",
-          isExecuting && "shadow-[0_0_15px_1px_hsl(var(--primary)/0.4)] border-primary/50 animate-pulse-jade", 
+          // Removed animate-pulse-jade as status is now a snapshot
+          isExecuting && "shadow-[0_0_15px_1px_hsl(var(--primary)/0.4)] border-primary/50", 
           isExpanded && "ring-1 ring-primary/70 border-primary/60 bg-primary/5"
         )}
         title={`Click to view details for ${agent.name}`}
@@ -101,25 +103,25 @@ const AgentPresenceGrid: React.FC = () => {
       .map(id => {
         const marketplaceAgent = getMarketplaceAgentById(id);
         if (!marketplaceAgent) return null;
-
-        const operationalStatuses: DisplayAgentInfo['status'][] = ['Idle', 'Executing', 'Error', 'Offline'];
-        const randomOpStatus = operationalStatuses[Math.floor(Math.random() * operationalStatuses.length)];
         
+        // Initialize operational data to represent a fetched snapshot.
+        // In a real app, this data would come from a backend.
         return {
           id: marketplaceAgent.id,
           name: marketplaceAgent.name,
           personaName: marketplaceAgent.tagline || marketplaceAgent.name,
-          status: randomOpStatus,
-          workload: Math.floor(Math.random() * 100),
+          status: 'Idle', // Default snapshot status
+          workload: 0, // Default snapshot workload
           marketplaceStatus: marketplaceAgent.status,
           category: marketplaceAgent.category,
-          currentTask: randomOpStatus === 'Executing' ? `Simulated task for ${marketplaceAgent.name}` : null,
+          currentTask: null, // Default snapshot task
         };
       })
       .filter(agent => agent !== null) as DisplayAgentInfo[];
     
     setDisplayAgents(agentsData);
     
+    // Simulate fetch time for agent definitions
     setTimeout(() => setIsLoading(false), 200); 
   }, [acquiredAgentIds, getMarketplaceAgentById]);
 
@@ -129,7 +131,7 @@ const AgentPresenceGrid: React.FC = () => {
       <Card className="h-auto bg-transparent border-none shadow-none">
         <CardHeader className="pb-2 pt-3 px-3">
           <CardTitle className="text-base font-medium text-foreground flex items-center">
-            <Cpu className="h-4 w-4 mr-2 text-primary" /> Agent Presence
+            <Cpu className="h-4 w-4 mr-2 text-primary" /> Agent Fleet Overview
           </CardTitle>
         </CardHeader>
         <CardContent className="px-3 pb-3 h-[200px] flex items-center justify-center">
@@ -143,7 +145,7 @@ const AgentPresenceGrid: React.FC = () => {
     <Card className="h-full bg-transparent border-none shadow-none">
       <CardHeader className="pb-2 pt-3 px-3">
         <CardTitle className="text-base font-medium text-foreground flex items-center">
-          <Cpu className="h-4 w-4 mr-2 text-primary" /> Agent Presence ({displayAgents.length})
+          <Cpu className="h-4 w-4 mr-2 text-primary" /> Agent Fleet Overview ({displayAgents.length})
         </CardTitle>
       </CardHeader>
       <CardContent className="px-3 pb-3 h-full flex-grow flex flex-col overflow-hidden">

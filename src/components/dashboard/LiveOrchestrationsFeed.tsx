@@ -57,6 +57,29 @@ const mockOrchestrationEntries: OrchestrationEntryData[] = [
     outcome: 'Backup process initiated for primary database...',
     rawInput: { task_name: "nightly_db_backup", target: "primary_db" },
   },
+  // Add a few more mock entries for a richer initial display
+  {
+    id: 'orch_4',
+    timestamp: new Date(Date.now() - 10 * 60 * 1000),
+    inputEvent: "System Event: 'User Registration'",
+    agentsInvolved: ['UserManagementAgent', 'WelcomeEmailAgent'],
+    startTime: new Date(Date.now() - 10 * 60 * 1000 - 5000),
+    durationMs: 5000,
+    status: 'success',
+    outcome: 'New user "jane_doe" registered and welcome email sent.',
+    rawInput: { username: "jane_doe", email: "jane@example.com" },
+    rawOutput: { userId: "usr_abc123", email_sent_status: "ok" },
+  },
+  {
+    id: 'orch_5',
+    timestamp: new Date(Date.now() - 1 * 60 * 1000),
+    inputEvent: "Agent Action: 'ContentScribe - Draft Blog Post'",
+    agentsInvolved: ['ContentScribeAgent', 'TopicResearchAgent'],
+    startTime: new Date(Date.now() - 1 * 60 * 1000),
+    status: 'in-progress',
+    outcome: 'Drafting blog post on "The Future of AI in SaaS"...',
+    rawInput: { topic: "AI in SaaS", length: "medium" },
+  },
 ];
 
 const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = React.memo(({ entry }) => {
@@ -185,26 +208,9 @@ const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = Reac
 OrchestrationEntryCard.displayName = 'OrchestrationEntryCard';
 
 const LiveOrchestrationsFeed: React.FC = () => {
-  const [entries, setEntries] = useState<OrchestrationEntryData[]>(mockOrchestrationEntries);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const newEntry: OrchestrationEntryData = {
-        id: `orch_${Date.now()}`,
-        timestamp: new Date(),
-        inputEvent: Math.random() > 0.5 ? "System Event: Health Check Complete" : "Agent Task: Analyze User Sentiment",
-        agentsInvolved: Math.random() > 0.3 ? ['SentimentAnalyzer', 'Notifier'] : ['SystemHealthAgent'],
-        startTime: new Date(Date.now() - (Math.floor(Math.random() * 5000) + 500)),
-        status: Math.random() > 0.15 ? (Math.random() > 0.35 ? 'success' : 'failure') : 'in-progress', 
-        outcome: Math.random() > 0.2 ? 'Analysis complete. Report generated.' : 'Processing data stream...',
-        durationMs: Math.random() > 0.2 ? Math.floor(Math.random() * 5000) + 1000 : undefined,
-        rawInput: { source: Math.random() > 0.5 ? "twitter_feed" : "internal_metrics_api" },
-        rawOutput: Math.random() > 0.3 ? { result_score: Math.random().toFixed(2) } : { status_code: 200 }
-      };
-      setEntries(prev => [newEntry, ...prev.slice(0, 24)]); 
-    }, 7000); 
-    return () => clearInterval(interval);
-  }, []);
+  // Entries are now static, representing a snapshot fetched from a backend.
+  // Real-time updates would come via props, context, or a data fetching library.
+  const entries: OrchestrationEntryData[] = mockOrchestrationEntries;
 
   return (
     <Card className="h-full flex flex-col bg-transparent border-none shadow-none">

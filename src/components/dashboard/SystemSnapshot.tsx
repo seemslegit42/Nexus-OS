@@ -25,29 +25,9 @@ const initialMetrics: Metric[] = [
 ];
 
 const SystemSnapshot: React.FC = () => {
-  const [metrics, setMetrics] = useState<Metric[]>(initialMetrics);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setMetrics(prevMetrics =>
-        prevMetrics.map(metric => {
-          let newValue = metric.value;
-          if (metric.label === "CPU Load" || metric.label === "Memory Usage") {
-            newValue = Math.max(10, Math.min(95, metric.value + Math.floor(Math.random() * 21) - 10));
-          } else if (metric.label === "Active Tasks") {
-            newValue = Math.max(0, metric.value + Math.floor(Math.random() * 5) - 2);
-          } else if (metric.label === "Security Score") {
-            newValue = Math.max(50, Math.min(100, metric.value + Math.floor(Math.random() * 7) - 3)); 
-          } else if (metric.label === "System Alerts") {
-            newValue = Math.random() > 0.7 ? Math.floor(Math.random() * 5) : Math.max(0, metric.value -1); 
-          }
-          return { ...metric, value: newValue };
-        })
-      );
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, []);
+  // Metrics are now static, representing a snapshot fetched from a backend.
+  // Real-time updates would come via props, context, or a data fetching library.
+  const metrics: Metric[] = initialMetrics;
   
   const getMetricStyling = (metric: Metric) => {
     let progressClass = `[&>div]:${metric.colorClass}`;
@@ -57,10 +37,10 @@ const SystemSnapshot: React.FC = () => {
       const isScore = metric.label === "Security Score";
       if ((isScore && metric.value < metric.threshold.error) || (!isScore && metric.value >= metric.threshold.error)) {
         progressClass = "[&>div]:bg-destructive";
-        textClass = "text-destructive font-bold"; // Added font-bold for error state
+        textClass = "text-destructive font-bold";
       } else if ((isScore && metric.value < metric.threshold.warn) || (!isScore && metric.value >= metric.threshold.warn)) {
         progressClass = "[&>div]:bg-yellow-500";
-        textClass = "text-yellow-500 dark:text-yellow-400 font-semibold"; // Added font-semibold for warning
+        textClass = "text-yellow-500 dark:text-yellow-400 font-semibold";
       } else if (isScore) {
         progressClass = "[&>div]:bg-green-500";
         textClass = "text-green-400";
@@ -74,7 +54,7 @@ const SystemSnapshot: React.FC = () => {
     <Card className="h-full bg-transparent border-none shadow-none">
       <CardHeader className="pb-2 pt-3 px-3">
         <CardTitle className="text-base font-medium text-foreground flex items-center">
-          <Activity className="h-4 w-4 mr-2 text-primary" /> System Snapshot
+          <Activity className="h-4 w-4 mr-2 text-primary" /> System Vital Signs
         </CardTitle>
       </CardHeader>
       <CardContent className="px-3 pb-3 space-y-2.5">
