@@ -11,9 +11,9 @@ html, body {
 
 /* ========== Custom Root Theme Tokens ========== */
 :root {
-  /* Color Palette - Verdigris, Purple, Aquamarine Theme */
-  --background-main-color: hsl(175, 20%, 20%); /* Verdigris Background */
-  --panel-background-color: hsla(175, 20%, 17%, 0.75); /* Verdigris Panel */
+  /* Color Palette - Greener Verdigris, Purple, Aquamarine Theme */
+  --background-main-color: hsl(160, 25%, 14%); /* Greener Verdigris Background */
+  --panel-background-color: hsla(160, 25%, 11%, 0.75); /* Greener Verdigris Panel */
   --accent-primary-color: hsl(271, 76%, 53%); /* Purple */
   --accent-secondary-color: hsl(170, 70%, 55%); /* Aquamarine */
   --text-primary-color: #EAEAEA;
@@ -63,15 +63,15 @@ html, body {
 
   /* ShadCN Compatibility - Mapped to new theme */
   /* Backgrounds */
-  --background: 175 20% 20%; /* Verdigris */
+  --background: 160 25% 14%; /* Greener Verdigris */
   --foreground: 0 0% 92%; /* Text Primary (#EAEAEA) */
   
   /* Cards & Popovers */
-  --card: 175 20% 17%; /* Opaque Verdigris Panel for card bg */
+  --card: 160 25% 11%; /* Opaque Greener Verdigris Panel for card bg */
   --card-foreground: var(--foreground); /* Text Primary on cards */
   
-  /* Popover defaults to Verdigris base, Tooltip overrides specifically */
-  --popover: 175 20% 15% / 0.85; /* Slightly darker/more opaque Verdigris panel for popovers */
+  /* Popover defaults to Greener Verdigris base, Tooltip overrides specifically */
+  --popover: 160 25% 9% / 0.85; /* Slightly darker/more opaque Greener Verdigris panel for popovers */
   --popover-foreground: var(--foreground); /* Text Primary on popovers */
 
   /* Primary Interactive Elements */
@@ -83,7 +83,7 @@ html, body {
   --secondary-foreground: 170 70% 15%; /* Dark Teal for Aquamarine contrast */
   
   /* Muted Text & Borders for components */
-  --muted: 175 20% 15%; /* Darker shade of Verdigris background for muted elements */
+  --muted: 160 25% 9%; /* Darker shade of Greener Verdigris background for muted elements */
   --muted-foreground: 0 0% 63%; /* Text Secondary (#A0A0A0) */
   
   --accent: 271 76% 53%; /* Purple for general accents (can be same as primary) */
@@ -94,7 +94,7 @@ html, body {
 
   /* Borders & Inputs */
   --border: 271 76% 45%;       /* Slightly darker, opaque Purple for general component borders */
-  --input: 175 20% 17% / 0.85;  /* Opaque Verdigris Panel for inputs */
+  --input: 160 25% 11% / 0.85;  /* Opaque Greener Verdigris Panel for inputs */
   --ring: 271 76% 53%;       /* Purple for focus rings */
 
   --radius: 0.75rem; /* From --border-radius-main: 12px */
@@ -106,11 +106,11 @@ html, body {
   --chart-4: hsl(var(--secondary)); /* Aquamarine */
   --chart-5: 0 0% 75%; /* Neutral Grey */
 
-  /* Scrollbar Variables (Aquamarine Theme) */
-  --scrollbar-track-bg: hsla(175, 20%, 20%, 0.6); /* Verdigris based track */
+  /* Scrollbar Variables (Aquamarine Theme with Greener Verdigris track) */
+  --scrollbar-track-bg: hsla(160, 25%, 14%, 0.6); /* Greener Verdigris based track */
   --scrollbar-thumb-bg: hsla(170, 70%, 55%, 0.5); /* Aquamarine thumb */
   --scrollbar-thumb-hover-bg: hsla(170, 70%, 55%, 0.7); /* Aquamarine thumb hover */
-  --scrollbar-thumb-border-color: hsla(175, 20%, 20%, 0.6); /* Verdigris based border */
+  --scrollbar-thumb-border-color: hsla(160, 25%, 14%, 0.6); /* Greener Verdigris based border */
 
   /* Command Observatory Specific Styles */
   --observatory-bg: var(--background-main-color);
