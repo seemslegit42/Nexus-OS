@@ -9,13 +9,11 @@
  * - GeneratePromptVariationsOutput - The output type for the generatePromptVariations function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
 
 const GeneratePromptVariationsInputSchema = z.object({
-  prompt: z
-    .string()
-    .describe('The prompt to generate variations for.'),
+  prompt: z.string().describe('The prompt to generate variations for.'),
   numVariations: z
     .number()
     .min(1)
@@ -28,9 +26,7 @@ export type GeneratePromptVariationsInput = z.infer<
 >;
 
 const GeneratePromptVariationsOutputSchema = z.object({
-  variations: z
-    .array(z.string())
-    .describe('The generated prompt variations.'),
+  variations: z.array(z.string()).describe('The generated prompt variations.'),
 });
 export type GeneratePromptVariationsOutput = z.infer<
   typeof GeneratePromptVariationsOutputSchema
@@ -44,8 +40,8 @@ export async function generatePromptVariations(
 
 const generatePromptVariationsPrompt = ai.definePrompt({
   name: 'generatePromptVariationsPrompt',
-  input: {schema: GeneratePromptVariationsInputSchema},
-  output: {schema: GeneratePromptVariationsOutputSchema},
+  input: { schema: GeneratePromptVariationsInputSchema },
+  output: { schema: GeneratePromptVariationsOutputSchema },
   prompt: `You are an AI prompt engineer. Generate {{numVariations}} variations of the following prompt, designed to test different phrasings and approaches. Return the variations in the requested JSON format.
 
 Original Prompt: {{{prompt}}}`,
@@ -58,7 +54,7 @@ const generatePromptVariationsFlow = ai.defineFlow(
     outputSchema: GeneratePromptVariationsOutputSchema,
   },
   async input => {
-    const {output} = await generatePromptVariationsPrompt(input);
+    const { output } = await generatePromptVariationsPrompt(input);
     return output!;
   }
 );

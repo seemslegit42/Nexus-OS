@@ -1,6 +1,6 @@
 // src/app/account/billing/page.tsx
 'use client';
-import { BillingPage as NexOSBillingPage } from '@/app/billing/page';
+import NexOSBillingPage from '@/app/billing/page';
 
 export default function AccountBillingPage() {
   // The /app/billing/page.tsx is already a comprehensive dashboard-style page

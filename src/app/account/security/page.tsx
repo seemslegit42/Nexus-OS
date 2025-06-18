@@ -1,12 +1,26 @@
 // src/app/account/security/page.tsx
 'use client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { KeyRound, ShieldCheck, Smartphone, History, LogOut, Loader2 } from 'lucide-react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Icons } from '@/lib/icons';
 import { cn } from '@/lib/utils';
 import React, { useState, useEffect } from 'react';
 
@@ -20,32 +34,30 @@ interface ActiveSession {
 
 export default function AccountSecurityPage() {
   const [activeSessions, setActiveSessions] = useState<ActiveSession[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    setIsLoading(true);
-    // Simulate fetching active sessions
-    setTimeout(() => {
-      setActiveSessions([
-        { id: 'session_1', device: 'Chrome on macOS', ip: '192.168.1.101', lastActive: 'Current session', location: 'New York, USA' },
-        { id: 'session_2', device: 'NexOS Mobile App on iOS', ip: '10.0.0.5', lastActive: '2 hours ago', location: 'Remote' },
-      ]);
-      setIsLoading(false);
-    }, 1000);
-  }, []);
+  // Remove mock data initialization - component should handle empty state
+  // In a real app, this would fetch actual data from an API
 
-  const innerCardClassName = "bg-card/70 backdrop-blur-sm border-primary/20 rounded-xl p-3 shadow-lg hover:border-primary/30 transition-all";
+  const innerCardClassName =
+    'bg-card/70 backdrop-blur-sm border-primary/20 rounded-xl p-3 shadow-lg hover:border-primary/30 transition-all';
 
   return (
-    <div className="flex flex-col gap-6 p-4 md:p-6 max-w-3xl mx-auto">
+    <div className="mx-auto flex max-w-3xl flex-col gap-6 p-4 md:p-6">
       <header>
-        <h1 className="text-3xl font-headline text-foreground">Security Settings</h1>
-        <p className="text-muted-foreground">Manage your password, two-factor authentication, and active sessions.</p>
+        <h1 className="font-headline text-3xl text-foreground">
+          Security Settings
+        </h1>
+        <p className="text-muted-foreground">
+          Manage your password, two-factor authentication, and active sessions.
+        </p>
       </header>
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-headline flex items-center"><KeyRound className="mr-2 h-5 w-5 text-primary"/> Change Password</CardTitle>
+          <CardTitle className="flex items-center font-headline">
+            <KeyRound className="mr-2 h-5 w-5 text-primary" /> Change Password
+          </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
@@ -62,38 +74,70 @@ export default function AccountSecurityPage() {
           </div>
         </CardContent>
         <CardFooter>
-          <Button className="ml-auto bg-primary hover:bg-primary/90 text-primary-foreground">Update Password</Button>
+          <Button className="ml-auto bg-primary text-primary-foreground hover:bg-primary/90">
+            Update Password
+          </Button>
         </CardFooter>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-headline flex items-center"><ShieldCheck className="mr-2 h-5 w-5 text-primary"/> Two-Factor Authentication (2FA)</CardTitle>
-          <CardDescription>Add an extra layer of security to your account.</CardDescription>
+          <CardTitle className="flex items-center font-headline">
+            <ShieldCheck className="mr-2 h-5 w-5 text-primary" /> Two-Factor
+            Authentication (2FA)
+          </CardTitle>
+          <CardDescription>
+            Add an extra layer of security to your account.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className={cn(innerCardClassName, "flex items-center justify-between")}>
+          <div
+            className={cn(
+              innerCardClassName,
+              'flex items-center justify-between'
+            )}
+          >
             <div>
-              <Label htmlFor="2fa-status" className="font-medium">Authenticator App</Label>
-              <p className="text-xs text-muted-foreground">Status: <span className="text-green-400">Enabled</span> (Google Authenticator)</p>
+              <Label htmlFor="2fa-status" className="font-medium">
+                Authenticator App
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                Status: <span className="text-green-400">Enabled</span> (Google
+                Authenticator)
+              </p>
             </div>
             <Switch id="2fa-status" defaultChecked />
           </div>
-           <div className={cn(innerCardClassName, "flex items-center justify-between")}>
+          <div
+            className={cn(
+              innerCardClassName,
+              'flex items-center justify-between'
+            )}
+          >
             <div>
-              <Label htmlFor="sms-status" className="font-medium">SMS Backup</Label>
-              <p className="text-xs text-muted-foreground">Status: <span className="text-muted-foreground">Disabled</span></p>
+              <Label htmlFor="sms-status" className="font-medium">
+                SMS Backup
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                Status: <span className="text-muted-foreground">Disabled</span>
+              </p>
             </div>
             <Switch id="sms-status" />
           </div>
-          <Button variant="outline"><Smartphone className="mr-2 h-4 w-4" /> Manage 2FA Devices</Button>
+          <Button variant="outline">
+            <Smartphone className="mr-2 h-4 w-4" /> Manage 2FA Devices
+          </Button>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-headline flex items-center"><History className="mr-2 h-5 w-5 text-primary"/> Active Sessions</CardTitle>
-          <CardDescription>Review and manage devices logged into your account.</CardDescription>
+          <CardTitle className="flex items-center font-headline">
+            <History className="mr-2 h-5 w-5 text-primary" /> Active Sessions
+          </CardTitle>
+          <CardDescription>
+            Review and manage devices logged into your account.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -101,7 +145,9 @@ export default function AccountSecurityPage() {
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
           ) : activeSessions.length === 0 ? (
-            <p className="text-sm text-center py-4 text-muted-foreground">No active sessions found.</p>
+            <p className="py-4 text-center text-sm text-muted-foreground">
+              No active sessions found.
+            </p>
           ) : (
             <Table>
               <TableHeader>
@@ -113,15 +159,25 @@ export default function AccountSecurityPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {activeSessions.map((session) => (
+                {activeSessions.map(session => (
                   <TableRow key={session.id}>
-                    <TableCell className="font-medium">{session.device}</TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{session.location} ({session.ip})</TableCell>
+                    <TableCell className="font-medium">
+                      {session.device}
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {session.location} ({session.ip})
+                    </TableCell>
                     <TableCell>{session.lastActive}</TableCell>
                     <TableCell className="text-right">
-                      {session.lastActive !== 'Current session' && 
-                        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive/80">Log Out</Button>
-                      }
+                      {session.lastActive !== 'Current session' && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive hover:text-destructive/80"
+                        >
+                          Log Out
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -130,7 +186,9 @@ export default function AccountSecurityPage() {
           )}
         </CardContent>
         <CardFooter>
-            <Button variant="destructive" className="ml-auto"><LogOut className="mr-2 h-4 w-4" /> Log Out All Other Sessions</Button>
+          <Button variant="destructive" className="ml-auto">
+            <LogOut className="mr-2 h-4 w-4" /> Log Out All Other Sessions
+          </Button>
         </CardFooter>
       </Card>
     </div>

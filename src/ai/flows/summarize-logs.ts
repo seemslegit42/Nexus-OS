@@ -1,8 +1,8 @@
 // Summarizes system logs using GenAI to provide a quick understanding of system activity and potential issues.
 'use server';
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
 
 const SummarizeLogsInputSchema = z.object({
   logs: z.string().describe('The system logs to summarize.'),
@@ -14,14 +14,16 @@ const SummarizeLogsOutputSchema = z.object({
 });
 export type SummarizeLogsOutput = z.infer<typeof SummarizeLogsOutputSchema>;
 
-export async function summarizeLogs(input: SummarizeLogsInput): Promise<SummarizeLogsOutput> {
+export async function summarizeLogs(
+  input: SummarizeLogsInput
+): Promise<SummarizeLogsOutput> {
   return summarizeLogsFlow(input);
 }
 
 const prompt = ai.definePrompt({
   name: 'summarizeLogsPrompt',
-  input: {schema: SummarizeLogsInputSchema},
-  output: {schema: SummarizeLogsOutputSchema},
+  input: { schema: SummarizeLogsInputSchema },
+  output: { schema: SummarizeLogsOutputSchema },
   prompt: `You are an expert system administrator.  Summarize the following logs so that a user can quickly understand system activity and identify potential issues.  Be concise, accurate, and thorough.
 
 Logs:
@@ -35,7 +37,7 @@ const summarizeLogsFlow = ai.defineFlow(
     outputSchema: SummarizeLogsOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const { output } = await prompt(input);
     return output!;
   }
 );

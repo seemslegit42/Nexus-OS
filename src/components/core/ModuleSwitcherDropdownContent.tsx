@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -21,14 +20,16 @@ interface ModuleSwitcherDropdownContentProps {
   modules: ModuleLink[];
 }
 
-export function ModuleSwitcherDropdownContent({ modules }: ModuleSwitcherDropdownContentProps) {
+export function ModuleSwitcherDropdownContent({
+  modules,
+}: ModuleSwitcherDropdownContentProps) {
   return (
     <>
       <DropdownMenuLabel>Switch Module</DropdownMenuLabel>
       <DropdownMenuSeparator />
       <ScrollArea className="h-[calc(100vh_-_10rem)] max-h-[400px]">
         <DropdownMenuGroup>
-          {modules.map((mod) => (
+          {modules.map(mod => (
             <DropdownMenuItem key={mod.name} asChild>
               <Link href={mod.href}>
                 {mod.icon}

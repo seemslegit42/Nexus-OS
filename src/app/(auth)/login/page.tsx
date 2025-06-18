@@ -1,8 +1,14 @@
-
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
@@ -11,8 +17,10 @@ export default function LoginPage() {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
-        <CardTitle className="text-2xl font-headline">Login</CardTitle>
-        <CardDescription>Enter your credentials to access your NexOS account.</CardDescription>
+        <CardTitle className="font-headline text-2xl">Login</CardTitle>
+        <CardDescription>
+          Enter your credentials to access your NexOS account.
+        </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
         <div className="grid gap-2">
@@ -25,7 +33,9 @@ export default function LoginPage() {
         </div>
       </CardContent>
       <CardFooter className="flex flex-col gap-2">
-        <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">Sign In</Button>
+        <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+          Sign In
+        </Button>
         <div className="mt-2 text-center text-sm">
           <Link href="/reset" className="text-primary hover:underline">
             Forgot password?

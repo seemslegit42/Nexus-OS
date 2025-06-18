@@ -1,4 +1,3 @@
-
 // src/types/micro-app.ts
 
 /**
@@ -34,10 +33,35 @@ export interface MicroApp {
   isVisible: boolean; // Is the app generally visible/deployable on dashboards/launchpads
   version: string; // e.g., "1.0.2"
   entryPoint?: string; // Path to the micro-app, e.g., "/autopilot" or a specific launch command
-  defaultLayout?: { // This can remain as it's for generic WorkspaceGrid placement
-    lg: { x: number; y: number; w: number; h: number; minW?: number; minH?: number; static?: boolean };
-    md?: { x: number; y: number; w: number; h: number; minW?: number; minH?: number; static?: boolean };
-    sm?: { x: number; y: number; w: number; h: number; minW?: number; minH?: number; static?: boolean };
+  defaultLayout?: {
+    // This can remain as it's for generic WorkspaceGrid placement
+    lg: {
+      x: number;
+      y: number;
+      w: number;
+      h: number;
+      minW?: number;
+      minH?: number;
+      static?: boolean;
+    };
+    md?: {
+      x: number;
+      y: number;
+      w: number;
+      h: number;
+      minW?: number;
+      minH?: number;
+      static?: boolean;
+    };
+    sm?: {
+      x: number;
+      y: number;
+      w: number;
+      h: number;
+      minW?: number;
+      minH?: number;
+      static?: boolean;
+    };
   };
   deployableTo: ('dashboard' | 'loom-studio' | 'dedicated-tab' | 'none')[]; // Where it can be deployed/launched from
   permissionsRequired?: string[]; // List of specific permission strings this app needs
@@ -46,5 +70,3 @@ export interface MicroApp {
   createdAt: string; // ISO Date string
   updatedAt: string; // ISO Date string
 }
-
-    

@@ -1,10 +1,11 @@
-
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import * as schema from './schema'; // Import all exports from schema.ts
 
 if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL environment variable is not set. Please define it in your .env file. For Neon, this should be your Neon connection string.');
+  throw new Error(
+    'DATABASE_URL environment variable is not set. Please define it in your .env file. For Neon, this should be your Neon connection string.'
+  );
 }
 
 // --- Neon Postgres Connection ---
@@ -17,7 +18,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 // `pg.Pool` handles connection pooling automatically. Default settings are generally fine for Neon.
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: isProduction 
+  ssl: isProduction
     ? { rejectUnauthorized: true } // In production, always verify the server's SSL certificate.
     : { rejectUnauthorized: false }, // In development, you might disable unauthorized certificate rejection for convenience if not using a local CA.
   // You can add other pool options here if needed, e.g., max, idleTimeoutMillis.

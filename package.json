@@ -3,21 +3,41 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev --turbo",
+    "dev:perf": "next dev --turbo --experimental-https",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
     "build": "next build",
+    "build:analyze": "cross-env ANALYZE=true next build",
+    "build:perf": "next build && pnpm run analyze:bundle",
     "start": "next start",
+    "start:perf": "next start --experimental-https",
     "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
+    "typecheck:watch": "tsc --noEmit --watch",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "analyze:bundle": "pnpx @next/bundle-analyzer",
+    "analyze:deps": "pnpx depcheck",
+    "test:perf": "lighthouse http://localhost:3000 --output html --output-path ./performance-report.html",
+    "optimize:images": "next-optimized-images",
+    "precommit": "pnpm run lint:fix && pnpm run typecheck",
+    "cache:clear": "rm -rf .next && rm -rf node_modules/.cache",
+    "perf:audit": "pnpm run build:perf && pnpm run test:perf",
+    "prepare": "husky install",
+    "check-all": "pnpm run format:check && pnpm run lint && pnpm run typecheck"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/utilities": "^3.2.2",
     "@genkit-ai/googleai": "^1.8.0",
     "@genkit-ai/next": "^1.8.0",
     "@hookform/resolvers": "^4.1.3",
+    "@phosphor-icons/react": "^2.1.10",
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-alert-dialog": "^1.1.6",
     "@radix-ui/react-avatar": "^1.1.3",
@@ -61,21 +81,46 @@
     "recharts": "^2.15.1",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
+    "uuid": "^11.1.0",
     "zod": "^3.24.2",
     "zustand": "^4.5.4"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^15.3.3",
     "@tailwindcss/typography": "^0.5.13",
     "@types/node": "^20",
     "@types/pg": "^8.11.6",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-grid-layout": "^1.3.5",
+    "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.34.1",
+    "@typescript-eslint/parser": "^8.34.1",
     "benchmark": "^2.1.4",
+    "cross-env": "^7.0.3",
     "drizzle-kit": "^0.31.1",
+    "eslint": "^9",
+    "eslint-config-next": "15.3.3",
+    "eslint-plugin-import": "^2.29.1",
     "genkit-cli": "^1.8.0",
+    "husky": "^8.0.3",
+    "lighthouse": "^12.0.0",
+    "lint-staged": "^15.2.2",
     "postcss": "^8",
+    "prettier": "^3.2.5",
+    "prettier-plugin-tailwindcss": "^0.5.11",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "web-vitals": "^4.2.3",
+    "webpack-bundle-analyzer": "^4.10.1"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{json,md,mdx,css,html,yml,yaml}": [
+      "prettier --write"
+    ]
   }
 }

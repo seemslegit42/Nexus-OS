@@ -1,7 +1,13 @@
 // src/components/ui/virtual-list.tsx
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react';
 import { cn } from '@/lib/utils';
 
 interface VirtualListProps<T> {
@@ -47,22 +53,28 @@ export function VirtualList<T>({
     return items.slice(visibleRange.start, visibleRange.end + 1);
   }, [items, visibleRange]);
 
-  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
-    const newScrollTop = e.currentTarget.scrollTop;
-    setScrollTop(newScrollTop);
-    onScroll?.(newScrollTop);
-  }, [onScroll]);
+  const handleScroll = useCallback(
+    (e: React.UIEvent<HTMLDivElement>) => {
+      const newScrollTop = e.currentTarget.scrollTop;
+      setScrollTop(newScrollTop);
+      onScroll?.(newScrollTop);
+    },
+    [onScroll]
+  );
 
   // Smooth scrolling to specific item
-  const scrollToItem = useCallback((index: number) => {
-    if (scrollElementRef.current) {
-      const targetScrollTop = index * itemHeight;
-      scrollElementRef.current.scrollTo({
-        top: targetScrollTop,
-        behavior: 'smooth',
-      });
-    }
-  }, [itemHeight]);
+  const scrollToItem = useCallback(
+    (index: number) => {
+      if (scrollElementRef.current) {
+        const targetScrollTop = index * itemHeight;
+        scrollElementRef.current.scrollTo({
+          top: targetScrollTop,
+          behavior: 'smooth',
+        });
+      }
+    },
+    [itemHeight]
+  );
 
   return (
     <div
@@ -83,14 +95,12 @@ export function VirtualList<T>({
         >
           {visibleItems.map((item, index) => {
             const actualIndex = visibleRange.start + index;
-            const key = keyExtractor ? keyExtractor(item, actualIndex) : actualIndex;
-            
+            const key = keyExtractor
+              ? keyExtractor(item, actualIndex)
+              : actualIndex;
+
             return (
-              <div
-                key={key}
-                style={{ height: itemHeight }}
-                className="w-full"
-              >
+              <div key={key} style={{ height: itemHeight }} className="w-full">
                 {renderItem(item, actualIndex)}
               </div>
             );
@@ -149,7 +159,10 @@ export function VirtualGrid<T>({
 
   const visibleItems = useMemo(() => {
     const startIndex = visibleRange.start * itemsPerRow;
-    const endIndex = Math.min((visibleRange.end + 1) * itemsPerRow, items.length);
+    const endIndex = Math.min(
+      (visibleRange.end + 1) * itemsPerRow,
+      items.length
+    );
     return items.slice(startIndex, endIndex);
   }, [items, visibleRange, itemsPerRow]);
 
@@ -174,34 +187,43 @@ export function VirtualGrid<T>({
             right: 0,
           }}
         >
-          {Array.from({ length: visibleRange.end - visibleRange.start + 1 }).map((_, rowIndex) => {
+          {Array.from({
+            length: visibleRange.end - visibleRange.start + 1,
+          }).map((_, rowIndex) => {
             const actualRowIndex = visibleRange.start + rowIndex;
             const rowStartIndex = actualRowIndex * itemsPerRow;
-            const rowEndIndex = Math.min(rowStartIndex + itemsPerRow, items.length);
-            
+            const rowEndIndex = Math.min(
+              rowStartIndex + itemsPerRow,
+              items.length
+            );
+
             return (
               <div
                 key={actualRowIndex}
-                style={{ 
+                style={{
                   height: itemHeight,
                   marginBottom: gap,
                   display: 'flex',
                   gap,
                 }}
               >
-                {items.slice(rowStartIndex, rowEndIndex).map((item, colIndex) => {
-                  const itemIndex = rowStartIndex + colIndex;
-                  const key = keyExtractor ? keyExtractor(item, itemIndex) : itemIndex;
-                  
-                  return (
-                    <div
-                      key={key}
-                      style={{ width: itemWidth, height: itemHeight }}
-                    >
-                      {renderItem(item, itemIndex)}
-                    </div>
-                  );
-                })}
+                {items
+                  .slice(rowStartIndex, rowEndIndex)
+                  .map((item, colIndex) => {
+                    const itemIndex = rowStartIndex + colIndex;
+                    const key = keyExtractor
+                      ? keyExtractor(item, itemIndex)
+                      : itemIndex;
+
+                    return (
+                      <div
+                        key={key}
+                        style={{ width: itemWidth, height: itemHeight }}
+                      >
+                        {renderItem(item, itemIndex)}
+                      </div>
+                    );
+                  })}
               </div>
             );
           })}
@@ -243,24 +265,32 @@ export function InfiniteVirtualList<T>({
   const scrollElementRef = useRef<HTMLDivElement>(null);
   const loadingRef = useRef(false);
 
-  const handleScroll = useCallback(async (e: React.UIEvent<HTMLDivElement>) => {
-    const element = e.currentTarget;
-    const newScrollTop = element.scrollTop;
-    setScrollTop(newScrollTop);
+  const handleScroll = useCallback(
+    async (e: React.UIEvent<HTMLDivElement>) => {
+      const element = e.currentTarget;
+      const newScrollTop = element.scrollTop;
+      setScrollTop(newScrollTop);
 
-    // Check if we need to load more items
-    const scrollBottom = element.scrollHeight - element.scrollTop - element.clientHeight;
-    const shouldLoadMore = scrollBottom < threshold * itemHeight && hasMore && !isLoading && !loadingRef.current;
+      // Check if we need to load more items
+      const scrollBottom =
+        element.scrollHeight - element.scrollTop - element.clientHeight;
+      const shouldLoadMore =
+        scrollBottom < threshold * itemHeight &&
+        hasMore &&
+        !isLoading &&
+        !loadingRef.current;
 
-    if (shouldLoadMore) {
-      loadingRef.current = true;
-      try {
-        await loadMore();
-      } finally {
-        loadingRef.current = false;
+      if (shouldLoadMore) {
+        loadingRef.current = true;
+        try {
+          await loadMore();
+        } finally {
+          loadingRef.current = false;
+        }
       }
-    }
-  }, [itemHeight, hasMore, isLoading, loadMore, threshold]);
+    },
+    [itemHeight, hasMore, isLoading, loadMore, threshold]
+  );
 
   const totalHeight = items.length * itemHeight + (isLoading ? itemHeight : 0);
 
@@ -301,21 +331,23 @@ export function InfiniteVirtualList<T>({
         >
           {visibleItems.map((item, index) => {
             const actualIndex = visibleRange.start + index;
-            const key = keyExtractor ? keyExtractor(item, actualIndex) : actualIndex;
-            
+            const key = keyExtractor
+              ? keyExtractor(item, actualIndex)
+              : actualIndex;
+
             return (
-              <div
-                key={key}
-                style={{ height: itemHeight }}
-                className="w-full"
-              >
+              <div key={key} style={{ height: itemHeight }} className="w-full">
                 {renderItem(item, actualIndex)}
               </div>
             );
           })}
           {isLoading && (
             <div style={{ height: itemHeight }} className="w-full">
-              {loadingComponent || <div className="flex items-center justify-center h-full">Loading...</div>}
+              {loadingComponent || (
+                <div className="flex h-full items-center justify-center">
+                  Loading more items...
+                </div>
+              )}
             </div>
           )}
         </div>

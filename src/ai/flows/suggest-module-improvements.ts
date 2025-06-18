@@ -8,26 +8,30 @@
  * - SuggestModuleImprovementsOutput - The return type for the suggestModuleImprovements function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
 
 const SuggestModuleImprovementsInputSchema = z.object({
-  moduleCode: z
-    .string()
-    .describe('The code of the module to be improved.'),
+  moduleCode: z.string().describe('The code of the module to be improved.'),
   moduleDescription: z
     .string()
     .optional()
     .describe('A description of what the module does.'),
 });
-export type SuggestModuleImprovementsInput = z.infer<typeof SuggestModuleImprovementsInputSchema>;
+export type SuggestModuleImprovementsInput = z.infer<
+  typeof SuggestModuleImprovementsInputSchema
+>;
 
 const SuggestModuleImprovementsOutputSchema = z.object({
   suggestions: z
     .string()
-    .describe('Suggestions for improving the module, covering efficiency, security, and best practices.'),
+    .describe(
+      'Suggestions for improving the module, covering efficiency, security, and best practices.'
+    ),
 });
-export type SuggestModuleImprovementsOutput = z.infer<typeof SuggestModuleImprovementsOutputSchema>;
+export type SuggestModuleImprovementsOutput = z.infer<
+  typeof SuggestModuleImprovementsOutputSchema
+>;
 
 export async function suggestModuleImprovements(
   input: SuggestModuleImprovementsInput
@@ -37,8 +41,8 @@ export async function suggestModuleImprovements(
 
 const prompt = ai.definePrompt({
   name: 'suggestModuleImprovementsPrompt',
-  input: {schema: SuggestModuleImprovementsInputSchema},
-  output: {schema: SuggestModuleImprovementsOutputSchema},
+  input: { schema: SuggestModuleImprovementsInputSchema },
+  output: { schema: SuggestModuleImprovementsOutputSchema },
   prompt: `You are an AI expert in code optimization and security best practices.
 
   You will receive a module's code and description (if provided).
@@ -65,7 +69,7 @@ const suggestModuleImprovementsFlow = ai.defineFlow(
     outputSchema: SuggestModuleImprovementsOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const { output } = await prompt(input);
     return output!;
   }
 );

@@ -1,5 +1,4 @@
-
-import type {Config} from 'tailwindcss';
+import type { Config } from 'tailwindcss';
 
 export default {
   darkMode: ['class'],
@@ -11,15 +10,15 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "var(--spacing-md)", // Use spacing token
+      padding: 'var(--spacing-md)', // Use spacing token
       screens: {
-        "2xl": "1400px",
+        '2xl': '1400px',
       },
     },
     extend: {
       fontFamily: {
         main: ['var(--font-main)', 'sans-serif'],
-        headline: ['var(--font-headline-comfortaa)', 'sans-serif'],
+        headline: ['var(--font-headline)', 'sans-serif'],
         code: ['var(--font-main)', 'monospace'],
       },
       fontSize: {
@@ -99,14 +98,14 @@ export default {
         'panel-custom': 'var(--panel-box-shadow)',
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "var(--border-radius-small)",
-        main: "var(--border-radius-main)",
-        small: "var(--border-radius-small)",
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'var(--border-radius-small)',
+        main: 'var(--border-radius-main)',
+        small: 'var(--border-radius-small)',
       },
       backdropFilter: {
-        'panel': 'var(--panel-backdrop-filter)',
+        panel: 'var(--panel-backdrop-filter)',
       },
       keyframes: {
         'accordion-down': {
@@ -117,12 +116,14 @@ export default {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
-        'pulse-glow-purple': { 
+        'pulse-glow-purple': {
           '0%, 100%': {
-            boxShadow: 'var(--panel-box-shadow), 0 8px 32px hsla(var(--primary-hsl) / 0.1), 0 4px 12px hsla(var(--primary-hsl) / 0.08)',
+            boxShadow:
+              'var(--panel-box-shadow), 0 8px 32px hsla(var(--primary-hsl) / 0.1), 0 4px 12px hsla(var(--primary-hsl) / 0.08)',
           },
           '50%': {
-            boxShadow: 'var(--panel-box-shadow), 0 8px 45px hsla(var(--primary-hsl) / 0.18), 0 4px 20px hsla(var(--primary-hsl) / 0.12)',
+            boxShadow:
+              'var(--panel-box-shadow), 0 8px 45px hsla(var(--primary-hsl) / 0.18), 0 4px 20px hsla(var(--primary-hsl) / 0.12)',
           },
         },
       },
@@ -136,12 +137,13 @@ export default {
   plugins: [
     require('tailwindcss-animate'),
     require('@tailwindcss/typography'),
-    function ({ addUtilities }: { addUtilities: any}) {
+    function ({ addUtilities }: { addUtilities: any }) {
       addUtilities({
         '.panel-glass-effect': {
-          'background': 'var(--panel-background-color)',
-          'border': 'var(--border-width-main) solid var(--border-color-main)',
-          'box-shadow': 'var(--panel-box-shadow), 0 8px 32px hsla(var(--primary-hsl) / 0.1), 0 4px 12px hsla(var(--primary-hsl) / 0.08)', // Added static outer glow here
+          background: 'var(--panel-background-color)',
+          border: 'var(--border-width-main) solid var(--border-color-main)',
+          'box-shadow':
+            'var(--panel-box-shadow), 0 8px 32px hsla(var(--primary-hsl) / 0.1), 0 4px 12px hsla(var(--primary-hsl) / 0.08)', // Added static outer glow here
           'backdrop-filter': 'var(--panel-backdrop-filter)',
           'border-radius': 'var(--border-radius-main)',
         },
@@ -155,9 +157,7 @@ export default {
           'font-size': 'var(--font-size-h2)',
           'font-weight': 'var(--font-weight-bold)',
         },
-      })
-    }
+      });
+    },
   ],
 } satisfies Config;
-
-    

@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { ChevronDown, ListChecks, CheckCircle, XCircle, AlertTriangle, Loader2 } from 'lucide-react';
+import { CaretDown as ChevronDown, ListChecks, CheckCircle, XCircle, Warning as AlertTriangle, CircleNotch as Loader2 } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNowStrict, format } from 'date-fns';
 
@@ -84,20 +84,201 @@ const mockOrchestrationEntries: OrchestrationEntryData[] = [
 
 const OrchestrationEntryCard: React.FC<{ entry: OrchestrationEntryData }> = React.memo(({ entry }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  useEffect(() => {
+    // Trigger animation for new entries
+    if (entry.status === 'in-progress') {
+      setIsAnimating(true);
+      const timer = setTimeout(() => setIsAnimating(false), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [entry.status]);
 
   const getStatusStyles = () => {
     switch (entry.status) {
       case 'success':
         return {
-          cardOuterClass: 'border-green-500/70 hover:border-green-500/90 bg-green-500/5 hover:bg-green-500/10',
-          icon: <CheckCircle className="h-4 w-4 text-green-500" />,
+          cardOuterClass: 'border-emerald-500/50 hover:border-emerald-500/70 bg-gradient-to-br from-emerald-500/10 to-green-500/5 hover:from-emerald-500/15 hover:to-green-500/10',
+          icon: <CheckCircle className="h-4 w-4 text-emerald-500" />,
           badgeVariant: 'default' as const,
-          badgeClass: 'bg-green-500/20 text-green-600 dark:text-green-300 border-green-500/30',
+          badgeClass: 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border-emerald-500/30 backdrop-blur-sm',
+          glowClass: 'shadow-emerald-500/20',
         };
       case 'in-progress':
         return {
-          cardOuterClass: 'border-yellow-500/70 hover:border-yellow-500/90 bg-yellow-500/5 hover:bg-yellow-500/10 animate-pulse-jade', 
+          cardOuterClass: 'border-yellow-500/50 hover:border-yellow-500/70 bg-gradient-to-br from-yellow-500/10 to-orange-500/5 hover:from-yellow-500/15 hover:to-orange-500/10',
           icon: <Loader2 className="h-4 w-4 text-yellow-500 animate-spin" />,
+          badgeVariant: 'secondary' as const,
+          badgeClass: 'bg-yellow-500/20 text-yellow-600 dark:text-yellow-300 border-yellow-500/30 backdrop-blur-sm',
+          glowClass: 'shadow-yellow-500/20',
+        };
+      case 'failure':
+        return {
+          cardOuterClass: 'border-red-500/50 hover:border-red-500/70 bg-gradient-to-br from-red-500/10 to-pink-500/5 hover:from-red-500/15 hover:to-pink-500/10',
+          icon: <XCircle className="h-4 w-4 text-red-500" />,
+          badgeVariant: 'destructive' as const,
+          badgeClass: 'bg-red-500/20 text-red-600 dark:text-red-300 border-red-500/30 backdrop-blur-sm',
+          glowClass: 'shadow-red-500/20',
+        };
+      default:
+        return {
+          cardOuterClass: 'border-gray-500/50 hover:border-gray-500/70 bg-gradient-to-br from-gray-500/10 to-slate-500/5',
+          icon: <AlertTriangle className="h-4 w-4 text-gray-500" />,
+          badgeVariant: 'outline' as const,
+          badgeClass: 'bg-gray-500/20 text-gray-600 dark:text-gray-300 border-gray-500/30 backdrop-blur-sm',
+          glowClass: 'shadow-gray-500/20',
+        };
+    }
+  };
+
+  const statusStyles = getStatusStyles();
+
+  return (
+    <Card 
+      className={cn(
+        "group cursor-pointer transition-all duration-500 hover:shadow-xl backdrop-blur-md border-2 relative overflow-hidden",
+        statusStyles.cardOuterClass,
+        statusStyles.glowClass,
+        isExpanded && "shadow-xl scale-[1.01]",
+        isAnimating && "animate-pulse-glow"
+      )}
+      onClick={() => setIsExpanded(!isExpanded)}
+    >
+      {/* Animated background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+      
+      {/* Status indicator line */}
+      <div className={cn(
+        "absolute left-0 top-0 bottom-0 w-1 transition-all duration-300",
+        entry.status === 'success' && "bg-emerald-500",
+        entry.status === 'in-progress' && "bg-yellow-500 animate-pulse",
+        entry.status === 'failure' && "bg-red-500"
+      )} />
+
+      <CardHeader className="pb-2 relative z-10 pl-4">
+        <div className="flex items-start justify-between">
+          <div className="flex items-start space-x-3 flex-1 min-w-0">
+            <div className="flex-shrink-0 p-1.5 rounded-lg bg-white/10 backdrop-blur-sm group-hover:bg-white/20 transition-colors">
+              {statusStyles.icon}
+            </div>
+            <div className="flex-1 min-w-0">
+              <CardTitle className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors truncate">
+                {entry.inputEvent}
+              </CardTitle>
+              <p className="text-xs text-muted-foreground mt-1 group-hover:text-muted-foreground/80 transition-colors">
+                {formatDistanceToNowStrict(entry.timestamp, { addSuffix: true })}
+                {entry.durationMs && ` • ${entry.durationMs}ms`}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2 flex-shrink-0">
+            <Badge 
+              variant={statusStyles.badgeVariant}
+              className={cn("text-[10px] px-2 py-0.5 font-medium", statusStyles.badgeClass)}
+            >
+              {entry.status}
+            </Badge>
+            <ChevronDown className={cn(
+              "h-3 w-3 text-muted-foreground transition-transform duration-300 group-hover:text-foreground",
+              isExpanded && "rotate-180"
+            )} />
+          </div>
+        </div>
+      </CardHeader>
+
+      {/* Agent badges */}
+      <div className="px-4 pb-2 relative z-10">
+        <div className="flex flex-wrap gap-1">
+          {entry.agentsInvolved.map((agent, index) => (
+            <Badge 
+              key={agent} 
+              variant="outline" 
+              className={cn(
+                "text-[9px] px-1.5 py-0.5 font-medium bg-white/10 border-white/20 text-white/80 backdrop-blur-sm",
+                "hover:bg-white/20 transition-colors"
+              )}
+              style={{
+                animationDelay: `${index * 100}ms`,
+                animation: isAnimating ? 'fadeInUp 0.5s ease-out forwards' : undefined
+              }}
+            >
+              {agent}
+            </Badge>
+          ))}
+        </div>
+      </div>
+      
+      {isExpanded && (
+        <CardContent className="pt-0 pb-4 px-4 relative z-10">
+          <div className="space-y-3 border-t border-white/10 pt-3 bg-white/5 backdrop-blur-sm rounded-lg p-3 -mx-1">
+            <div className="text-xs space-y-2">
+              <div>
+                <span className="text-muted-foreground font-medium flex items-center mb-1">
+                  <div className="w-1 h-1 bg-primary rounded-full mr-2" />
+                  Outcome:
+                </span>
+                <p className="text-foreground/90 leading-relaxed bg-black/10 rounded p-2">
+                  {entry.outcome || 'Processing...'}
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <span className="text-muted-foreground font-medium flex items-center mb-1">
+                    <div className="w-1 h-1 bg-secondary rounded-full mr-2" />
+                    Started:
+                  </span>
+                  <p className="text-foreground/80 text-[10px] font-mono bg-black/10 rounded px-2 py-1">
+                    {format(entry.startTime, 'HH:mm:ss')}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground font-medium flex items-center mb-1">
+                    <div className="w-1 h-1 bg-accent rounded-full mr-2" />
+                    Duration:
+                  </span>
+                  <p className="text-foreground/80 text-[10px] font-mono bg-black/10 rounded px-2 py-1">
+                    {entry.durationMs ? `${entry.durationMs}ms` : 'In progress...'}
+                  </p>
+                </div>
+              </div>
+
+              {(entry.rawInput || entry.rawOutput) && (
+                <div className="space-y-2">
+                  {entry.rawInput && (
+                    <details className="group/details">
+                      <summary className="text-muted-foreground font-medium cursor-pointer flex items-center group-hover/details:text-foreground transition-colors">
+                        <div className="w-1 h-1 bg-blue-400 rounded-full mr-2" />
+                        Raw Input
+                        <ChevronDown className="h-3 w-3 ml-1 transition-transform group-open/details:rotate-180" />
+                      </summary>
+                      <pre className="text-[9px] font-mono text-foreground/70 mt-1 overflow-x-auto bg-black/20 rounded p-2 whitespace-pre-wrap">
+                        {JSON.stringify(entry.rawInput, null, 2)}
+                      </pre>
+                    </details>
+                  )}
+                  {entry.rawOutput && (
+                    <details className="group/details">
+                      <summary className="text-muted-foreground font-medium cursor-pointer flex items-center group-hover/details:text-foreground transition-colors">
+                        <div className="w-1 h-1 bg-green-400 rounded-full mr-2" />
+                        Raw Output
+                        <ChevronDown className="h-3 w-3 ml-1 transition-transform group-open/details:rotate-180" />
+                      </summary>
+                      <pre className="text-[9px] font-mono text-foreground/70 mt-1 overflow-x-auto bg-black/20 rounded p-2 whitespace-pre-wrap">
+                        {JSON.stringify(entry.rawOutput, null, 2)}
+                      </pre>
+                    </details>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      )}
+    </Card>
+  );
+});
           badgeVariant: 'secondary' as const,
           badgeClass: 'bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border-yellow-500/30',
         };

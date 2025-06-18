@@ -1,174 +1,205 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ========== Base Layer Reset ========== */
-html, body {
-  @apply antialiased overflow-x-hidden;
+html,
+body {
+  @apply overflow-x-hidden antialiased;
   font-family: var(--font-main);
   scroll-behavior: smooth;
 }
 
 /* ========== Custom Root Theme Tokens ========== */
 :root {
-  /* Color Palette - Verdigris, Deep Purple, Aquamarine-Cyan Theme */
-  --verdigris-jade-base: hsl(146, 50%, 36%);
-  --deep-purple-base: hsl(271, 47%, 42%);
-  --aquamarine-cyan-base: hsl(177, 100%, 41%);
+  /* Tailwind Base Variables for shadcn/ui compatibility */
+  --background: 146 50% 36%; /* verdigris-jade */
+  --foreground: 0 0% 92%; /* offwhite */
+  --card: 146 50% 30%; /* darker verdigris for cards */
+  --card-foreground: 0 0% 92%;
+  --popover: 146 50% 30%;
+  --popover-foreground: 0 0% 92%;
+  --primary: 271 47% 42%; /* deep purple */
+  --primary-foreground: 0 0% 92%;
+  --secondary: 177 100% 41%; /* aquamarine cyan */
+  --secondary-foreground: 146 50% 15%;
+  --muted: 146 20% 25%;
+  --muted-foreground: 0 0% 63%;
+  --accent: 177 100% 41%;
+  --accent-foreground: 146 50% 15%;
+  --destructive: 2 66% 61%; /* error red */
+  --destructive-foreground: 0 0% 92%;
+  --border: 271 47% 42%;
+  --input: 271 47% 42%;
+  --ring: 271 47% 42%;
+  --radius: 0.75rem;
 
-  --background-main-color: var(--verdigris-jade-base); /* Verdigris/Jade Background */
-  --panel-background-color: hsla(146, 50%, 30%, 0.75); /* Verdigris/Jade Panel (darker, semi-transparent) */
-  
-  --accent-primary-color: var(--deep-purple-base); /* Deep Purple */
-  --accent-secondary-color: var(--aquamarine-cyan-base); /* Aquamarine-Cyan */
-  
-  --text-primary-color: #EAEAEA; /* Off-white for main text */
-  --text-secondary-color: #A0A0A0; /* Light grey for secondary text */
-  
-  --status-success-color: var(--aquamarine-cyan-base); /* Aquamarine-Cyan for success */
-  --status-in-progress-color: var(--aquamarine-cyan-base); /* Aquamarine-Cyan for in-progress/warning */
-  --status-error-color: hsl(2, 66%, 61%); /* Muted Red for error (#D9534F) */
-  
-  --border-color-main: hsla(271, 47%, 42%, 0.3); /* Purple Glow Border */
+  /* Color Palette */
+  --color-verdigris-jade: hsl(146, 50%, 36%);
+  --color-deep-purple: hsl(271, 47%, 42%);
+  --color-aquamarine-cyan: hsl(177, 100%, 41%);
+  --color-error-red: hsl(2, 66%, 61%);
+  --color-offwhite: #eaeaea;
+  --color-grey: #a0a0a0;
 
-  /* HSL versions for easier manipulation in JS/animations if needed */
-  --primary-hsl: 271 47% 42%; /* Deep Purple HSL string */
-  --secondary-hsl: 177 100% 41%; /* Aquamarine-Cyan HSL string */
+  /* Primary HSL for legacy references */
+  --primary-hsl: 271, 47%, 42%;
 
+  /* Backgrounds */
+  --background-main: var(--color-verdigris-jade);
+  --background-panel: hsla(146, 50%, 30%, 0.75);
+  --background-card: var(--glass-card-bg);
+  --background-modal: var(--glass-modal-bg);
+  --background-sidebar: var(--glass-sidebar-bg);
+  --background-notification: var(--glass-notification-bg);
+
+  /* Observatory specific backgrounds */
+  --observatory-bg: var(--color-verdigris-jade);
+  --observatory-border: hsla(271, 47%, 42%, 0.3);
+  --observatory-shadow: 0 8px 32px 0 rgba(28, 25, 52, 0.15);
+
+  /* Text */
+  --text-primary: var(--color-offwhite);
+  --text-secondary: var(--color-grey);
+
+  /* Status */
+  --status-success: var(--color-aquamarine-cyan);
+  --status-in-progress: var(--color-aquamarine-cyan);
+  --status-error: var(--color-error-red);
+
+  /* Border */
+  --border-main: hsla(271, 47%, 42%, 0.3);
+  --border-card: var(--glass-card-border);
+  --border-modal: var(--glass-modal-border);
+  --border-sidebar: var(--glass-sidebar-border);
+  --border-notification: var(--glass-notification-border);
+
+  /* Shadow */
+  --shadow-card: var(--glass-card-shadow);
+  --shadow-modal: var(--glass-modal-shadow);
+  --shadow-sidebar: var(--glass-sidebar-shadow);
+  --shadow-notification: var(--glass-notification-shadow);
+
+  /* Backdrop Filter */
+  --blur-card: var(--glass-card-blur);
+  --blur-modal: var(--glass-modal-blur);
+  --blur-sidebar: var(--glass-sidebar-blur);
+  --blur-notification: var(--glass-notification-blur);
 
   /* Typography */
   --font-main: 'Lexend', sans-serif;
-  --font-headline-comfortaa: 'Comfortaa', sans-serif;
-  
+  --font-headline: 'Comfortaa', sans-serif;
   --font-size-base: 16px;
   --font-size-small: 14px;
   --font-size-large: 20px;
   --font-size-h1: 32px;
   --font-size-h2: 24px;
-
   --font-weight-regular: 400;
   --font-weight-bold: 600;
 
-  /* Spacing & Sizing */
+  /* Spacing */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
   --spacing-lg: 24px;
   --spacing-xl: 32px;
 
-  /* Borders & Radius */
-  --border-radius-main: 12px;
-  --border-radius-small: 8px;
-  --border-width-main: 1px;
+  /* Radius */
+  --radius-main: 12px;
+  --radius-small: 8px;
 
-  /* Effects (Glassmorphism) */
-  --panel-backdrop-filter: blur(14px) saturate(110%);
-  --panel-box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
-
-
-  /* ShadCN Compatibility - Mapped to new theme */
-  /* Backgrounds */
-  --background: 146 50% 36%; /* Verdigris/Jade */
-  --foreground: 0 0% 92%; /* Text Primary (#EAEAEA) */
-  
-  /* Cards & Popovers */
-  --card: 146 50% 30%; /* Opaque Verdigris/Jade Panel for card bg */
-  --card-foreground: var(--foreground); /* Text Primary on cards */
-  
-  /* Popover defaults to Verdigris/Jade base */
-  --popover: 146 50% 28% / 0.85; /* Slightly darker/more opaque Verdigris/Jade panel for popovers */
-  --popover-foreground: var(--foreground); /* Text Primary on popovers */
-
-  /* Primary Interactive Elements */
-  --primary: 271 47% 42%; /* Deep Purple */
-  --primary-foreground: 271 47% 90%; /* Light Lavender for Deep Purple contrast */
-
-  /* Secondary Elements */
-  --secondary: 177 100% 41%; /* Aquamarine-Cyan */
-  --secondary-foreground: 177 100% 15%; /* Dark Cyan for Aquamarine-Cyan contrast */
-  
-  /* Muted Text & Borders for components */
-  --muted: 146 50% 25%; /* Darker shade of Verdigris/Jade background for muted elements */
-  --muted-foreground: 0 0% 63%; /* Text Secondary (#A0A0A0) */
-  
-  --accent: 271 47% 42%; /* Deep Purple for general accents */
-  --accent-foreground: 271 47% 90%; /* Light Lavender for Deep Purple contrast */
-  
-  --destructive: 2 66% 61%; /* Error Red (D9534F) */
-  --destructive-foreground: 2 66% 95%; /* Light contrast for destructive */
-
-  /* Borders & Inputs */
-  --border: 271 47% 35%;       /* Slightly darker, opaque Purple for general component borders */
-  --input: 146 50% 30% / 0.85;  /* Opaque Verdigris/Jade Panel for inputs */
-  --ring: 271 47% 42%;       /* Deep Purple for focus rings */
-
-  --radius: 0.75rem; /* From --border-radius-main: 12px */
-
-  /* Chart Colors - Harmonized with Purple/Aquamarine-Cyan */
-  --chart-1: hsl(var(--primary)); /* Deep Purple */
-  --chart-2: 271 40% 55%; /* Lighter Purple */
-  --chart-3: 271 50% 35%; /* Darker Purple */
-  --chart-4: hsl(var(--secondary)); /* Aquamarine-Cyan */
-  --chart-5: 0 0% 75%; /* Neutral Grey */
-
-  /* Scrollbar Variables (Aquamarine-Cyan Theme with Verdigris/Jade track) */
-  --scrollbar-track-bg: hsla(146, 50%, 36%, 0.6); /* Verdigris/Jade based track */
-  --scrollbar-thumb-bg: hsla(177, 100%, 41%, 0.5); /* Aquamarine-Cyan thumb */
-  --scrollbar-thumb-hover-bg: hsla(177, 100%, 41%, 0.7); /* Aquamarine-Cyan thumb hover */
-  --scrollbar-thumb-border-color: hsla(146, 50%, 36%, 0.6); /* Verdigris/Jade based border */
-
-  /* Command Observatory Specific Styles */
-  --observatory-bg: var(--background-main-color);
-  --observatory-border: var(--border-color-main); 
-  --observatory-shadow: var(--panel-box-shadow);
+  /* Glassmorphism Tokens (for reference, already mapped above) */
+  --glass-card-bg: rgba(245, 255, 250, 0.15);
+  --glass-card-blur: blur(20px);
+  --glass-card-border: 1px solid rgba(245, 255, 250, 0.3);
+  --glass-card-shadow: 0 8px 32px 0 rgba(28, 25, 52, 0.1);
+  --glass-modal-bg: rgba(245, 255, 250, 0.2);
+  --glass-modal-blur: blur(30px);
+  --glass-modal-border: 1px solid rgba(245, 255, 250, 0.35);
+  --glass-modal-shadow: 0 12px 40px 0 rgba(28, 25, 52, 0.15);
+  --glass-sidebar-bg: rgba(245, 255, 250, 0.1);
+  --glass-sidebar-blur: blur(25px);
+  --glass-sidebar-border: 1px solid rgba(245, 255, 250, 0.25);
+  --glass-sidebar-shadow: 4px 0 24px 0 rgba(28, 25, 52, 0.1);
+  --glass-notification-bg: rgba(245, 255, 250, 0.25);
+  --glass-notification-blur: blur(15px);
+  --glass-notification-border: 1px solid rgba(245, 255, 250, 0.4);
+  --glass-notification-shadow: 0 4px 20px 0 rgba(28, 25, 52, 0.12);
 }
 
 /* Ensure Tailwind base styles use our custom properties for background and text */
 @layer base {
   body {
-    background-color: var(--background-main-color);
-    color: var(--text-primary-color);
+    background-color: var(--background-main);
+    color: var(--text-primary);
     font-family: var(--font-main);
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-regular);
   }
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-headline-comfortaa);
-    color: var(--text-primary-color);
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-headline);
+    color: var(--text-primary);
   }
-  h1 { font-size: var(--font-size-h1); }
-  h2 { font-size: var(--font-size-h2); }
-  h3 { font-size: var(--font-size-large); }
+  h1 {
+    font-size: var(--font-size-h1);
+  }
+  h2 {
+    font-size: var(--font-size-h2);
+  }
+  h3 {
+    font-size: var(--font-size-large);
+  }
 
   * {
-    border-color: hsl(var(--border)); /* Default border color for ShadCN components */
+    border-color: hsl(
+      var(--border)
+    ); /* Default border color for ShadCN components */
   }
 }
 
 /* ========== Global Utility Layer ========== */
 .panel-glass {
-  background: var(--panel-background-color);
-  border: var(--border-width-main) solid var(--border-color-main);
-  box-shadow: var(--panel-box-shadow), 0 8px 32px hsla(var(--primary-hsl) / 0.1), 0 4px 12px hsla(var(--primary-hsl) / 0.08); /* Use static outer shadow */
-  backdrop-filter: var(--panel-backdrop-filter);
-  border-radius: var(--border-radius-main);
+  background: var(--background-panel);
+  border: var(--border-width-main) solid var(--border-main);
+  box-shadow:
+    var(--shadow-card),
+    0 8px 32px hsla(var(--primary-hsl) / 0.1),
+    0 4px 12px hsla(var(--primary-hsl) / 0.08); /* Use static outer shadow */
+  backdrop-filter: var(--blur-card);
+  border-radius: var(--radius-main);
 }
 
-.text-primary-custom { color: var(--text-primary-color); }
-.text-secondary-custom { color: var(--text-secondary-color); }
+.text-primary-custom {
+  color: var(--text-primary);
+}
+.text-secondary-custom {
+  color: var(--text-secondary);
+}
 
-.text-size-small { font-size: var(--font-size-small); }
-.text-size-large { font-size: var(--font-size-large); }
+.text-size-small {
+  font-size: var(--font-size-small);
+}
+.text-size-large {
+  font-size: var(--font-size-large);
+}
 
-.font-regular { font-weight: var(--font-weight-regular); }
-.font-bold-custom { font-weight: var(--font-weight-bold); }
+.font-regular {
+  font-weight: var(--font-weight-regular);
+}
+.font-bold-custom {
+  font-weight: var(--font-weight-bold);
+}
 
-.glow-purple { /* This class can be used for explicit purple glow on elements if needed */
-  box-shadow: 0 0 12px hsla(var(--primary-hsl) / 0.5); 
+.glow-purple {
+  /* This class can be used for explicit purple glow on elements if needed */
+  box-shadow: 0 0 12px hsla(var(--primary-hsl) / 0.5);
   border-color: hsla(var(--primary-hsl) / 0.2);
 }
-
 
 /* React Grid Layout specific styles */
 .react-grid-layout {
@@ -219,7 +250,7 @@ html, body {
 }
 
 .react-grid-item > .react-resizable-handle::after {
-  content: "";
+  content: '';
   position: absolute;
   right: 2px;
   bottom: 2px;
@@ -247,25 +278,25 @@ html, body {
     height: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: var(--scrollbar-track-bg); 
+    background: var(--scrollbar-track-bg);
     border-radius: 10px;
   }
   ::-webkit-scrollbar-thumb {
-    background-color: var(--scrollbar-thumb-bg); 
+    background-color: var(--scrollbar-thumb-bg);
     border-radius: 10px;
-    border: 2px solid var(--scrollbar-thumb-border-color); 
+    border: 2px solid var(--scrollbar-thumb-border-color);
     background-clip: padding-box;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background-color: var(--scrollbar-thumb-hover-bg); 
-    border-color: var(--scrollbar-thumb-border-color); 
+    background-color: var(--scrollbar-thumb-hover-bg);
+    border-color: var(--scrollbar-thumb-border-color);
   }
   ::-webkit-scrollbar-corner {
     background: transparent;
   }
   * {
     scrollbar-width: thin;
-    scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg); 
+    scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg);
   }
 }
 
@@ -276,7 +307,7 @@ html, body {
     overflow: hidden;
   }
   .zone-shimmer-border::before {
-    content: "";
+    content: '';
     position: absolute;
     top: -50%;
     left: -50%;
@@ -286,17 +317,17 @@ html, body {
       transparent,
       transparent,
       transparent,
-      hsla(var(--primary-hsl) / 0.3), /* Purple shimmer */
-      hsla(var(--primary-hsl) / 0.2), /* Lighter Purple shimmer */
-      transparent,
+      hsla(var(--primary-hsl) / 0.3),
+      /* Purple shimmer */ hsla(var(--primary-hsl) / 0.2),
+      /* Lighter Purple shimmer */ transparent,
       transparent
     );
     animation: shimmer 4s linear infinite;
-    z-index: -1; 
-    border-radius: inherit; 
+    z-index: -1;
+    border-radius: inherit;
   }
   .zone-shimmer-border > * {
-    position: relative; 
+    position: relative;
     z-index: 1;
   }
 }
@@ -312,12 +343,50 @@ html, body {
 
 /* Purple Pulsating Glow Animation for Cards */
 @keyframes pulse-glow-purple {
-  0%, 100% {
-    box-shadow: var(--panel-box-shadow), 0 8px 32px hsla(var(--primary-hsl) / 0.1), 0 4px 12px hsla(var(--primary-hsl) / 0.08);
+  0%,
+  100% {
+    box-shadow:
+      var(--panel-box-shadow),
+      0 8px 32px hsla(var(--primary-hsl) / 0.1),
+      0 4px 12px hsla(var(--primary-hsl) / 0.08);
   }
   50% {
-    box-shadow: var(--panel-box-shadow), 0 8px 45px hsla(var(--primary-hsl) / 0.18), 0 4px 20px hsla(var(--primary-hsl) / 0.12);
+    box-shadow:
+      var(--panel-box-shadow),
+      0 8px 45px hsla(var(--primary-hsl) / 0.18),
+      0 4px 20px hsla(var(--primary-hsl) / 0.12);
   }
 }
 
-    
+/* Glassmorphism Utility Classes */
+.glass-card {
+  background: var(--glass-card-bg);
+  backdrop-filter: var(--glass-card-blur);
+  border: var(--glass-card-border);
+  box-shadow: var(--glass-card-shadow);
+  border-radius: 16px;
+}
+
+.glass-modal {
+  background: var(--glass-modal-bg);
+  backdrop-filter: var(--glass-modal-blur);
+  border: var(--glass-modal-border);
+  box-shadow: var(--glass-modal-shadow);
+  border-radius: 20px;
+}
+
+.glass-sidebar {
+  background: var(--glass-sidebar-bg);
+  backdrop-filter: var(--glass-sidebar-blur);
+  border: var(--glass-sidebar-border);
+  box-shadow: var(--glass-sidebar-shadow);
+  border-radius: 16px 0 0 16px;
+}
+
+.glass-notification {
+  background: var(--glass-notification-bg);
+  backdrop-filter: var(--glass-notification-blur);
+  border: var(--glass-notification-border);
+  box-shadow: var(--glass-notification-shadow);
+  border-radius: 14px;
+}

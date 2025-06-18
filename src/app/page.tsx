@@ -3,7 +3,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
+import { CircleNotch as Loader2 } from '@phosphor-icons/react';
 
 export default function RootPage() {
   const router = useRouter();
@@ -16,8 +16,8 @@ export default function RootPage() {
   }, [router]);
 
   return (
-    <div className="flex flex-col flex-grow items-center justify-center p-6 h-full text-center">
-      <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+    <div className="flex h-full flex-grow flex-col items-center justify-center p-6 text-center">
+      <Loader2 className="mb-4 h-12 w-12 animate-spin text-primary" />
       <p className="text-muted-foreground">Redirecting to your dashboard...</p>
     </div>
   );

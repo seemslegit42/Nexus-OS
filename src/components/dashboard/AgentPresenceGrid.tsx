@@ -4,7 +4,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Cpu, CheckCircle, XCircle, AlertTriangle, Loader2, PackageSearch } from 'lucide-react';
+import { Cpu, MagnifyingGlass as PackageSearch } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import { useUserAgentsStore } from '@/stores/user-agents.store';
 import { useAgentMarketplaceStore } from '@/stores/agent-marketplace.store';
@@ -15,85 +15,183 @@ interface DisplayAgentInfo {
   id: string;
   name: string;
   personaName: string;
-  // Operational status fields - now represent a snapshot, not live client-side simulation
-  status: 'Idle' | 'Executing' | 'Offline' | 'Error'; 
-  workload: number; // Represents last known workload
-  currentTask: string | null; // Represents last known task
   marketplaceStatus: MarketplaceAgent['status'];
   category: string;
+  description?: string;
 }
 
-const AgentStatusIcon: React.FC<{ status: DisplayAgentInfo['status'] }> = React.memo(({ status }) => {
-  switch (status) {
-    case 'Executing': return <Loader2 className="h-3.5 w-3.5 text-primary animate-spin" />; 
-    case 'Idle': return <CheckCircle className="h-3.5 w-3.5 text-green-400" />;
-    case 'Offline': return <XCircle className="h-3.5 w-3.5 text-muted-foreground/70" />; 
-    case 'Error': return <AlertTriangle className="h-3.5 w-3.5 text-red-400" />;
-    default: return null;
-  }
-});
-AgentStatusIcon.displayName = 'AgentStatusIcon';
+const AgentCard: React.FC<{ agent: DisplayAgentInfo }> = React.memo(
+  ({ agent }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
 
+    const getStatusGradient = () => {
+      switch (agent.marketplaceStatus) {
+        case 'available':
+          return 'from-emerald-500/20 to-green-500/20 border-emerald-500/40';
+        case 'in-development':
+          return 'from-blue-500/20 to-cyan-500/20 border-blue-500/40';
+        case 'deprecated':
+          return 'from-orange-500/20 to-red-500/20 border-orange-500/40';
+        default:
+          return 'from-gray-500/20 to-slate-500/20 border-gray-500/40';
+      }
+    };
 
-const AgentDetailPanel: React.FC<{ agent: DisplayAgentInfo }> = React.memo(({ agent }) => {
-  return (
-    <div
-      className={cn(
-        "rounded-xl border border-primary/20 bg-card/50 backdrop-blur-sm text-card-foreground shadow-lg p-3 mt-2 text-xs space-y-1.5" 
-      )}
-    >
-      <h4 className="text-sm font-semibold text-primary mb-1">{agent.personaName}</h4>
-      <p><strong className="text-muted-foreground">ID:</strong> <span className="text-foreground/90 font-mono text-[11px]">{agent.id}</span></p>
-      <p>
-        <strong className="text-muted-foreground">Operational Status:</strong> <span className={cn(
-            "font-medium",
-            agent.status === 'Executing' && "text-primary",
-            agent.status === 'Idle' && "text-green-400",
-            agent.status === 'Error' && "text-red-400",
-            agent.status === 'Offline' && "text-muted-foreground/80"
-        )}>{agent.status}</span> <span className="text-muted-foreground/80">(Last Workload: {agent.workload}%)</span>
-      </p>
-       <p><strong className="text-muted-foreground">Marketplace Status:</strong> <Badge variant={agent.marketplaceStatus === 'available' ? 'default' : 'secondary'} className={cn("text-[9px] h-auto px-1 py-0 ml-1", agent.marketplaceStatus === 'available' ? 'bg-green-500/20 text-green-600 dark:text-green-400' : 'bg-blue-500/20 text-blue-600 dark:text-blue-400')}>{agent.marketplaceStatus}</Badge></p>
-       <p><strong className="text-muted-foreground">Category:</strong> <span className="text-foreground/90">{agent.category}</span></p>
-      <p><strong className="text-muted-foreground">Last Task:</strong> <span className="text-foreground/90">{agent.currentTask || 'N/A'}</span></p>
-    </div>
-  );
-});
-AgentDetailPanel.displayName = 'AgentDetailPanel';
-
-const AgentEntry: React.FC<{ agent: DisplayAgentInfo }> = React.memo(({ agent }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const isExecuting = agent.status === 'Executing'; // This now represents a snapshot status
-
-  return (
-    <div>
-      <div
-        onClick={() => setIsExpanded(!isExpanded)}
+    return (
+      <Card
         className={cn(
-          "p-2.5 rounded-lg bg-background/40 hover:bg-primary/10 border border-primary/20 cursor-pointer transition-all hover:shadow-md hover:border-primary/40 active:scale-[0.98]",
-          // Removed animate-pulse-jade as status is now a snapshot
-          isExecuting && "shadow-[0_0_15px_1px_hsl(var(--primary)/0.4)] border-primary/50", 
-          isExpanded && "ring-1 ring-primary/70 border-primary/60 bg-primary/5"
+          'group cursor-pointer backdrop-blur-md transition-all duration-500 hover:shadow-xl',
+          'relative overflow-hidden border-2 bg-gradient-to-br',
+          getStatusGradient(),
+          isExpanded && 'scale-[1.02] shadow-xl shadow-primary/20',
+          isHovered && 'shadow-lg shadow-primary/10'
         )}
-        title={`Click to view details for ${agent.name}`}
+        onClick={() => setIsExpanded(!isExpanded)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="flex justify-between items-center">
-          <p className="text-sm font-semibold text-foreground truncate flex-1 mr-2">{agent.name}</p>
-          <AgentStatusIcon status={agent.status} />
+        {/* Floating particles effect */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div
+            className={cn(
+              'duration-[3s] absolute h-2 w-2 rounded-full bg-white/20 transition-all',
+              isHovered
+                ? '-translate-y-8 translate-x-8 opacity-100'
+                : 'translate-x-0 translate-y-0 opacity-0'
+            )}
+            style={{ top: '20%', left: '10%' }}
+          />
+          <div
+            className={cn(
+              'duration-[4s] absolute h-1 w-1 rounded-full bg-white/30 transition-all delay-500',
+              isHovered
+                ? '-translate-y-12 translate-x-12 opacity-100'
+                : 'translate-x-0 translate-y-0 opacity-0'
+            )}
+            style={{ top: '60%', left: '70%' }}
+          />
+          <div
+            className={cn(
+              'duration-[3.5s] absolute h-1.5 w-1.5 rounded-full bg-white/15 transition-all delay-300',
+              isHovered
+                ? '-translate-x-6 -translate-y-10 opacity-100'
+                : 'translate-x-0 translate-y-0 opacity-0'
+            )}
+            style={{ top: '40%', right: '20%' }}
+          />
         </div>
-        <p className="text-xs text-muted-foreground truncate mt-0.5">
-          {agent.currentTask ? `Task: ${agent.currentTask.substring(0,30)}${agent.currentTask.length > 30 ? '...' : ''}` : `Workload: ${agent.workload}%`}
-        </p>
-      </div>
-      {isExpanded && <AgentDetailPanel agent={agent} />}
-    </div>
-  );
-});
-AgentEntry.displayName = 'AgentEntry';
+
+        {/* Glow effect on hover */}
+        <div
+          className={cn(
+            'absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity duration-300',
+            isHovered && 'opacity-100'
+          )}
+        />
+
+        <CardHeader className="relative z-10 pb-3">
+          <div className="flex items-start justify-between">
+            <div className="min-w-0 flex-1">
+              <CardTitle
+                className={cn(
+                  'truncate text-sm font-semibold transition-all duration-300',
+                  'text-foreground group-hover:text-primary',
+                  isExpanded && 'text-primary'
+                )}
+              >
+                {agent.name}
+              </CardTitle>
+              <p className="mt-1 truncate text-xs text-muted-foreground transition-colors group-hover:text-muted-foreground/80">
+                {agent.personaName}
+              </p>
+            </div>
+            <div className="ml-2 flex items-center gap-2">
+              <Badge
+                variant={
+                  agent.marketplaceStatus === 'available'
+                    ? 'default'
+                    : 'secondary'
+                }
+                className={cn(
+                  'px-2 py-0.5 text-[10px] font-medium backdrop-blur-sm transition-all duration-300',
+                  agent.marketplaceStatus === 'available'
+                    ? 'border-emerald-500/30 bg-emerald-500/20 text-emerald-600 hover:bg-emerald-500/30 dark:text-emerald-400'
+                    : 'border-blue-500/30 bg-blue-500/20 text-blue-600 hover:bg-blue-500/30 dark:text-blue-400'
+                )}
+              >
+                {agent.marketplaceStatus}
+              </Badge>
+              <div
+                className={cn(
+                  'relative h-2 w-2 rounded-full transition-all duration-300',
+                  agent.marketplaceStatus === 'available'
+                    ? 'bg-emerald-400'
+                    : 'bg-blue-400'
+                )}
+              >
+                {/* Pulsing ring effect */}
+                <div
+                  className={cn(
+                    'absolute inset-0 animate-ping rounded-full opacity-75',
+                    agent.marketplaceStatus === 'available'
+                      ? 'bg-emerald-400'
+                      : 'bg-blue-400'
+                  )}
+                />
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+
+        {isExpanded && (
+          <CardContent className="relative z-10 pb-4 pt-0">
+            <div className="-mx-1 space-y-3 rounded-lg border-t border-border/30 bg-white/5 p-3 pt-3 backdrop-blur-sm">
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="space-y-1">
+                  <span className="flex items-center font-medium text-muted-foreground">
+                    <div className="mr-2 h-1 w-1 rounded-full bg-primary" />
+                    Agent ID:
+                  </span>
+                  <p className="break-all rounded bg-black/10 px-2 py-1 font-mono text-[10px] text-foreground/90">
+                    {agent.id}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <span className="flex items-center font-medium text-muted-foreground">
+                    <div className="mr-2 h-1 w-1 rounded-full bg-secondary" />
+                    Category:
+                  </span>
+                  <p className="rounded bg-black/10 px-2 py-1 capitalize text-foreground/90">
+                    {agent.category}
+                  </p>
+                </div>
+              </div>
+              {agent.description && (
+                <div className="space-y-1 text-xs">
+                  <span className="flex items-center font-medium text-muted-foreground">
+                    <div className="mr-2 h-1 w-1 rounded-full bg-accent" />
+                    Description:
+                  </span>
+                  <p className="rounded bg-black/10 p-2 leading-relaxed text-foreground/80">
+                    {agent.description}
+                  </p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        )}
+      </Card>
+    );
+  }
+);
+AgentCard.displayName = 'AgentCard';
 
 const AgentPresenceGrid: React.FC = () => {
   const acquiredAgentIds = useUserAgentsStore(state => state.acquiredAgentIds);
-  const getMarketplaceAgentById = useAgentMarketplaceStore(state => state.getAgentById);
+  const getMarketplaceAgentById = useAgentMarketplaceStore(
+    state => state.getAgentById
+  );
   const [displayAgents, setDisplayAgents] = useState<DisplayAgentInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -103,63 +201,62 @@ const AgentPresenceGrid: React.FC = () => {
       .map(id => {
         const marketplaceAgent = getMarketplaceAgentById(id);
         if (!marketplaceAgent) return null;
-        
-        // Initialize operational data to represent a fetched snapshot.
-        // In a real app, this data would come from a backend.
+
         return {
           id: marketplaceAgent.id,
           name: marketplaceAgent.name,
           personaName: marketplaceAgent.tagline || marketplaceAgent.name,
-          status: 'Idle', // Default snapshot status
-          workload: 0, // Default snapshot workload
           marketplaceStatus: marketplaceAgent.status,
           category: marketplaceAgent.category,
-          currentTask: null, // Default snapshot task
+          description: marketplaceAgent.description,
         };
       })
       .filter(agent => agent !== null) as DisplayAgentInfo[];
-    
-    setDisplayAgents(agentsData);
-    
-    // Simulate fetch time for agent definitions
-    setTimeout(() => setIsLoading(false), 200); 
-  }, [acquiredAgentIds, getMarketplaceAgentById]);
 
+    setDisplayAgents(agentsData);
+    setIsLoading(false);
+  }, [acquiredAgentIds, getMarketplaceAgentById]);
 
   if (isLoading) {
     return (
-      <Card className="h-auto bg-transparent border-none shadow-none">
-        <CardHeader className="pb-2 pt-3 px-3">
-          <CardTitle className="text-base font-medium text-foreground flex items-center">
-            <Cpu className="h-4 w-4 mr-2 text-primary" /> Agent Fleet Overview
+      <Card className="h-auto border-none bg-transparent shadow-none">
+        <CardHeader className="px-3 pb-2 pt-3">
+          <CardTitle className="flex items-center text-base font-medium text-foreground">
+            <Cpu className="mr-2 h-4 w-4 text-primary" /> Agent Fleet Overview
           </CardTitle>
         </CardHeader>
-        <CardContent className="px-3 pb-3 h-[200px] flex items-center justify-center">
-            <Loader2 className="h-8 w-8 text-primary animate-spin"/>
+        <CardContent className="flex h-[200px] items-center justify-center px-3 pb-3">
+          <div className="flex flex-col items-center gap-2">
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            <p className="text-sm text-muted-foreground">Loading agents...</p>
+          </div>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="h-full bg-transparent border-none shadow-none">
-      <CardHeader className="pb-2 pt-3 px-3">
-        <CardTitle className="text-base font-medium text-foreground flex items-center">
-          <Cpu className="h-4 w-4 mr-2 text-primary" /> Agent Fleet Overview ({displayAgents.length})
+    <Card className="h-full border-none bg-transparent shadow-none">
+      <CardHeader className="px-3 pb-2 pt-3">
+        <CardTitle className="flex items-center text-base font-medium text-foreground">
+          <Cpu className="mr-2 h-4 w-4 text-primary" /> Agent Fleet Overview (
+          {displayAgents.length})
         </CardTitle>
       </CardHeader>
-      <CardContent className="px-3 pb-3 h-full flex-grow flex flex-col overflow-hidden">
+      <CardContent className="flex h-full flex-grow flex-col overflow-hidden px-3 pb-3">
         <ScrollArea className="flex-grow pr-1">
-          <div className="space-y-2">
-            {displayAgents.map((agent) => (
-              <AgentEntry key={agent.id} agent={agent} />
+          <div className="grid gap-3">
+            {displayAgents.map(agent => (
+              <AgentCard key={agent.id} agent={agent} />
             ))}
             {displayAgents.length === 0 && (
-                <div className="text-center py-6 text-sm text-muted-foreground h-full flex flex-col items-center justify-center">
-                    <PackageSearch className="mx-auto h-10 w-10 opacity-50 mb-2" />
-                    No agents acquired yet.
-                    <p className="text-xs mt-1">Deploy agents from the Marketplace to see them here.</p>
-                </div>
+              <div className="flex h-full flex-col items-center justify-center py-8 text-center text-sm text-muted-foreground">
+                <PackageSearch className="mx-auto mb-3 h-12 w-12 opacity-40" />
+                <p className="font-medium">No agents deployed yet</p>
+                <p className="mt-1 text-xs text-muted-foreground/80">
+                  Deploy agents from the Marketplace to see them here.
+                </p>
+              </div>
             )}
           </div>
         </ScrollArea>

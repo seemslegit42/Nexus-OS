@@ -1,0 +1,13 @@
+node_modules
+.next
+.git
+*.log
+coverage
+dist
+build
+.env*
+pnpm-lock.yaml
+*.tsbuildinfo
+.genkit
+public/sw.js
+public/workbox-*.js

@@ -1,24 +1,23 @@
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import type { ReactNode } from "react";
-import { ZoneControls } from "./zone-controls"; 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+import type { ReactNode } from 'react';
+import { ZoneControls } from './zone-controls';
 
 interface ZoneProps {
-  id: string; 
+  id: string;
   title: string;
   children: ReactNode;
   className?: string;
   icon?: ReactNode;
-  
-  onPinToggle?: () => void;
+
+  onPinToggle?: (id: string) => void;
   isPinned?: boolean;
-  onMaximizeToggle?: () => void;
+  onMaximizeToggle?: (id: string) => void;
   isMaximized?: boolean;
-  onMinimizeToggle?: () => void;
+  onMinimizeToggle?: (id: string) => void;
   isMinimized?: boolean;
-  onClose?: () => void;
-  onSettingsToggle?: () => void;
+  onClose?: (id: string) => void;
+  onSettingsToggle?: (id: string) => void;
 
   canPin?: boolean;
   canMaximize?: boolean;
@@ -32,11 +31,11 @@ interface ZoneProps {
   onViewLogs?: (zoneId: string, zoneTitle: string) => void;
 }
 
-export function Zone({ 
-  id, 
-  title, 
-  children, 
-  className, 
+export function Zone({
+  id,
+  title,
+  children,
+  className,
   icon,
   onPinToggle,
   isPinned,
@@ -56,45 +55,58 @@ export function Zone({
   onRunTask,
   onViewLogs,
 }: ZoneProps) {
-
-  const showHeader = title || 
-                     icon || 
-                     (canPin && onPinToggle) || 
-                     (canMaximize && onMaximizeToggle) || 
-                     (canMinimize && onMinimizeToggle) || 
-                     onOpenApp || onRunTask || onViewLogs || (canSettings && onSettingsToggle) || (canClose && onClose); // Simplified check
+  const showHeader =
+    title ||
+    icon ||
+    (canPin && onPinToggle) ||
+    (canMaximize && onMaximizeToggle) ||
+    (canMinimize && onMinimizeToggle) ||
+    onOpenApp ||
+    onRunTask ||
+    onViewLogs ||
+    (canSettings && onSettingsToggle) ||
+    (canClose && onClose); // Simplified check
 
   return (
-    <Card className={cn(
+    <Card
+      className={cn(
         // Base Card styling (rounded-2xl, jade border, glass bg, custom jade glow) is now handled by Card component itself
-        "flex flex-col overflow-hidden h-full", 
-        hasActiveAutomation && "zone-shimmer-border", 
+        'flex h-full flex-col overflow-hidden',
+        hasActiveAutomation && 'zone-shimmer-border',
         className
       )}
     >
       {showHeader && (
-        <CardHeader 
+        <CardHeader
           className={cn(
-            "draggable-zone-header", 
-            "flex flex-row items-center justify-between space-y-0 p-2.5 md:p-3 border-b border-primary/20 min-h-[44px] cursor-grab bg-card/30 backdrop-blur-sm rounded-t-2xl", // Ensure header also has some blur and consistent bg
-            isMinimized && "rounded-b-2xl" 
+            'draggable-zone-header',
+            'flex min-h-[44px] cursor-grab flex-row items-center justify-between space-y-0 rounded-t-2xl border-b border-primary/20 bg-card/30 p-2.5 backdrop-blur-sm md:p-3', // Ensure header also has some blur and consistent bg
+            isMinimized && 'rounded-b-2xl'
           )}
         >
           <div className="flex items-center gap-2 overflow-hidden">
-            {icon && <span className="text-primary flex-shrink-0 [&>svg]:w-4 [&>svg]:h-4">{icon}</span>}
-            {title && <CardTitle className="text-sm font-headline text-foreground truncate">{title}</CardTitle>}
+            {icon && (
+              <span className="flex-shrink-0 text-primary [&>svg]:h-4 [&>svg]:w-4">
+                {icon}
+              </span>
+            )}
+            {title && (
+              <CardTitle className="truncate font-headline text-sm text-foreground">
+                {title}
+              </CardTitle>
+            )}
           </div>
           <ZoneControls
-            zoneId={id} 
-            zoneTitle={title} 
-            onPinToggle={onPinToggle}
+            zoneId={id}
+            zoneTitle={title}
+            onPinToggle={() => onPinToggle?.(id)}
             isPinned={isPinned}
-            onMaximizeToggle={onMaximizeToggle}
+            onMaximizeToggle={() => onMaximizeToggle?.(id)}
             isMaximized={isMaximized}
-            onMinimizeToggle={onMinimizeToggle}
+            onMinimizeToggle={() => onMinimizeToggle?.(id)}
             isMinimized={isMinimized}
-            onClose={onClose} 
-            onSettingsToggle={onSettingsToggle}
+            onClose={() => onClose?.(id)}
+            onSettingsToggle={() => onSettingsToggle?.(id)}
             canPin={canPin}
             canMaximize={canMaximize}
             canMinimize={canMinimize}
@@ -106,11 +118,13 @@ export function Zone({
           />
         </CardHeader>
       )}
-      <CardContent 
+      <CardContent
         className={cn(
-          "flex-grow overflow-auto transition-all duration-300 ease-in-out",
-          showHeader ? "p-3" : "p-0", 
-          isMinimized ? "max-h-0 !p-0 opacity-0 invisible" : "opacity-100 visible"
+          'flex-grow overflow-auto transition-all duration-300 ease-in-out',
+          showHeader ? 'p-3' : 'p-0',
+          isMinimized
+            ? 'invisible max-h-0 !p-0 opacity-0'
+            : 'visible opacity-100'
         )}
       >
         {!isMinimized && children}

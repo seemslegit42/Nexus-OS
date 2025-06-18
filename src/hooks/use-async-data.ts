@@ -34,7 +34,7 @@ export function useAsyncData<T>(
   const [isLoading, setIsLoading] = useState(!initialData);
   const [error, setError] = useState<Error | null>(null);
   const [isStale, setIsStale] = useState(false);
-  
+
   const mountedRef = useRef(true);
   const fetchPromiseRef = useRef<Promise<T> | null>(null);
 
@@ -58,14 +58,14 @@ export function useAsyncData<T>(
 
     try {
       const result = await fetchPromise;
-      
+
       if (mountedRef.current) {
         setData(result);
         setError(null);
       }
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Unknown error');
-      
+
       if (mountedRef.current) {
         setError(error);
         onError?.(error);
@@ -145,40 +145,43 @@ export function usePaginatedData<T>(
   options: UsePaginatedDataOptions<T> = {}
 ): UsePaginatedDataResult<T> {
   const { pageSize = 20, onError } = options;
-  
+
   const [data, setData] = useState<T[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
-  
+
   const loadingRef = useRef(false);
 
-  const loadPage = useCallback(async (page: number, append = false): Promise<void> => {
-    if (loadingRef.current) return;
+  const loadPage = useCallback(
+    async (page: number, append = false): Promise<void> => {
+      if (loadingRef.current) return;
 
-    loadingRef.current = true;
-    setIsLoading(true);
-    setError(null);
+      loadingRef.current = true;
+      setIsLoading(true);
+      setError(null);
 
-    try {
-      const newData = await fetchFn(page, pageSize);
-      
-      setData(prev => append ? [...prev, ...newData] : newData);
-      setHasMore(newData.length === pageSize);
-      
-      if (append) {
-        setCurrentPage(page);
+      try {
+        const newData = await fetchFn(page, pageSize);
+
+        setData(prev => (append ? [...prev, ...newData] : newData));
+        setHasMore(newData.length === pageSize);
+
+        if (append) {
+          setCurrentPage(page);
+        }
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error('Unknown error');
+        setError(error);
+        onError?.(error);
+      } finally {
+        setIsLoading(false);
+        loadingRef.current = false;
       }
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Unknown error');
-      setError(error);
-      onError?.(error);
-    } finally {
-      setIsLoading(false);
-      loadingRef.current = false;
-    }
-  }, [fetchFn, pageSize, onError]);
+    },
+    [fetchFn, pageSize, onError]
+  );
 
   const loadMore = useCallback(async (): Promise<void> => {
     if (!hasMore || loadingRef.current) return;

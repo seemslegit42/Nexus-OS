@@ -1,4 +1,3 @@
-
 // src/app/admin/micro-apps/initial-data.ts
 import type { MicroApp } from '@/types/micro-app';
 
@@ -8,7 +7,8 @@ export const mockMicroApps: MicroApp[] = [
     internalName: 'autopilot',
     displayName: 'Autopilot Workflow Builder',
     icon: 'Workflow',
-    description: 'Visually create and manage multi-step AI-powered automations and task chains.',
+    description:
+      'Visually create and manage multi-step AI-powered automations and task chains.',
     category: 'Automation',
     status: 'enabled',
     tags: ['workflow', 'ai', 'visual-editor', 'automation', 'low-code'],
@@ -17,13 +17,13 @@ export const mockMicroApps: MicroApp[] = [
     isVisible: true,
     requiresSubscription: true,
     monetization: {
-        enabled: true,
-        price: 29,
-        billingCycle: 'monthly',
-        billingAgent: 'BillingProxy',
-        pricingTierId: 'tier_pro_monthly',
-        stripeProductId: 'prod_XyZ123Abc',
-        accessControlFlags: ['pro_tier_access']
+      enabled: true,
+      price: 29,
+      billingCycle: 'monthly',
+      billingAgent: 'BillingProxy',
+      pricingTierId: 'tier_pro_monthly',
+      stripeProductId: 'prod_XyZ123Abc',
+      accessControlFlags: ['pro_tier_access'],
     },
     flags: { isFeatured: true, requiresBetaFeature: false },
     version: '1.1.0',
@@ -39,7 +39,8 @@ export const mockMicroApps: MicroApp[] = [
     internalName: 'guardian-security-center',
     displayName: 'Guardian Security Center',
     icon: 'ShieldCheck',
-    description: 'Monitor system threats, analyze security logs, and manage access controls.',
+    description:
+      'Monitor system threats, analyze security logs, and manage access controls.',
     category: 'Security',
     status: 'enabled',
     tags: ['security', 'monitoring', 'rbac', 'threat-detection'],
@@ -62,7 +63,8 @@ export const mockMicroApps: MicroApp[] = [
     internalName: 'system-pulse',
     displayName: 'System Pulse Monitor',
     icon: 'RadioTower',
-    description: 'Live overview of system health, agent activity, and key performance metrics.',
+    description:
+      'Live overview of system health, agent activity, and key performance metrics.',
     category: 'Monitoring',
     status: 'enabled',
     tags: ['monitoring', 'health', 'real-time', 'kpi'],
@@ -84,7 +86,8 @@ export const mockMicroApps: MicroApp[] = [
     internalName: 'developer-sandbox',
     displayName: 'Developer Sandbox',
     icon: 'TerminalSquare',
-    description: 'Experimental tools and features for NexOS developers. Use with caution.',
+    description:
+      'Experimental tools and features for NexOS developers. Use with caution.',
     category: 'Development',
     status: 'enabled',
     tags: ['experimental', 'debug', 'tools'],
@@ -106,7 +109,8 @@ export const mockMicroApps: MicroApp[] = [
     internalName: 'smart-lead-tracker',
     displayName: 'Smart Lead Tracker',
     icon: 'Users', // Updated icon
-    description: 'Capture, tag, and track leads with actionable insights. Auto-suggest follow-ups, import/export, and segment contacts.', // Updated description
+    description:
+      'Capture, tag, and track leads with actionable insights. Auto-suggest follow-ups, import/export, and segment contacts.', // Updated description
     category: 'Productivity',
     status: 'enabled',
     tags: ['CRM', 'Sales', 'Lightweight'], // Updated tags
@@ -117,9 +121,9 @@ export const mockMicroApps: MicroApp[] = [
     monetization: null,
     flags: { isFeatured: false },
     version: '1.0.0',
-    entryPoint: '/micro-apps/smart-lead-tracker', 
+    entryPoint: '/micro-apps/smart-lead-tracker',
     deployableTo: ['dashboard'],
-    defaultLayout: { lg: { x: 0, y: 8, w: 4, h: 8, minW: 3, minH: 6 } }, 
+    defaultLayout: { lg: { x: 0, y: 8, w: 4, h: 8, minW: 3, minH: 6 } },
     permissionsRequired: ['data:read', 'data:write'],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -144,6 +148,36 @@ export const mockMicroApps: MicroApp[] = [
     deployableTo: ['dashboard'], // Deployable to the main dashboard
     defaultLayout: { lg: { x: 4, y: 4, w: 4, h: 6, minW: 3, minH: 4 } }, // Example layout
     permissionsRequired: ['network:scan'], // Example permission
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'performance-monitor-v1',
+    internalName: 'performance-monitor',
+    displayName: 'Performance Monitor',
+    icon: 'Activity',
+    description:
+      'Real-time performance monitoring dashboard with FPS, memory usage, cache metrics, and issue detection.',
+    category: 'Monitoring',
+    status: 'enabled',
+    tags: [
+      'performance',
+      'monitoring',
+      'optimization',
+      'metrics',
+      'diagnostics',
+    ],
+    agentDependencies: [],
+    authRequired: true,
+    isVisible: true,
+    requiresSubscription: false,
+    monetization: null,
+    flags: { isFeatured: true, isDevOnly: false },
+    version: '1.0.0',
+    entryPoint: '/micro-apps/performance-monitor',
+    deployableTo: ['dashboard', 'dedicated-tab'],
+    defaultLayout: { lg: { x: 8, y: 4, w: 4, h: 6, minW: 3, minH: 4 } },
+    permissionsRequired: ['system:monitor'], // Permission to monitor system performance
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },

@@ -1,4 +1,3 @@
-
 // src/types/marketplace-agent.ts
 
 /**
@@ -16,8 +15,9 @@ export interface MarketplaceAgent {
   author: string; // Creator or publisher of the agent (e.g., "NexOS Labs", "CommunityContributorX")
   tags: string[]; // Keywords for discoverability (e.g., ["optimization", "code_analysis", "performance"])
   status: 'available' | 'beta' | 'preview' | 'coming_soon' | 'deprecated'; // Lifecycle status
-  
-  capabilities: { // Key features or tasks the agent can perform
+
+  capabilities: {
+    // Key features or tasks the agent can perform
     title: string;
     description: string;
     icon?: string; // Optional icon for each capability
@@ -34,7 +34,7 @@ export interface MarketplaceAgent {
   } | null; // Null if inherently free or bundled
 
   entryPoint: string; // Base path for the agent's detail/configuration page, e.g., "/explore/agents/optimizer_prime_v1"
-  
+
   // Visuals for marketplace card and detail page
   heroImage?: string; // URL for a primary promotional image
   previewImages?: string[]; // URLs for screenshots or diagrams showcasing the agent

@@ -1,32 +1,43 @@
-
 // src/components/core/zone-controls.tsx
 'use client';
 
-import React, { useMemo, useState, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { Pin, Maximize2, Minimize2, Minus, X, Edit, MoreVertical, PlayCircle, FileText, Loader2, ExternalLink } from "lucide-react";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
+import React, { useMemo, useState, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import {
+  PushPin as Pin,
+  ArrowsOut as Maximize2,
+  ArrowsIn as Minimize2,
+  Minus,
+  X,
+  PencilSimple as Edit,
+  DotsThreeVertical as MoreVertical,
+  PlayCircle,
+  FileText,
+  CircleNotch as Loader2,
+  ArrowSquareOut as ExternalLink,
+} from '@phosphor-icons/react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface ZoneControlsProps {
   zoneId: string;
   zoneTitle: string;
-  
+
   onPinToggle?: () => void;
   isPinned?: boolean;
   onMaximizeToggle?: () => void;
   isMaximized?: boolean;
-  onMinimizeToggle?: () => void; 
-  isMinimized?: boolean; 
+  onMinimizeToggle?: () => void;
+  isMinimized?: boolean;
   onClose?: () => void;
   onSettingsToggle?: () => void;
-  
+
   canPin?: boolean;
   canMaximize?: boolean;
   canMinimize?: boolean;
@@ -38,8 +49,9 @@ interface ZoneControlsProps {
   onViewLogs?: (zoneId: string, zoneTitle: string) => void;
 }
 
-const BASE_BUTTON_CLASS = "relative h-7 w-7 p-1 rounded-full border border-primary/15 bg-primary/5 backdrop-blur-sm shadow-md focus:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:opacity-30 disabled:pointer-events-none transition-all duration-200 ease-in-out overflow-hidden group";
-const ICON_BASE_CLASS = "h-4 w-4 transition-all duration-200 ease-in-out";
+const BASE_BUTTON_CLASS =
+  'relative h-7 w-7 p-1 rounded-full border border-primary/15 bg-primary/5 backdrop-blur-sm shadow-md focus:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:opacity-30 disabled:pointer-events-none transition-all duration-200 ease-in-out overflow-hidden group';
+const ICON_BASE_CLASS = 'h-4 w-4 transition-all duration-200 ease-in-out';
 
 export function ZoneControls({
   zoneId,
@@ -61,7 +73,6 @@ export function ZoneControls({
   onRunTask,
   onViewLogs,
 }: ZoneControlsProps) {
-  
   const [isRunningTask, setIsRunningTask] = useState(false);
 
   const handleRunTaskInternal = useCallback(async () => {
@@ -70,7 +81,7 @@ export function ZoneControls({
       try {
         await onRunTask(zoneId, zoneTitle);
       } catch (error) {
-        console.error("Error running task:", error);
+        console.error('Error running task:', error);
       }
       setIsRunningTask(false);
     }
@@ -89,22 +100,44 @@ export function ZoneControls({
   }, [onViewLogs, zoneId, zoneTitle]);
 
   const hasMenuActions = useMemo(() => {
-    return !!(onOpenApp || onRunTask || onViewLogs || (canSettings && onSettingsToggle) || (canClose && onClose));
-  }, [onOpenApp, onRunTask, onViewLogs, canSettings, onSettingsToggle, canClose, onClose]);
+    return !!(
+      onOpenApp ||
+      onRunTask ||
+      onViewLogs ||
+      (canSettings && onSettingsToggle) ||
+      (canClose && onClose)
+    );
+  }, [
+    onOpenApp,
+    onRunTask,
+    onViewLogs,
+    canSettings,
+    onSettingsToggle,
+    canClose,
+    onClose,
+  ]);
 
-  if (!hasMenuActions && !onPinToggle && !onMinimizeToggle && !onMaximizeToggle) {
+  if (
+    !hasMenuActions &&
+    !onPinToggle &&
+    !onMinimizeToggle &&
+    !onMaximizeToggle
+  ) {
     return null;
   }
 
   return (
-    <div className="flex items-center gap-1.5 flex-shrink-0">
+    <div className="flex flex-shrink-0 items-center gap-1.5">
       {hasMenuActions && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
               size="icon"
-              className={cn(BASE_BUTTON_CLASS, "text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/10 hover:shadow-primary/20")}
+              className={cn(
+                BASE_BUTTON_CLASS,
+                'text-muted-foreground hover:border-primary/30 hover:bg-primary/10 hover:text-foreground hover:shadow-primary/20'
+              )}
               title="More actions"
             >
               <MoreVertical className={ICON_BASE_CLASS} />
@@ -118,7 +151,10 @@ export function ZoneControls({
               </DropdownMenuItem>
             )}
             {onRunTask && (
-              <DropdownMenuItem onClick={handleRunTaskInternal} disabled={isRunningTask}>
+              <DropdownMenuItem
+                onClick={handleRunTaskInternal}
+                disabled={isRunningTask}
+              >
                 {isRunningTask ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
@@ -132,18 +168,29 @@ export function ZoneControls({
                 <FileText className="mr-2 h-4 w-4" /> View Logs
               </DropdownMenuItem>
             )}
-            {(onOpenApp || onRunTask || onViewLogs) && (canSettings && onSettingsToggle || canClose && onClose) && <DropdownMenuSeparator />}
-            
+            {(onOpenApp || onRunTask || onViewLogs) &&
+              ((canSettings && onSettingsToggle) || (canClose && onClose)) && (
+                <DropdownMenuSeparator />
+              )}
+
             {canSettings && onSettingsToggle && (
               <DropdownMenuItem onClick={onSettingsToggle}>
                 <Edit className="mr-2 h-4 w-4" /> Configure
               </DropdownMenuItem>
             )}
-            {canClose && onClose && ( 
+            {canClose && onClose && (
               <>
-                {(onOpenApp || onRunTask || onViewLogs || (canSettings && onSettingsToggle)) && <DropdownMenuSeparator />}
-                <DropdownMenuItem onClick={onClose} className="text-destructive focus:text-destructive-foreground focus:bg-destructive">
-                  <X className="mr-2 h-4 w-4" /> Close Zone 
+                {(onOpenApp ||
+                  onRunTask ||
+                  onViewLogs ||
+                  (canSettings && onSettingsToggle)) && (
+                  <DropdownMenuSeparator />
+                )}
+                <DropdownMenuItem
+                  onClick={onClose}
+                  className="text-destructive focus:bg-destructive focus:text-destructive-foreground"
+                >
+                  <X className="mr-2 h-4 w-4" /> Close Zone
                 </DropdownMenuItem>
               </>
             )}
@@ -152,61 +199,85 @@ export function ZoneControls({
       )}
 
       {onPinToggle && (
-        <Button 
+        <Button
           key="pin-control"
-          variant="ghost" 
-          size="icon" 
+          variant="ghost"
+          size="icon"
           className={cn(
             BASE_BUTTON_CLASS,
-            "text-muted-foreground hover:text-primary hover:border-primary/30 hover:bg-primary/10 hover:shadow-primary/20",
-            isPinned && "text-primary border-primary/40 bg-primary/15 shadow-primary/30"
-          )} 
-          onClick={onPinToggle} 
-          title={isPinned ? "Unpin Zone" : "Pin Zone"}
+            'text-muted-foreground hover:border-primary/30 hover:bg-primary/10 hover:text-primary hover:shadow-primary/20',
+            isPinned &&
+              'border-primary/40 bg-primary/15 text-primary shadow-primary/30'
+          )}
+          onClick={onPinToggle}
+          title={isPinned ? 'Unpin Zone' : 'Pin Zone'}
           disabled={!canPin}
         >
-          <Pin className={cn(ICON_BASE_CLASS, isPinned ? "rotate-45 scale-110" : "group-hover:rotate-[-15deg]")} />
-          <span className="sr-only">{isPinned ? "Unpin" : "Pin"}</span>
+          <Pin
+            className={cn(
+              ICON_BASE_CLASS,
+              isPinned ? 'rotate-45 scale-110' : 'group-hover:rotate-[-15deg]'
+            )}
+          />
+          <span className="sr-only">{isPinned ? 'Unpin' : 'Pin'}</span>
         </Button>
       )}
-    
+
       {onMinimizeToggle && (
-        <Button 
+        <Button
           key="minimize-control"
-          variant="ghost" 
-          size="icon" 
+          variant="ghost"
+          size="icon"
           className={cn(
             BASE_BUTTON_CLASS,
-            "text-yellow-500/80 hover:text-yellow-400 hover:border-yellow-500/30 hover:bg-yellow-500/10 hover:shadow-yellow-500/20",
-            isMinimized && "text-yellow-400 border-yellow-500/40 bg-yellow-500/15 shadow-yellow-500/30"
-          )} 
-          onClick={onMinimizeToggle} 
-          title={isMinimized ? "Restore Content" : "Minimize Content"}
+            'text-yellow-500/80 hover:border-yellow-500/30 hover:bg-yellow-500/10 hover:text-yellow-400 hover:shadow-yellow-500/20',
+            isMinimized &&
+              'border-yellow-500/40 bg-yellow-500/15 text-yellow-400 shadow-yellow-500/30'
+          )}
+          onClick={onMinimizeToggle}
+          title={isMinimized ? 'Restore Content' : 'Minimize Content'}
           disabled={!canMinimize}
         >
-          <Minus className={cn(ICON_BASE_CLASS, "group-hover:scale-x-125")} />
-          <span className="sr-only">{isMinimized ? "Restore Content" : "Minimize Content"}</span>
+          <Minus className={cn(ICON_BASE_CLASS, 'group-hover:scale-x-125')} />
+          <span className="sr-only">
+            {isMinimized ? 'Restore Content' : 'Minimize Content'}
+          </span>
         </Button>
       )}
 
       {onMaximizeToggle && (
-        <Button 
+        <Button
           key="maximize-control"
-          variant="ghost" 
-          size="icon" 
+          variant="ghost"
+          size="icon"
           className={cn(
             BASE_BUTTON_CLASS,
-            "text-green-500/80 hover:text-green-400 hover:border-green-500/30 hover:bg-green-500/10 hover:shadow-green-500/20",
-            isMaximized && "text-green-400 border-green-500/40 bg-green-500/15 shadow-green-500/30"
-          )} 
-          onClick={onMaximizeToggle} 
-          title={isMaximized ? "Restore Zone" : "Maximize Zone"}
+            'text-green-500/80 hover:border-green-500/30 hover:bg-green-500/10 hover:text-green-400 hover:shadow-green-500/20',
+            isMaximized &&
+              'border-green-500/40 bg-green-500/15 text-green-400 shadow-green-500/30'
+          )}
+          onClick={onMaximizeToggle}
+          title={isMaximized ? 'Restore Zone' : 'Maximize Zone'}
           disabled={!canMaximize}
         >
-          {isMaximized ? 
-            <Minimize2 className={cn(ICON_BASE_CLASS, "group-hover:rotate-[-45deg] group-hover:scale-90")} /> : 
-            <Maximize2 className={cn(ICON_BASE_CLASS, "group-hover:rotate-[45deg] group-hover:scale-110")} />}
-          <span className="sr-only">{isMaximized ? "Restore" : "Maximize"}</span>
+          {isMaximized ? (
+            <Minimize2
+              className={cn(
+                ICON_BASE_CLASS,
+                'group-hover:rotate-[-45deg] group-hover:scale-90'
+              )}
+            />
+          ) : (
+            <Maximize2
+              className={cn(
+                ICON_BASE_CLASS,
+                'group-hover:rotate-[45deg] group-hover:scale-110'
+              )}
+            />
+          )}
+          <span className="sr-only">
+            {isMaximized ? 'Restore' : 'Maximize'}
+          </span>
         </Button>
       )}
     </div>

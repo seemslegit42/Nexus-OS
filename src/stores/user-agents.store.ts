@@ -1,4 +1,3 @@
-
 // src/stores/user-agents.store.ts
 import { create } from 'zustand';
 
@@ -11,10 +10,10 @@ interface UserAgentsState {
 
 export const useUserAgentsStore = create<UserAgentsState>((set, get) => ({
   acquiredAgentIds: [],
-  addAgentId: (id) => {
+  addAgentId: id => {
     if (!get().acquiredAgentIds.includes(id)) {
-      set((state) => ({ acquiredAgentIds: [...state.acquiredAgentIds, id] }));
+      set(state => ({ acquiredAgentIds: [...state.acquiredAgentIds, id] }));
     }
   },
-  isAcquired: (id) => get().acquiredAgentIds.includes(id),
+  isAcquired: id => get().acquiredAgentIds.includes(id),
 }));

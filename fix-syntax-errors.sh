@@ -1,0 +1,1 @@
+/workspaces/Nexus-OS/tooling/scripts/fix-syntax-errors.sh
